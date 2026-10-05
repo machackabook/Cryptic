@@ -26,13 +26,13 @@ python3 -m http.server 8080
 ## Optional local bridge
 
 ```bash
-node runtime/bridge.mjs
+CRYPTIC_BRIDGE_TOKEN="$(openssl rand -hex 24)" node runtime/bridge.mjs
 ```
 
-The bridge prints a one-session secret. In Cryptic, run:
+Use the same local session token value when connecting from Cryptic. In Cryptic, run:
 
 ```text
-bridge connect http://127.0.0.1:7331 <bridge-secret>
+bridge connect http://127.0.0.1:7331 <CRYPTIC_BRIDGE_TOKEN>
 bridge status
 ```
 
