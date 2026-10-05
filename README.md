@@ -40,7 +40,7 @@ Do not commit the bridge secret.
 
 ## GitHub Pages
 
-The repository includes a Pages workflow. In **Settings → Pages**, choose **GitHub Actions** as the source once. Pushes to `main` then verify and deploy the public surface.
+In **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/(root)`, then save. The public surface is already rooted at `index.html`; the separate verification workflow remains the evidence gate for each push.
 
 ## Public security boundary
 
