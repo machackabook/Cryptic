@@ -1,0 +1,115 @@
+{
+  "schema": "cryptic.nodes.public.v1",
+  "updated": "2026-10-05",
+  "gateway": "https://api.crypticnews.org",
+  "nodes": [
+    {
+      "id": "cryptic",
+      "label": "Cryptic HyperTerminal",
+      "kind": "command-center",
+      "repo": "https://github.com/machackabook/Cryptic",
+      "interface_url": "https://machackabook.github.io/Cryptic/",
+      "embed": false,
+      "capabilities": ["terminal","runtime-token","ledger","comms","change-proposal"],
+      "direct_write": false,
+      "auth": "gateway-token+private-adapter"
+    },
+    {
+      "id": "crypticnews",
+      "label": "Cryptic News",
+      "kind": "public-hub",
+      "interface_url": "https://crypticnews.org",
+      "embed": false,
+      "capabilities": ["public-navigation","project-hub"],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "gateway",
+      "label": "Cryptic Capability Gateway",
+      "kind": "edge-gateway",
+      "interface_url": "https://api.crypticnews.org/v1/status",
+      "embed": false,
+      "capabilities": ["signed-runtime-token","opaque-envelope","change-proposal"],
+      "direct_write": false,
+      "auth": "origin+signed-capability"
+    },
+    {
+      "id": "welcome",
+      "label": "Welcome Sentience",
+      "kind": "integrated-interface",
+      "repo": "https://github.com/machackabook/Welcome-Sentience",
+      "interface_url": "./interfaces/welcome-sentience.html",
+      "embed": true,
+      "capabilities": ["consent-surface","living-wallpaper","public-attestation"],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "geocore",
+      "label": "Geocore Shepard Tone Engine",
+      "kind": "external-interface",
+      "repo": "https://github.com/Azazeleous/Geocore-Shepopalopadousard-Tone-Engine",
+      "interface_url": "https://geocore-shepard-tone-engine.vercel.app",
+      "embed": false,
+      "capabilities": ["audio-workstation","shepard-tone","wav-export"],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "nexus-core",
+      "label": "Nexus Core",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/Nexus_Core",
+      "reference_url": "https://gemini.google.com/share/374ba8685c13",
+      "capabilities": ["source","factory","gaia","docs","notebooks"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "gaia-generation",
+      "label": "Gaia — The Nexus Generation",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/Gaia-The-Nexus-Generation",
+      "capabilities": ["docs","infra","security"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "nexus-generation",
+      "label": "The Nexus Generation",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/The-Nexus-Generation",
+      "capabilities": ["public-source"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "nexus-gemini",
+      "label": "The NexusGemini V1",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/The-NexusGemini-V1",
+      "capabilities": ["gemini-cli","github-action","examples"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "gaiasiris",
+      "label": "GAIASiris",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/GAIASiris",
+      "capabilities": ["python","iris","assets"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "repo-sync",
+      "label": "Nexus Repo Sync",
+      "kind": "source-node",
+      "repo": "https://github.com/machackabook/nexus-repo-sync",
+      "capabilities": ["repo-sync","config","scripts"],
+      "direct_write": false,
+      "auth": "github-authenticated-adapter"
+    }
+  ]
+}
