@@ -155,7 +155,7 @@
   }
 
   async function aggregate(kind,payload={},opts={}){
-    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','service-worker','edge']});
+    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','edge']});
   }
 
   function on(kind,handler){
@@ -194,7 +194,7 @@
     routes:()=>({
       loopback:true,
       broadcast:'BroadcastChannel' in window,
-      serviceWorker:Boolean(navigator.serviceWorker?.controller),
+      serviceWorker:false,
       localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url')),
       edge:Boolean(window.CrypticRuntime?.gateway),
       deeplink:true
