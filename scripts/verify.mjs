@@ -15,9 +15,11 @@ const patterns=[
 
 const bad=[];
 for(const f of files){
-  if(fs.statSync(f).size>2_000_000)continue;
+  const rel=path.relative(root,f).replaceAll('\\','/');
+  if(rel==='scripts/verify.mjs') continue;
+  if(fs.statSync(f).size>2_000_000) continue;
   const s=fs.readFileSync(f,'utf8');
-  for(const re of patterns) if(re.test(s)) bad.push(`${path.relative(root,f)} matches ${re}`);
+  for(const re of patterns) if(re.test(s)) bad.push(`${rel} matches blocked secret pattern`);
 }
 
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
