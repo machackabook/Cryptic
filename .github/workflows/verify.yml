@@ -8,8 +8,7 @@ jobs:
   evidence-gate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: node scripts/verify.mjs
+      - name: Clone public repository
+        run: git clone --depth 1 https://github.com/machackabook/Cryptic.git repo
+      - name: Run Cryptic evidence gate
+        run: cd repo && node scripts/verify.mjs
