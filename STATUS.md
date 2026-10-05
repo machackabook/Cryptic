@@ -1,27 +1,35 @@
 # Cryptic Runtime Status
 
-## v0.5.0 — Initial public runtime
+## v0.6.0 — Public command-center convergence
+
+**Verified configuration**
+- Repository `machackabook/Cryptic` is public.
+- GitHub reports Pages enabled for Cryptic.
+- Cloudflare reports `api.crypticnews.org` attached and enabled for Worker `cryptic-capability-gateway`.
+- Cloudflare reports secrets `CRYPTIC_SIGNING_KEY` and `CRYPTIC_PRIVATE_NODE_MAP` bound to the Worker.
+- The node registry contains only public URLs, public repository references, capability labels, and auth-mode metadata; no private node endpoint is committed.
 
 **Implemented**
 - Cosmic Guardian entry gate.
 - Browser HyperTerminal command fabric.
-- Per-request scoped runtime token broker with 10-minute TTL.
-- Runtime-token fingerprints recorded in the local provenance ledger.
-- Adapter request surfaces: Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson, Local Bridge.
-- 963 Hz Web Audio sonification.
-- Mandelbrot-inspired background traversal.
-- BottomRight.AI expandable widget.
-- PWA manifest + service-worker cache.
-- Health-only localhost bridge with explicit environment-supplied token.
-- Public/private boundary documentation and secret-ignore rules.
+- Local per-request runtime receipts plus edge-signed 5-minute capability tokens.
+- Public node dock and command routing.
+- Welcome-Sentience integrated as a same-origin usable interface.
+- Cryptic News, Geocore Tone Engine, Nexus Core, GAIA/Nexus source repositories, Gemini integration repo, GAIASiris, and repo-sync represented as public nodes.
+- ECDH P-256 + AES-256-GCM client-side Cryptic envelope sealing after a real recipient public key is paired.
+- Gateway accepts ciphertext opaquely and does not decrypt/persist plaintext.
+- Signed, hashed change-proposal receipts.
+- Local bridge actions protected by both a local secret and exact-scope edge capability token.
+- Native bridge action allowlist: `runtime.info`, `git.status`, `git.fetch`, `git.pull-ff`.
+- PWA cache updated for node registry, runtime module, and integrated interface.
 
-**Verification receipt**
-- Local verification script: PASS.
-- Inline runtime JavaScript syntax check: PASS.
-- GitHub-hosted Actions: PAUSED because GitHub did not assign a hosted runner (runner_id 0) to attempted jobs. The workflow file was removed to avoid publishing a false green/red CI signal. The portable verification script remains in scripts/verify.mjs.
+**Deliberately not claimed**
+- The Cosmic Guardian page is not server-side authentication.
+- Public runtime tokens are capabilities/receipts, not provider credentials.
+- A change proposal is not an applied change.
+- Private node routing is not active until real private endpoints are provisioned into the Worker secret map.
+- No arbitrary shell execution endpoint exists.
+- Other public machackabook repositories audited in this pass do not currently report GitHub Pages enabled; they are linked as source/capability nodes instead of being falsely labeled as live Pages sites.
 
-**GitHub Pages**
-- Public files are rooted at /index.html.
-- Enable once via Repository Settings → Pages → Deploy from a branch → main → /(root).
-
-No provider credentials or uploaded Firebase configuration are published in this repository.
+**External render probe**
+- A Cloudflare Browser Rendering verification request was attempted after deployment but Cloudflare returned rate-limit error 2001. Configuration/readback checks above succeeded; visual HTTP rendering should be rerun when the Browser Rendering quota is available.
