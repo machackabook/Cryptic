@@ -4,7 +4,7 @@
 
 Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
 
-## v0.5.0 capabilities
+## v0.6.0 capabilities
 
 - Cosmic Guardian entry gate and consent boundary.
 - HyperTerminal command fabric with a local evidence ledger.
@@ -26,17 +26,29 @@ python3 -m http.server 8080
 ## Optional local bridge
 
 ```bash
-CRYPTIC_BRIDGE_TOKEN="$(openssl rand -hex 24)" node runtime/bridge.mjs
+export CRYPTIC_BRIDGE_TOKEN="$(openssl rand -hex 24)"\nexport CRYPTIC_WORKSPACE_ROOT="$PWD"\nnode runtime/bridge.mjs
 ```
 
 Use the same local session token value when connecting from Cryptic. In Cryptic, run:
 
 ```text
 bridge connect http://127.0.0.1:7331 <CRYPTIC_BRIDGE_TOKEN>
-bridge status
+bridge status\nbridge action git.status\nbridge action git.pull-ff
 ```
 
 Do not commit the bridge secret.
+
+## Capability gateway
+
+The public command center uses `https://api.crypticnews.org` as its edge capability gateway.
+
+- A fresh signed token is minted for each requested scope.
+- The HMAC signing key is stored only as a Cloudflare Worker secret.
+- Private node endpoints are reserved for the Worker secret map, not committed to GitHub.
+- Encrypted Cryptic envelopes are opaque to the gateway.
+- Change requests are proposals until a separately authenticated adapter authorizes and applies them.
+
+See `docs/CRYPTIC-COMMUNICATION.md`.
 
 ## GitHub Pages
 
