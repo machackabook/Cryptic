@@ -1,9 +1,11 @@
-const CACHE='cryptic-v0.6.0';
+const CACHE='cryptic-v0.7.0';
 const ASSETS=[
   './',
   './index.html',
   './manifest.webmanifest',
   './cryptic-runtime.js',
+  './cryptic-bus.js',
+  './cryptic-console.js',
   './config/nodes.public.json',
   './interfaces/welcome-sentience.html'
 ];
@@ -12,6 +14,6 @@ self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise
 self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET')return;
   e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-    const copy=res.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy)); return res;
+    const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res;
   }).catch(()=>caches.match('./index.html'))));
 });
