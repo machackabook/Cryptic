@@ -1,1 +1,51 @@
 # Cryptic
+
+**The HyperTerminal Sovereign Operating System** — first public promoted surface for the Cryptic / Nexus / GAIA lineage.
+
+Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
+
+## v0.5.0 capabilities
+
+- Cosmic Guardian entry gate and consent boundary.
+- HyperTerminal command fabric with a local evidence ledger.
+- **A new scoped runtime request token for every requested adapter operation.** Tokens are short-lived correlation receipts, not secrets or provider credentials.
+- Provider request surfaces for Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson and the local bridge.
+- 963 Hz Web Audio sonification.
+- Mandelbrot-inspired global-space traversal field.
+- BottomRight.AI expandable pocket widget.
+- Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
+- CI evidence gate with common secret-pattern scanning.
+
+## Run locally
+
+```bash
+python3 -m http.server 8080
+# open http://127.0.0.1:8080
+```
+
+## Optional local bridge
+
+```bash
+node runtime/bridge.mjs
+```
+
+The bridge prints a one-session secret. In Cryptic, run:
+
+```text
+bridge connect http://127.0.0.1:7331 <bridge-secret>
+bridge status
+```
+
+Do not commit the bridge secret.
+
+## GitHub Pages
+
+The repository includes a Pages workflow. In **Settings → Pages**, choose **GitHub Actions** as the source once. Pushes to `main` then verify and deploy the public surface.
+
+## Public security boundary
+
+The Cosmic Guardian screen is a visual/consent gate, **not server-side access control**. GitHub Pages is static and public. Real restricted access belongs behind an authentication proxy or authenticated backend.
+
+Provider secrets, private Enclave material, and the uploaded Firebase configuration are intentionally excluded from this public repository.
+
+© 2026 Cryptic News LLC / The Architect. All rights reserved.
