@@ -14,7 +14,7 @@ Cryptic is a portable browser command environment with an optional localhost bri
 - Mandelbrot-inspired global-space traversal field.
 - BottomRight.AI expandable pocket widget.
 - Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
-- CI evidence gate with common secret-pattern scanning.
+- Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner.
 
 ## Run locally
 
