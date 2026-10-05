@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cryptic Terminal Route</title>
+<script>
+(() => {
+  const target = new URL('../', location.href);
+  for (const [k,v] of new URLSearchParams(location.search)) target.searchParams.set(k,v);
+  target.hash = '#terminal';
+  location.replace(target.href);
+})();
+</script>
+<noscript><a href="../">Open Cryptic</a></noscript>
