@@ -175,7 +175,7 @@
   }
 
 
-  async function bridgeAction(action){
+  async function bridgeAction(action){\n    if(!window.CrypticTerminal?.gateOpen) return {ok:false,error:'guardian_closed'};
     if(!['runtime.info','git.status','git.fetch','git.pull-ff'].includes(action||'')){
       return window.out?.('bridge action: runtime.info | git.status | git.fetch | git.pull-ff','system');
     }
