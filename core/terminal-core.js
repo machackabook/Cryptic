@@ -1,4 +1,4 @@
-const VERSION='0.8.0';
+const VERSION='0.8.1';
 const providers=[['gemini','Gemini'],['github','GitHub'],['drive','Google Drive'],['ollama','Ollama'],['openai','OpenAI'],['amazon-q','Amazon Q'],['watson','IBM Watson'],['bridge','Local Bridge']];
 const tokens=[];
 let gateOpen=false,oscillator=null,audioCtx=null,wakeLock=null;
