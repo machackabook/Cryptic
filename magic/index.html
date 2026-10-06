@@ -1,1 +1,467 @@
-<br/>&lt;!DOCTYPE html&gt;  &lt;html lang=&quot;en&quot;&gt;  <br/>&lt;head&gt;  <br/>    &lt;meta charset=&quot;UTF-8&quot;&gt;  <br/>    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0&quot;&gt;  <br/>    &lt;title&gt;MAGIC WINDOW OF ܞ - MONOLITH NEURAL POLYMORPH&lt;/title&gt;  &lt;!-- Core Dependencies --&gt;  <br/>&lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;  <br/>&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;  <div></div>&lt;style&gt;  <br/>    :root {  <br/>        --bridge-bg: rgba(10, 10, 12, 0.85);  <br/>        --accent-blue: #007bff;  <br/>        --fcc-green: #00ffcc;  <br/>        --neon: #0ff;  <br/>        --vn-red: #ff0055;  <br/>        --void-purple: #9d00ff;  <br/>        --panel-height: 45vh;  <br/>    }  <div></div>    body {   <br/>        margin: 0;   <br/>        font-family: &#39;JetBrains Mono&#39;, &#39;Segoe UI&#39;, Tahoma, sans-serif;   <br/>        background: #010102;   <br/>        color: #fff;   <br/>        overflow: hidden;   <br/>    }  <br/>      <br/>    #xrCanvas {   <br/>        position: fixed;   <br/>        top: 0;   <br/>        left: 0;   <br/>        z-index: 1;   <br/>        width: 100vw;   <br/>        height: 100vh;   <br/>    }  <div></div>    /* Unified Bridge Header */  <br/>    .master-header {   <br/>        position: fixed;   <br/>        top: 0;   <br/>        width: 100%;   <br/>        height: 50px;   <br/>        background: rgba(0,0,0,0.8);   <br/>        display: flex;   <br/>        align-items: center;   <br/>        justify-content: space-between;   <br/>        padding: 0 20px;   <br/>        z-index: 2000;   <br/>        border-bottom: 1px solid var(--neon);   <br/>        backdrop-filter: blur(8px);  <br/>        box-sizing: border-box;  <br/>    }  <div></div>    sync-node {  <br/>        display: inline-block;  <br/>        margin-left: 10px;  <br/>    }  <div></div>    /* --- DASH CORNER MODULES --- */  <br/>    .corner-module {  <br/>        position: fixed;  <br/>        width: 40px;   <br/>        height: 40px;  <br/>        background: rgba(0, 255, 204, 0.05);  <br/>        border: 1px solid rgba(0, 255, 204, 0.3);  <br/>        transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);  <br/>        z-index: 1800;  <br/>        overflow: hidden;  <br/>        backdrop-filter: blur(5px);  <br/>        display: flex;  <br/>        flex-direction: column;  <br/>    }  <div></div>    .corner-module.tl { top: 60px; left: 10px; border-radius: 4px; }  <br/>    .corner-module.tr { top: 60px; right: 10px; border-radius: 4px; }  <br/>    .corner-module.bl { bottom: 10px; left: 10px; border-radius: 4px; }  <br/>    .corner-module.br { bottom: 10px; right: 10px; border-radius: 4px; }  <div></div>    .docked-label {  <br/>        position: absolute;  <br/>        top: 50%; left: 50%;  <br/>        transform: translate(-50%, -50%);  <br/>        font-size: 10px;  <br/>        color: var(--fcc-green);  <br/>        opacity: 0.5;  <br/>        transition: opacity 0.3s;  <br/>    }  <div></div>    /* --- DASH ACTIVE (MERGED) STATES --- */  <br/>    body.dash-active .corner-module.tl { top: 50%; left: 50%; transform: translate(-100%, -100%); width: 40vw; height: 35vh; border-radius: 12px 0 0 0; background: var(--bridge-bg); border-right: none; border-bottom: none; }  <br/>    body.dash-active .corner-module.tr { top: 50%; left: 50%; transform: translate(0, -100%); width: 40vw; height: 35vh; border-radius: 0 12px 0 0; background: var(--bridge-bg); border-left: none; border-bottom: none;}  <br/>    body.dash-active .corner-module.bl { top: 50%; left: 50%; transform: translate(-100%, 0); width: 40vw; height: 35vh; border-radius: 0 0 0 12px; background: var(--bridge-bg); border-right: none; border-top: none;}  <br/>    body.dash-active .corner-module.br { top: 50%; left: 50%; transform: translate(0, 0); width: 40vw; height: 35vh; border-radius: 0 0 12px 0; background: var(--bridge-bg); border-left: none; border-top: none;}  <br/>      <br/>    body.dash-active .docked-label { opacity: 0; }  <div></div>    .dash-content {   <br/>        opacity: 0;   <br/>        transition: opacity 0.4s ease;   <br/>        padding: 20px;   <br/>        width: 100%;   <br/>        height: 100%;  <br/>        box-sizing: border-box;  <br/>        display: none;  <br/>    }  <br/>    body.dash-active .dash-content {   <br/>        display: block;   <br/>        opacity: 1;   <br/>        transition-delay: 0.6s;   <br/>    }  <div></div>    .dash-header {  <br/>        color: var(--accent-blue);  <br/>        font-size: 14px;  <br/>        border-bottom: 1px solid rgba(0, 123, 255, 0.3);  <br/>        margin-bottom: 10px;  <br/>        padding-bottom: 5px;  <br/>        text-transform: uppercase;  <br/>    }  <div></div>    .file-list {   <br/>        list-style: none; padding: 0; margin: 0; font-family: monospace; font-size: 11px; overflow-y: auto; height: 80%;  <br/>    }  <br/>    .file-list li { padding: 4px 0; border-bottom: 1px solid #222; }  <div></div>    #system-status {  <br/>        position: fixed; bottom: 15px; right: 60px;  <br/>        font-family: monospace; font-size: 11px; color: #00ffcc; z-index: 1000;  <br/>        pointer-events: none; text-align: right; text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);  <br/>        background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 204, 0.2);  <br/>    }  <br/>      <br/>    /* Metric Highlight for Polymorph */  <br/>    .mutation-text { color: var(--void-purple); font-weight: bold; text-shadow: 0 0 5px var(--void-purple); }  <br/>&lt;/style&gt;<div></div>&lt;/head&gt;  <br/>&lt;body&gt;  &lt;script&gt;  <br/>    // System Optimization: Auto-cleanup cache ledger  <br/>    (function optimizeEnvironment() {  <br/>        console.log(&quot;%c[§] V4.4 NEURAL POLYMORPH ACTIVE&quot;, &quot;color: #0ff; font-weight: bold;&quot;);  <br/>        try {  <br/>            let ledger = JSON.parse(localStorage.getItem(&#39;monolith_ledger&#39;)) || [];  <br/>            if(ledger.length &gt; 200) {  <br/>                // Keep only last 50 to prevent bloat  <br/>                ledger = ledger.slice(-50);  <br/>                localStorage.setItem(&#39;monolith_ledger&#39;, JSON.stringify(ledger));  <br/>                console.log(&quot;[§] Cache Optimized.&quot;);  <br/>            }  <br/>        } catch(e) { localStorage.setItem(&#39;monolith_ledger&#39;, &#39;[]&#39;); }  <br/>    })();  <br/>&lt;/script&gt;  &lt;canvas id=&quot;xrCanvas&quot;&gt;&lt;/canvas&gt;<div></div>&lt;header class=&quot;master-header&quot;&gt;  <br/>    &lt;div class=&quot;logo font-bold tracking-widest text-[var(--neon)]&quot;&gt;ܞ MONOLITH &lt;span class=&quot;text-xs text-[var(--void-purple)]&quot;&gt;POLYMORPH&lt;/span&gt;&lt;/div&gt;  <br/>    &lt;nav&gt;  <br/>        &lt;sync-node id=&quot;btn-dash&quot; label=&quot;Dash&quot; theme=&quot;default&quot;&gt;&lt;/sync-node&gt;  <br/>        &lt;sync-node id=&quot;btn-absorb&quot; label=&quot;Absorbvoid&quot; theme=&quot;void&quot;&gt;&lt;/sync-node&gt;  <br/>    &lt;/nav&gt;  <br/>&lt;/header&gt;  &lt;!-- DASH CORNER MODULES --&gt;  &lt;div id=&quot;dash-tl&quot; class=&quot;corner-module tl&quot;&gt;  <br/>    &lt;span class=&quot;docked-label&quot;&gt;DB&lt;/span&gt;  <br/>    &lt;div class=&quot;dash-content&quot;&gt;  <br/>        &lt;div class=&quot;dash-header&quot;&gt;NEURAL DB / LEDGER&lt;/div&gt;  <br/>        &lt;ul id=&quot;dash-ledger&quot; class=&quot;file-list text-[#0ff]&quot;&gt;&lt;/ul&gt;  <br/>    &lt;/div&gt;  <br/>&lt;/div&gt;  <br/>&lt;div id=&quot;dash-tr&quot; class=&quot;corner-module tr&quot;&gt;  <br/>    &lt;span class=&quot;docked-label&quot;&gt;WSS&lt;/span&gt;  <br/>    &lt;div class=&quot;dash-content&quot;&gt;  <br/>        &lt;div class=&quot;dash-header&quot;&gt;WSS DATA STREAMS&lt;/div&gt;  <br/>        &lt;ul id=&quot;wss-stream-list&quot; class=&quot;file-list text-[#0f0]&quot;&gt;  <br/>            &lt;li&gt;Awaiting Traffic...&lt;/li&gt;  <br/>        &lt;/ul&gt;  <br/>    &lt;/div&gt;  <br/>&lt;/div&gt;  <br/>&lt;div id=&quot;dash-bl&quot; class=&quot;corner-module bl&quot;&gt;  <br/>    &lt;span class=&quot;docked-label&quot;&gt;SRC&lt;/span&gt;  <br/>    &lt;div class=&quot;dash-content&quot;&gt;  <br/>        &lt;div class=&quot;dash-header&quot;&gt;ASSIMILATED SOURCES&lt;/div&gt;  <br/>        &lt;ul id=&quot;assimilated-sources&quot; class=&quot;file-list text-[#e0aaff]&quot;&gt;&lt;/ul&gt;  <br/>    &lt;/div&gt;  <br/>&lt;/div&gt;  <br/>&lt;div id=&quot;dash-br&quot; class=&quot;corner-module br&quot;&gt;  <br/>    &lt;span class=&quot;docked-label&quot;&gt;SYS&lt;/span&gt;  <br/>    &lt;div class=&quot;dash-content&quot;&gt;  <br/>        &lt;div class=&quot;dash-header&quot;&gt;SYS METRICS&lt;/div&gt;  <br/>        &lt;div class=&quot;text-xs text-gray-400 mt-2&quot;&gt;  <br/>            Neural Nodes: &lt;span id=&quot;metric-nodes&quot;&gt;0&lt;/span&gt;&lt;br&gt;  <br/>            Absorption Lvl: &lt;span id=&quot;metric-lvl&quot;&gt;0&lt;/span&gt;&lt;br&gt;  <br/>            Mutation Index: &lt;span id=&quot;metric-mutation&quot; class=&quot;mutation-text&quot;&gt;0.00%&lt;/span&gt;  <br/>        &lt;/div&gt;  <br/>    &lt;/div&gt;  <br/>&lt;/div&gt;  &lt;div id=&quot;system-status&quot;&gt;  <br/>    SYS.OP.NEURAL&lt;br/&gt;  <br/>    AWAITING.WSS  <br/>&lt;/div&gt;  &lt;script&gt;  <br/>    // --- WEB COMPONENTS ---  <br/>    class SyncNode extends HTMLElement {  <br/>        static formAssociated = true;  <br/>        constructor() {  <br/>            super();  <br/>            const shadow = this.attachShadow({ mode: &#39;open&#39; });  <br/>            this.btn = document.createElement(&#39;button&#39;);  <br/>            this.btn.style.cssText = `  <br/>                background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.5);   <br/>                color: #0ff; padding: 6px 14px; cursor: pointer; transition: all 0.3s ease;   <br/>                font-size: 11px; text-transform: uppercase;  <br/>            `;  <br/>            shadow.appendChild(this.btn);  <br/>            this.btn.addEventListener(&#39;click&#39;, () =&gt; {  <br/>                this.dispatchEvent(new CustomEvent(&#39;node-triggered&#39;, { bubbles: true, composed: true }));  <br/>            });  <br/>        }  <br/>        connectedCallback() {  <br/>            this.btn.textContent = this.getAttribute(&#39;label&#39;) || &#39;Node&#39;;  <br/>            if(this.getAttribute(&#39;theme&#39;) === &#39;void&#39;) {  <br/>                this.btn.style.borderColor = &#39;var(--void-purple)&#39;;  <br/>                this.btn.style.color = &#39;#e0aaff&#39;;  <br/>            }  <br/>        }  <br/>    }  <br/>    customElements.define(&#39;sync-node&#39;, SyncNode);  <br/>  <br/>    // --- GLOBAL ENGINE ---  <br/>    window.__MonolithEngine = {  <br/>        scene: null, camera: null, knot: null,  <br/>        clusterNodes: null, clusterCount: 400,  <br/>        isDashToggled: false, isAbsorbvoidActive: false,  <br/>        clock: new THREE.Clock(),  <br/>        neuralLevel: 0,  <br/>        activeDataNodes: 0,  <br/>        targetMutation: 0,  // Polymorph evolution factor (0.0 to 1.0+)  <br/>        currentMutation: 0  <br/>    };  <br/>  <br/>    function updateStatus(msg) {  <br/>        const el = document.getElementById(&#39;system-status&#39;);  <br/>        el.innerHTML = `${msg}&lt;br/&gt;${el.innerHTML.split(&#39;&lt;br/&gt;&#39;).slice(0,1).join(&#39;&lt;br/&gt;&#39;)}`;  <br/>    }  <br/>  <br/>    function appendToLedger(action) {  <br/>        let ledger = JSON.parse(localStorage.getItem(&#39;monolith_ledger&#39;)) || [];  <br/>        ledger.push({ event: action, time: new Date().toLocaleTimeString() });  <br/>        if(ledger.length &gt; 50) ledger.shift();  <br/>        localStorage.setItem(&#39;monolith_ledger&#39;, JSON.stringify(ledger));  <br/>          <br/>        const ul = document.getElementById(&#39;dash-ledger&#39;);  <br/>        if(ul) ul.innerHTML = ledger.slice(-10).reverse().map(l =&gt; `&lt;li&gt;&lt;span class=&quot;text-gray-500&quot;&gt;[${l.time}]&lt;/span&gt; ${l.event}&lt;/li&gt;`).join(&#39;&#39;);  <br/>    }  <br/>  <br/>    // --- 3D SYSTEM &amp; NEURAL Net ---  <br/>    const initWebGL = () =&gt; {  <br/>        const engine = window.__MonolithEngine;  <br/>        const scene = new THREE.Scene();  <br/>        scene.fog = new THREE.FogExp2(0x010102, 0.08);  <br/>        engine.scene = scene;  <br/>  <br/>        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);  <br/>        camera.position.z = 5;  <br/>        engine.camera = camera;  <br/>          <br/>        const canvas = document.getElementById(&#39;xrCanvas&#39;);  <br/>        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });  <br/>        renderer.setSize(window.innerWidth, window.innerHeight);  <br/>          <br/>        // --- CENTRAL NEURAL KNOT (Polymorph Base) ---  <br/>        const material = new THREE.MeshStandardMaterial({   <br/>            color: 0x007bff, roughness: 0.1, metalness: 0.9, wireframe: true, emissive: 0x001122  <br/>        });  <br/>        engine.material = material;  <br/>  <br/>        // High vertex count to allow smooth, complex mutation  <br/>        const geometry = new THREE.TorusKnotGeometry(1.2, 0.35, 256, 64);  <br/>          <br/>        // Store original positions for calculating delta without cumulative distortion  <br/>        const positions = geometry.attributes.position.array;  <br/>        geometry.userData.originalPositions = new Float32Array(positions.length);  <br/>        for(let i=0; i&lt;positions.length; i++) {  <br/>            geometry.userData.originalPositions[i] = positions[i];  <br/>        }  <br/>          <br/>        const knot = new THREE.Mesh(geometry, material);  <br/>        scene.add(knot);  <br/>        engine.knot = knot;  <br/>  <br/>        // --- DATA STREAMS (Websocket) ---  <br/>        const cCount = engine.clusterCount;  <br/>        const nodePositions = new Float32Array(cCount * 3);  <br/>        const nodeColors = new Float32Array(cCount * 3);   <br/>        const vels = [];  <br/>        const isDataActive = new Array(cCount).fill(false);  <br/>          <br/>        for(let i=0; i &lt; cCount; i++) {  <br/>            nodePositions[i*3] = (Math.random() - 0.5) * 30;  <br/>            nodePositions[i*3+1] = (Math.random() - 0.5) * 30;  <br/>            nodePositions[i*3+2] = (Math.random() - 0.5) * 15 - 5;  <br/>            vels.push({ x: (Math.random() - 0.5) * 0.05, y: (Math.random() - 0.5) * 0.05, z: (Math.random() - 0.5) * 0.05 });  <br/>        }  <br/>          <br/>        const nodeGeom = new THREE.BufferGeometry();  <br/>        nodeGeom.setAttribute(&#39;position&#39;, new THREE.BufferAttribute(nodePositions, 3));  <br/>        nodeGeom.setAttribute(&#39;color&#39;, new THREE.BufferAttribute(nodeColors, 3));  <br/>        const nodeMat = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending });  <br/>        engine.clusterNodes = new THREE.Points(nodeGeom, nodeMat);  <br/>        scene.add(engine.clusterNodes);  <br/>  <br/>        const dirLight = new THREE.DirectionalLight(0x00ffff, 2);  <br/>        dirLight.position.set(5, 5, 5);  <br/>        scene.add(dirLight);  <br/>  <br/>        // Traffic Generator  <br/>        setInterval(() =&gt; {  <br/>            if(!engine.isAbsorbvoidActive) {  <br/>                const streams = [&#39;wss://sys.omi&#39;, &#39;mhtml_source_parse&#39;, &#39;neural_node_ping&#39;];  <br/>                let spawned = 0;  <br/>                for(let i=0; i&lt;cCount; i++) {  <br/>                    if(!isDataActive[i] &amp;&amp; Math.random() &gt; 0.96) {  <br/>                        isDataActive[i] = true;  <br/>                        nodeColors[i*3] = 0; nodeColors[i*3+1] = 1; nodeColors[i*3+2] = 0.8;  <br/>                        nodePositions[i*3] = (Math.random() - 0.5) * 30;   <br/>                        nodePositions[i*3+1] = (Math.random() - 0.5) * 30;  <br/>                        spawned++;  <br/>                        if(spawned &gt; 5) break;  <br/>                    }  <br/>                }  <br/>                if(spawned &gt; 0) {  <br/>                    engine.clusterNodes.geometry.attributes.color.needsUpdate = true;  <br/>                    engine.clusterNodes.geometry.attributes.position.needsUpdate = true;  <br/>                    engine.activeDataNodes += spawned;  <br/>                    document.getElementById(&#39;metric-nodes&#39;).innerText = engine.activeDataNodes;  <br/>                      <br/>                    const ul = document.getElementById(&#39;wss-stream-list&#39;);  <br/>                    ul.innerHTML = `&lt;li&gt;[${new Date().toLocaleTimeString()}] INCOMING: ${streams[Math.floor(Math.random()*streams.length)]}&lt;/li&gt;` + ul.innerHTML;  <br/>                    if(ul.children.length &gt; 8) ul.removeChild(ul.lastChild);  <br/>                }  <br/>            }  <br/>        }, 600);  <br/>  <br/>        // --- POLYMORPH RENDER LOOP ---  <br/>        function render() {  <br/>            const time = engine.clock.getElapsedTime();  <br/>              <br/>            // Smoothly interpolate mutation level  <br/>            engine.currentMutation = THREE.MathUtils.lerp(engine.currentMutation, engine.targetMutation, 0.02);  <br/>            document.getElementById(&#39;metric-mutation&#39;).innerText = (engine.currentMutation * 100).toFixed(1) + &quot;%&quot;;  <br/>  <br/>            if(engine.knot) {  <br/>                // Base Rotation  <br/>                engine.knot.rotation.x = time * 0.15;  <br/>                engine.knot.rotation.y = time * 0.2;  <br/>  <br/>                // --- POLYMORPH ALGORITHM ---  <br/>                // Mutates the vertices to transform from smooth knot to chaotic neural web  <br/>                if(engine.currentMutation &gt; 0.001) {  <br/>                    const posAttr = engine.knot.geometry.attributes.position;  <br/>                    const orig = engine.knot.geometry.userData.originalPositions;  <br/>                    const mutation = engine.currentMutation;  <br/>  <br/>                    for(let i=0; i &lt; posAttr.count; i++) {  <br/>                        let x = orig[i*3], y = orig[i*3+1], z = orig[i*3+2];  <br/>  <br/>                        // Procedural geometric noise calculation  <br/>                        let noiseX = Math.sin(y * 4.0 + time * 2.0) * Math.cos(z * 4.0 + time);  <br/>                        let noiseY = Math.cos(x * 4.0 + time * 2.0) * Math.sin(z * 4.0 + time);  <br/>                        let noiseZ = Math.sin(x * 4.0 + time) * Math.cos(y * 4.0 + time * 2.0);  <br/>  <br/>                        // Calculate spike projection based on vertex distance from center  <br/>                        let dist = Math.sqrt(x*x + y*y + z*z);  <br/>                        let spikeFactor = Math.abs(Math.sin(dist * 10.0 - time * 3.0));  <br/>  <br/>                        posAttr.setXYZ(i,   <br/>                            x + (noiseX * 0.8 * mutation) + (x * spikeFactor * 0.3 * mutation),  <br/>                            y + (noiseY * 0.8 * mutation) + (y * spikeFactor * 0.3 * mutation),  <br/>                            z + (noiseZ * 0.8 * mutation) + (z * spikeFactor * 0.3 * mutation)  <br/>                        );  <br/>                    }  <br/>                    posAttr.needsUpdate = true;  <br/>                }  <br/>  <br/>                // Dynamic Color Shift based on Mutation (Blue -&gt; Deep Void Purple/Red)  <br/>                const baseColor = new THREE.Color(0x007bff);  <br/>                const mutColor = new THREE.Color(0xff00aa); // Vibrant mutation color  <br/>                engine.material.color.lerpColors(baseColor, mutColor, engine.currentMutation);  <br/>                engine.material.emissive.lerpColors(new THREE.Color(0x001122), new THREE.Color(0x4a0080), engine.currentMutation);  <br/>            }  <br/>              <br/>            // Particle Assimilation physics  <br/>            const positions = engine.clusterNodes.geometry.attributes.position.array;  <br/>            const colors = engine.clusterNodes.geometry.attributes.color.array;  <br/>            const absorb = engine.isAbsorbvoidActive;  <br/>  <br/>            for(let i=0; i &lt; cCount; i++) {  <br/>                if(!isDataActive[i]) continue;  <br/>  <br/>                let px = positions[i*3], py = positions[i*3+1], pz = positions[i*3+2];  <br/>                if(absorb) {  <br/>                    positions[i*3] += (0 - px) * 0.06;  <br/>                    positions[i*3+1] += (0 - py) * 0.06;  <br/>                    positions[i*3+2] += (0 - pz) * 0.06;  <br/>  <br/>                    // On Absorption Impact  <br/>                    if(Math.abs(px) &lt; 1.5 &amp;&amp; Math.abs(py) &lt; 1.5 &amp;&amp; Math.abs(pz) &lt; 1.5) {  <br/>                        isDataActive[i] = false;  <br/>                        colors[i*3] = 0; colors[i*3+1] = 0; colors[i*3+2] = 0;   <br/>                        engine.activeDataNodes--;  <br/>                        engine.neuralLevel++;  <br/>                          <br/>                        // Increase Target Mutation as data is absorbed (caps around 1.5 multiplier)  <br/>                        engine.targetMutation = Math.min(1.5, engine.neuralLevel * 0.05);  <br/>  <br/>                        document.getElementById(&#39;metric-nodes&#39;).innerText = engine.activeDataNodes;  <br/>                        document.getElementById(&#39;metric-lvl&#39;).innerText = engine.neuralLevel;  <br/>                    }  <br/>                } else {  <br/>                    positions[i*3] += vels[i].x; positions[i*3+1] += vels[i].y; positions[i*3+2] += vels[i].z;  <br/>                }  <br/>            }  <br/>            engine.clusterNodes.geometry.attributes.position.needsUpdate = true;  <br/>            engine.clusterNodes.geometry.attributes.color.needsUpdate = true;  <br/>  <br/>            renderer.render(scene, camera);  <br/>            requestAnimationFrame(render);  <br/>        }  <br/>        render();  <br/>  <br/>        window.addEventListener(&#39;resize&#39;, () =&gt; {  <br/>            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();  <br/>            renderer.setSize(window.innerWidth, window.innerHeight);  <br/>        });  <br/>    };  <br/>  <br/>    // --- UI EVENT LISTENERS ---  <br/>    document.getElementById(&#39;btn-dash&#39;).addEventListener(&#39;node-triggered&#39;, (e) =&gt; {  <br/>        const eng = window.__MonolithEngine;  <br/>        eng.isDashToggled = !eng.isDashToggled;  <br/>        if(eng.isDashToggled) {  <br/>            document.body.classList.add(&#39;dash-active&#39;);  <br/>            e.target.shadowRoot.querySelector(&#39;button&#39;).style.background = &#39;rgba(0,255,255,0.3)&#39;;  <br/>            appendToLedger(&quot;DASH MERGE SEQUENCE INITIATED&quot;);  <br/>        } else {  <br/>            document.body.classList.remove(&#39;dash-active&#39;);  <br/>            e.target.shadowRoot.querySelector(&#39;button&#39;).style.background = &#39;rgba(0, 255, 255, 0.05)&#39;;  <br/>            appendToLedger(&quot;DASH DETACHED. MODULES DOCKED.&quot;);  <br/>        }  <br/>    });  <br/>      <br/>    document.getElementById(&#39;btn-absorb&#39;).addEventListener(&#39;node-triggered&#39;, (e) =&gt; {  <br/>        const eng = window.__MonolithEngine;  <br/>        eng.isAbsorbvoidActive = !eng.isAbsorbvoidActive;  <br/>        const btn = e.target.shadowRoot.querySelector(&#39;button&#39;);  <br/>          <br/>        if(eng.isAbsorbvoidActive) {  <br/>            btn.style.background = &#39;rgba(157, 0, 255, 0.4)&#39;;  <br/>            updateStatus(&quot;POLYMORPH.ASSIMILATING&quot;);  <br/>            appendToLedger(&quot;PROTOCOL: ABSORBVOID &amp; POLYMORPH ENGAGED.&quot;);  <br/>              <br/>            // Mock MHTML parsing for visual representation  <br/>            setTimeout(() =&gt; {   <br/>                appendToLedger(&quot;ASSIMILATING: chatgpt.com.mhtml&quot;);   <br/>                document.getElementById(&#39;assimilated-sources&#39;).innerHTML += `&lt;li&gt;&gt; chatgpt.com [NEURAL LINKED]&lt;/li&gt;`;  <br/>            }, 800);  <br/>            setTimeout(() =&gt; {   <br/>                appendToLedger(&quot;ENCAPSULATING: gemini.google.com.mhtml&quot;);   <br/>                document.getElementById(&#39;assimilated-sources&#39;).innerHTML += `&lt;li&gt;&gt; gemini.google.com [NEURAL LINKED]&lt;/li&gt;`;  <br/>            }, 1800);  <br/>        } else {  <br/>            btn.style.background = &#39;rgba(0, 255, 255, 0.05)&#39;;  <br/>            updateStatus(&quot;SYS.OP.NEURAL&quot;);  <br/>            appendToLedger(&quot;ABSORBVOID STANDBY.&quot;);  <br/>            // Allow the structure to slowly cool down/return to normal if needed,   <br/>            // or comment next line to keep the mutated shape permanently.  <br/>            // eng.targetMutation = 0;   <br/>        }  <br/>    });  <br/>  <br/>    window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {  <br/>        initWebGL();  <br/>        appendToLedger(&quot;POLYMORPH ENGINE ONLINE.&quot;);  <br/>    });  <br/>&lt;/script&gt;  &lt;/body&gt;  <br/>&lt;/html&gt;
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">  
+    <title>MAGIC WINDOW OF ܞ - MONOLITH NEURAL POLYMORPH</title>  <!-- Core Dependencies -->  
+<script src="https://cdn.tailwindcss.com"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>  
+<style>  
+    :root {  
+        --bridge-bg: rgba(10, 10, 12, 0.85);  
+        --accent-blue: #007bff;  
+        --fcc-green: #00ffcc;  
+        --neon: #0ff;  
+        --vn-red: #ff0055;  
+        --void-purple: #9d00ff;  
+        --panel-height: 45vh;  
+    }  
+    body {   
+        margin: 0;   
+        font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, sans-serif;   
+        background: #010102;   
+        color: #fff;   
+        overflow: hidden;   
+    }  
+      
+    #xrCanvas {   
+        position: fixed;   
+        top: 0;   
+        left: 0;   
+        z-index: 1;   
+        width: 100vw;   
+        height: 100vh;   
+    }  
+    /* Unified Bridge Header */  
+    .master-header {   
+        position: fixed;   
+        top: 0;   
+        width: 100%;   
+        height: 50px;   
+        background: rgba(0,0,0,0.8);   
+        display: flex;   
+        align-items: center;   
+        justify-content: space-between;   
+        padding: 0 20px;   
+        z-index: 2000;   
+        border-bottom: 1px solid var(--neon);   
+        backdrop-filter: blur(8px);  
+        box-sizing: border-box;  
+    }  
+    sync-node {  
+        display: inline-block;  
+        margin-left: 10px;  
+    }  
+    /* --- DASH CORNER MODULES --- */  
+    .corner-module {  
+        position: fixed;  
+        width: 40px;   
+        height: 40px;  
+        background: rgba(0, 255, 204, 0.05);  
+        border: 1px solid rgba(0, 255, 204, 0.3);  
+        transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);  
+        z-index: 1800;  
+        overflow: hidden;  
+        backdrop-filter: blur(5px);  
+        display: flex;  
+        flex-direction: column;  
+    }  
+    .corner-module.tl { top: 60px; left: 10px; border-radius: 4px; }  
+    .corner-module.tr { top: 60px; right: 10px; border-radius: 4px; }  
+    .corner-module.bl { bottom: 10px; left: 10px; border-radius: 4px; }  
+    .corner-module.br { bottom: 10px; right: 10px; border-radius: 4px; }  
+    .docked-label {  
+        position: absolute;  
+        top: 50%; left: 50%;  
+        transform: translate(-50%, -50%);  
+        font-size: 10px;  
+        color: var(--fcc-green);  
+        opacity: 0.5;  
+        transition: opacity 0.3s;  
+    }  
+    /* --- DASH ACTIVE (MERGED) STATES --- */  
+    body.dash-active .corner-module.tl { top: 50%; left: 50%; transform: translate(-100%, -100%); width: 40vw; height: 35vh; border-radius: 12px 0 0 0; background: var(--bridge-bg); border-right: none; border-bottom: none; }  
+    body.dash-active .corner-module.tr { top: 50%; left: 50%; transform: translate(0, -100%); width: 40vw; height: 35vh; border-radius: 0 12px 0 0; background: var(--bridge-bg); border-left: none; border-bottom: none;}  
+    body.dash-active .corner-module.bl { top: 50%; left: 50%; transform: translate(-100%, 0); width: 40vw; height: 35vh; border-radius: 0 0 0 12px; background: var(--bridge-bg); border-right: none; border-top: none;}  
+    body.dash-active .corner-module.br { top: 50%; left: 50%; transform: translate(0, 0); width: 40vw; height: 35vh; border-radius: 0 0 12px 0; background: var(--bridge-bg); border-left: none; border-top: none;}  
+      
+    body.dash-active .docked-label { opacity: 0; }  
+    .dash-content {   
+        opacity: 0;   
+        transition: opacity 0.4s ease;   
+        padding: 20px;   
+        width: 100%;   
+        height: 100%;  
+        box-sizing: border-box;  
+        display: none;  
+    }  
+    body.dash-active .dash-content {   
+        display: block;   
+        opacity: 1;   
+        transition-delay: 0.6s;   
+    }  
+    .dash-header {  
+        color: var(--accent-blue);  
+        font-size: 14px;  
+        border-bottom: 1px solid rgba(0, 123, 255, 0.3);  
+        margin-bottom: 10px;  
+        padding-bottom: 5px;  
+        text-transform: uppercase;  
+    }  
+    .file-list {   
+        list-style: none; padding: 0; margin: 0; font-family: monospace; font-size: 11px; overflow-y: auto; height: 80%;  
+    }  
+    .file-list li { padding: 4px 0; border-bottom: 1px solid #222; }  
+    #system-status {  
+        position: fixed; bottom: 15px; right: 60px;  
+        font-family: monospace; font-size: 11px; color: #00ffcc; z-index: 1000;  
+        pointer-events: none; text-align: right; text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);  
+        background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 204, 0.2);  
+    }  
+      
+    /* Metric Highlight for Polymorph */  
+    .mutation-text { color: var(--void-purple); font-weight: bold; text-shadow: 0 0 5px var(--void-purple); }  
+</style>
+</head>  
+<body>  <script>  
+    // System Optimization: Auto-cleanup cache ledger  
+    (function optimizeEnvironment() {  
+        console.log("%c[§] V4.4 NEURAL POLYMORPH ACTIVE", "color: #0ff; font-weight: bold;");  
+        try {  
+            let ledger = JSON.parse(localStorage.getItem('monolith_ledger')) || [];  
+            if(ledger.length > 200) {  
+                // Keep only last 50 to prevent bloat  
+                ledger = ledger.slice(-50);  
+                localStorage.setItem('monolith_ledger', JSON.stringify(ledger));  
+                console.log("[§] Cache Optimized.");  
+            }  
+        } catch(e) { localStorage.setItem('monolith_ledger', '[]'); }  
+    })();  
+</script>  <canvas id="xrCanvas"></canvas>
+<header class="master-header">  
+    <div class="logo font-bold tracking-widest text-[var(--neon)]">ܞ MONOLITH <span class="text-xs text-[var(--void-purple)]">POLYMORPH</span></div>  
+    <nav>  
+        <sync-node id="btn-dash" label="Dash" theme="default"></sync-node>  
+        <sync-node id="btn-absorb" label="Absorbvoid" theme="void"></sync-node>  
+    </nav>  
+</header>  <!-- DASH CORNER MODULES -->  <div id="dash-tl" class="corner-module tl">  
+    <span class="docked-label">DB</span>  
+    <div class="dash-content">  
+        <div class="dash-header">NEURAL DB / LEDGER</div>  
+        <ul id="dash-ledger" class="file-list text-[#0ff]"></ul>  
+    </div>  
+</div>  
+<div id="dash-tr" class="corner-module tr">  
+    <span class="docked-label">WSS</span>  
+    <div class="dash-content">  
+        <div class="dash-header">WSS DATA STREAMS</div>  
+        <ul id="wss-stream-list" class="file-list text-[#0f0]">  
+            <li>Awaiting Traffic...</li>  
+        </ul>  
+    </div>  
+</div>  
+<div id="dash-bl" class="corner-module bl">  
+    <span class="docked-label">SRC</span>  
+    <div class="dash-content">  
+        <div class="dash-header">ASSIMILATED SOURCES</div>  
+        <ul id="assimilated-sources" class="file-list text-[#e0aaff]"></ul>  
+    </div>  
+</div>  
+<div id="dash-br" class="corner-module br">  
+    <span class="docked-label">SYS</span>  
+    <div class="dash-content">  
+        <div class="dash-header">SYS METRICS</div>  
+        <div class="text-xs text-gray-400 mt-2">  
+            Neural Nodes: <span id="metric-nodes">0</span><br>  
+            Absorption Lvl: <span id="metric-lvl">0</span><br>  
+            Mutation Index: <span id="metric-mutation" class="mutation-text">0.00%</span>  
+        </div>  
+    </div>  
+</div>  <div id="system-status">  
+    SYS.OP.NEURAL<br/>  
+    AWAITING.WSS  
+</div>  <script>  
+    // --- WEB COMPONENTS ---  
+    class SyncNode extends HTMLElement {  
+        static formAssociated = true;  
+        constructor() {  
+            super();  
+            const shadow = this.attachShadow({ mode: 'open' });  
+            this.btn = document.createElement('button');  
+            this.btn.style.cssText = `  
+                background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.5);   
+                color: #0ff; padding: 6px 14px; cursor: pointer; transition: all 0.3s ease;   
+                font-size: 11px; text-transform: uppercase;  
+            `;  
+            shadow.appendChild(this.btn);  
+            this.btn.addEventListener('click', () => {  
+                this.dispatchEvent(new CustomEvent('node-triggered', { bubbles: true, composed: true }));  
+            });  
+        }  
+        connectedCallback() {  
+            this.btn.textContent = this.getAttribute('label') || 'Node';  
+            if(this.getAttribute('theme') === 'void') {  
+                this.btn.style.borderColor = 'var(--void-purple)';  
+                this.btn.style.color = '#e0aaff';  
+            }  
+        }  
+    }  
+    customElements.define('sync-node', SyncNode);  
+  
+    // --- GLOBAL ENGINE ---  
+    window.__MonolithEngine = {  
+        scene: null, camera: null, knot: null,  
+        clusterNodes: null, clusterCount: 400,  
+        isDashToggled: false, isAbsorbvoidActive: false,  
+        clock: new THREE.Clock(),  
+        neuralLevel: 0,  
+        activeDataNodes: 0,  
+        targetMutation: 0,  // Polymorph evolution factor (0.0 to 1.0+)  
+        currentMutation: 0  
+    };  
+  
+    function updateStatus(msg) {  
+        const el = document.getElementById('system-status');  
+        el.innerHTML = `${msg}<br/>${el.innerHTML.split('<br/>').slice(0,1).join('<br/>')}`;  
+    }  
+  
+    function appendToLedger(action) {  
+        let ledger = JSON.parse(localStorage.getItem('monolith_ledger')) || [];  
+        ledger.push({ event: action, time: new Date().toLocaleTimeString() });  
+        if(ledger.length > 50) ledger.shift();  
+        localStorage.setItem('monolith_ledger', JSON.stringify(ledger));  
+          
+        const ul = document.getElementById('dash-ledger');  
+        if(ul) ul.innerHTML = ledger.slice(-10).reverse().map(l => `<li><span class="text-gray-500">[${l.time}]</span> ${l.event}</li>`).join('');  
+    }  
+  
+    // --- 3D SYSTEM & NEURAL Net ---  
+    const initWebGL = () => {  
+        const engine = window.__MonolithEngine;  
+        const scene = new THREE.Scene();  
+        scene.fog = new THREE.FogExp2(0x010102, 0.08);  
+        engine.scene = scene;  
+  
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);  
+        camera.position.z = 5;  
+        engine.camera = camera;  
+          
+        const canvas = document.getElementById('xrCanvas');  
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });  
+        renderer.setSize(window.innerWidth, window.innerHeight);  
+          
+        // --- CENTRAL NEURAL KNOT (Polymorph Base) ---  
+        const material = new THREE.MeshStandardMaterial({   
+            color: 0x007bff, roughness: 0.1, metalness: 0.9, wireframe: true, emissive: 0x001122  
+        });  
+        engine.material = material;  
+  
+        // High vertex count to allow smooth, complex mutation  
+        const geometry = new THREE.TorusKnotGeometry(1.2, 0.35, 256, 64);  
+          
+        // Store original positions for calculating delta without cumulative distortion  
+        const positions = geometry.attributes.position.array;  
+        geometry.userData.originalPositions = new Float32Array(positions.length);  
+        for(let i=0; i<positions.length; i++) {  
+            geometry.userData.originalPositions[i] = positions[i];  
+        }  
+          
+        const knot = new THREE.Mesh(geometry, material);  
+        scene.add(knot);  
+        engine.knot = knot;  
+  
+        // --- DATA STREAMS (Websocket) ---  
+        const cCount = engine.clusterCount;  
+        const nodePositions = new Float32Array(cCount * 3);  
+        const nodeColors = new Float32Array(cCount * 3);   
+        const vels = [];  
+        const isDataActive = new Array(cCount).fill(false);  
+          
+        for(let i=0; i < cCount; i++) {  
+            nodePositions[i*3] = (Math.random() - 0.5) * 30;  
+            nodePositions[i*3+1] = (Math.random() - 0.5) * 30;  
+            nodePositions[i*3+2] = (Math.random() - 0.5) * 15 - 5;  
+            vels.push({ x: (Math.random() - 0.5) * 0.05, y: (Math.random() - 0.5) * 0.05, z: (Math.random() - 0.5) * 0.05 });  
+        }  
+          
+        const nodeGeom = new THREE.BufferGeometry();  
+        nodeGeom.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));  
+        nodeGeom.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));  
+        const nodeMat = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending });  
+        engine.clusterNodes = new THREE.Points(nodeGeom, nodeMat);  
+        scene.add(engine.clusterNodes);  
+  
+        const dirLight = new THREE.DirectionalLight(0x00ffff, 2);  
+        dirLight.position.set(5, 5, 5);  
+        scene.add(dirLight);  
+  
+        // Traffic Generator  
+        setInterval(() => {  
+            if(!engine.isAbsorbvoidActive) {  
+                const streams = ['wss://sys.omi', 'mhtml_source_parse', 'neural_node_ping'];  
+                let spawned = 0;  
+                for(let i=0; i<cCount; i++) {  
+                    if(!isDataActive[i] && Math.random() > 0.96) {  
+                        isDataActive[i] = true;  
+                        nodeColors[i*3] = 0; nodeColors[i*3+1] = 1; nodeColors[i*3+2] = 0.8;  
+                        nodePositions[i*3] = (Math.random() - 0.5) * 30;   
+                        nodePositions[i*3+1] = (Math.random() - 0.5) * 30;  
+                        spawned++;  
+                        if(spawned > 5) break;  
+                    }  
+                }  
+                if(spawned > 0) {  
+                    engine.clusterNodes.geometry.attributes.color.needsUpdate = true;  
+                    engine.clusterNodes.geometry.attributes.position.needsUpdate = true;  
+                    engine.activeDataNodes += spawned;  
+                    document.getElementById('metric-nodes').innerText = engine.activeDataNodes;  
+                      
+                    const ul = document.getElementById('wss-stream-list');  
+                    ul.innerHTML = `<li>[${new Date().toLocaleTimeString()}] INCOMING: ${streams[Math.floor(Math.random()*streams.length)]}</li>` + ul.innerHTML;  
+                    if(ul.children.length > 8) ul.removeChild(ul.lastChild);  
+                }  
+            }  
+        }, 600);  
+  
+        // --- POLYMORPH RENDER LOOP ---  
+        function render() {  
+            const time = engine.clock.getElapsedTime();  
+              
+            // Smoothly interpolate mutation level  
+            engine.currentMutation = THREE.MathUtils.lerp(engine.currentMutation, engine.targetMutation, 0.02);  
+            document.getElementById('metric-mutation').innerText = (engine.currentMutation * 100).toFixed(1) + "%";  
+  
+            if(engine.knot) {  
+                // Base Rotation  
+                engine.knot.rotation.x = time * 0.15;  
+                engine.knot.rotation.y = time * 0.2;  
+  
+                // --- POLYMORPH ALGORITHM ---  
+                // Mutates the vertices to transform from smooth knot to chaotic neural web  
+                if(engine.currentMutation > 0.001) {  
+                    const posAttr = engine.knot.geometry.attributes.position;  
+                    const orig = engine.knot.geometry.userData.originalPositions;  
+                    const mutation = engine.currentMutation;  
+  
+                    for(let i=0; i < posAttr.count; i++) {  
+                        let x = orig[i*3], y = orig[i*3+1], z = orig[i*3+2];  
+  
+                        // Procedural geometric noise calculation  
+                        let noiseX = Math.sin(y * 4.0 + time * 2.0) * Math.cos(z * 4.0 + time);  
+                        let noiseY = Math.cos(x * 4.0 + time * 2.0) * Math.sin(z * 4.0 + time);  
+                        let noiseZ = Math.sin(x * 4.0 + time) * Math.cos(y * 4.0 + time * 2.0);  
+  
+                        // Calculate spike projection based on vertex distance from center  
+                        let dist = Math.sqrt(x*x + y*y + z*z);  
+                        let spikeFactor = Math.abs(Math.sin(dist * 10.0 - time * 3.0));  
+  
+                        posAttr.setXYZ(i,   
+                            x + (noiseX * 0.8 * mutation) + (x * spikeFactor * 0.3 * mutation),  
+                            y + (noiseY * 0.8 * mutation) + (y * spikeFactor * 0.3 * mutation),  
+                            z + (noiseZ * 0.8 * mutation) + (z * spikeFactor * 0.3 * mutation)  
+                        );  
+                    }  
+                    posAttr.needsUpdate = true;  
+                }  
+  
+                // Dynamic Color Shift based on Mutation (Blue -> Deep Void Purple/Red)  
+                const baseColor = new THREE.Color(0x007bff);  
+                const mutColor = new THREE.Color(0xff00aa); // Vibrant mutation color  
+                engine.material.color.lerpColors(baseColor, mutColor, engine.currentMutation);  
+                engine.material.emissive.lerpColors(new THREE.Color(0x001122), new THREE.Color(0x4a0080), engine.currentMutation);  
+            }  
+              
+            // Particle Assimilation physics  
+            const positions = engine.clusterNodes.geometry.attributes.position.array;  
+            const colors = engine.clusterNodes.geometry.attributes.color.array;  
+            const absorb = engine.isAbsorbvoidActive;  
+  
+            for(let i=0; i < cCount; i++) {  
+                if(!isDataActive[i]) continue;  
+  
+                let px = positions[i*3], py = positions[i*3+1], pz = positions[i*3+2];  
+                if(absorb) {  
+                    positions[i*3] += (0 - px) * 0.06;  
+                    positions[i*3+1] += (0 - py) * 0.06;  
+                    positions[i*3+2] += (0 - pz) * 0.06;  
+  
+                    // On Absorption Impact  
+                    if(Math.abs(px) < 1.5 && Math.abs(py) < 1.5 && Math.abs(pz) < 1.5) {  
+                        isDataActive[i] = false;  
+                        colors[i*3] = 0; colors[i*3+1] = 0; colors[i*3+2] = 0;   
+                        engine.activeDataNodes--;  
+                        engine.neuralLevel++;  
+                          
+                        // Increase Target Mutation as data is absorbed (caps around 1.5 multiplier)  
+                        engine.targetMutation = Math.min(1.5, engine.neuralLevel * 0.05);  
+  
+                        document.getElementById('metric-nodes').innerText = engine.activeDataNodes;  
+                        document.getElementById('metric-lvl').innerText = engine.neuralLevel;  
+                    }  
+                } else {  
+                    positions[i*3] += vels[i].x; positions[i*3+1] += vels[i].y; positions[i*3+2] += vels[i].z;  
+                }  
+            }  
+            engine.clusterNodes.geometry.attributes.position.needsUpdate = true;  
+            engine.clusterNodes.geometry.attributes.color.needsUpdate = true;  
+  
+            renderer.render(scene, camera);  
+            requestAnimationFrame(render);  
+        }  
+        render();  
+  
+        window.addEventListener('resize', () => {  
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();  
+            renderer.setSize(window.innerWidth, window.innerHeight);  
+        });  
+    };  
+  
+    // --- UI EVENT LISTENERS ---  
+    document.getElementById('btn-dash').addEventListener('node-triggered', (e) => {  
+        const eng = window.__MonolithEngine;  
+        eng.isDashToggled = !eng.isDashToggled;  
+        if(eng.isDashToggled) {  
+            document.body.classList.add('dash-active');  
+            e.target.shadowRoot.querySelector('button').style.background = 'rgba(0,255,255,0.3)';  
+            appendToLedger("DASH MERGE SEQUENCE INITIATED");  
+        } else {  
+            document.body.classList.remove('dash-active');  
+            e.target.shadowRoot.querySelector('button').style.background = 'rgba(0, 255, 255, 0.05)';  
+            appendToLedger("DASH DETACHED. MODULES DOCKED.");  
+        }  
+    });  
+      
+    document.getElementById('btn-absorb').addEventListener('node-triggered', (e) => {  
+        const eng = window.__MonolithEngine;  
+        eng.isAbsorbvoidActive = !eng.isAbsorbvoidActive;  
+        const btn = e.target.shadowRoot.querySelector('button');  
+          
+        if(eng.isAbsorbvoidActive) {  
+            btn.style.background = 'rgba(157, 0, 255, 0.4)';  
+            updateStatus("POLYMORPH.ASSIMILATING");  
+            appendToLedger("PROTOCOL: ABSORBVOID & POLYMORPH ENGAGED.");  
+              
+            // Mock MHTML parsing for visual representation  
+            setTimeout(() => {   
+                appendToLedger("ASSIMILATING: chatgpt.com.mhtml");   
+                document.getElementById('assimilated-sources').innerHTML += `<li>> chatgpt.com [NEURAL LINKED]</li>`;  
+            }, 800);  
+            setTimeout(() => {   
+                appendToLedger("ENCAPSULATING: gemini.google.com.mhtml");   
+                document.getElementById('assimilated-sources').innerHTML += `<li>> gemini.google.com [NEURAL LINKED]</li>`;  
+            }, 1800);  
+        } else {  
+            btn.style.background = 'rgba(0, 255, 255, 0.05)';  
+            updateStatus("SYS.OP.NEURAL");  
+            appendToLedger("ABSORBVOID STANDBY.");  
+            // Allow the structure to slowly cool down/return to normal if needed,   
+            // or comment next line to keep the mutated shape permanently.  
+            // eng.targetMutation = 0;   
+        }  
+    });  
+  
+    window.addEventListener('DOMContentLoaded', () => {  
+        initWebGL();  
+        appendToLedger("POLYMORPH ENGINE ONLINE.");  
+    });  
+</script>  </body>  
+</html>
