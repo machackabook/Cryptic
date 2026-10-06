@@ -2,7 +2,8 @@
   'use strict';
 
   const VERSION='0.7.0';
-  const CHANNEL='cryptic.message.bus.v1';\n  const EDGE='https://bus.crypticnews.org';
+  const CHANNEL='cryptic.message.bus.v1';
+  const EDGE='https://bus.crypticnews.org';
   const SEEN_KEY='cryptic.bus.seen.v1';
   const MAX_SEEN=256;
   const sessionId=sessionStorage.getItem('cryptic.bus.session') || crypto.randomUUID();
@@ -96,7 +97,8 @@
       return receipt('edge',msg,false,{reason:e.message});
     }
   }
-  async function sendLocalhost(msg){\n    if(!window.CrypticTerminal?.gateOpen) return receipt('localhost',msg,false,{reason:'guardian_closed'});
+  async function sendLocalhost(msg){
+    if(!window.CrypticTerminal?.gateOpen) return receipt('localhost',msg,false,{reason:'guardian_closed'});
     const url=sessionStorage.getItem('cryptic.bridge.url');
     const secret=sessionStorage.getItem('cryptic.bridge.secret');
     if(!url || !secret) return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
@@ -221,7 +223,8 @@
   }
 
   window.CrypticBus=Object.freeze({
-    version:VERSION,\n    edge:EDGE,
+    version:VERSION,
+    edge:EDGE,
     session:sessionId,
     send,
     command,
