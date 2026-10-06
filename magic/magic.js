@@ -79,7 +79,7 @@ function updateSignal(){
  const ledgerDelta=Math.max(0,ledger.length-engine.lastLedger),teleDelta=Math.max(0,telemetry.length-engine.lastTelemetry);
  engine.lastLedger=ledger.length;engine.lastTelemetry=telemetry.length;
  engine.realSignal=Math.min(1,engine.realSignal*.82+ledgerDelta*.12+teleDelta*.2);
- const baseline=engine.focus?.35:.08;
+ const baseline=engine.focus ? .35 : .08;
  engine.targetMutation=Math.min(1.15,baseline+engine.realSignal*.62+Math.min(.25,telemetry.length/400));
  $('#metricTelemetry').textContent=String(telemetry.length);
 }
@@ -127,7 +127,7 @@ function initWebGL(){
    for(let i=0;i<count;i++){
      const theta=i/count*Math.PI*18+t*.018*(1+(i%4)*.2),phi=(i%70)/70*Math.PI*2+t*.011;
      const a=i%2===0?sampleHamiltonianXZ(theta,3.7,t*.35):sampleTorusTube(3.8,1.1,phi,theta,t*.35,i);
-     const pull=engine.focus?.Math.max(.25,1-m*.38):1;
+     const pull=engine.focus ? Math.max(.25,1-m*.38) : 1;
      pp[i*3]=a.x*pull;pp[i*3+1]=a.y*.58*pull;pp[i*3+2]=a.z*pull;
    }
    points.geometry.attributes.position.needsUpdate=true;
