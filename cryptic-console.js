@@ -246,30 +246,32 @@
 
   async function send(label='console') {
     const row = snapshot(label);
-    const runtime = window.CrypticRuntime;
-    if (!runtime?.signedToken) {
-      return { ok: false, local: true, reason: 'CrypticRuntime gateway token broker unavailable', row };
+    if (!window.CrypticBus?.aggregate) {
+      return { ok: false, local: true, reason: 'CrypticBus is not loaded', row };
     }
 
-    const token = await runtime.signedToken('browser', 'telemetry.submit');
-    if (!token) return { ok: false, local: true, reason: 'gateway token unavailable', row };
+    const routed = await window.CrypticBus.aggregate(
+      'telemetry.snapshot',
+      { snapshot: row },
+      {
+        target: 'telemetry',
+        route: ['loopback','broadcast','localhost','edge']
+      }
+    );
 
-    const res = await fetch(runtime.gateway + '/v1/telemetry', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-cryptic-token': token
-      },
-      body: JSON.stringify(row)
+    const accepted = routed.receipts.filter(r => r.ok);
+    window.CrypticTerminal?.ledger?.('telemetry.routed', {
+      session_id: row.session_id,
+      message_id: routed.message.id,
+      accepted: accepted.map(r => r.transport)
     });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, status: res.status, response: body, row };
 
-    window.CrypticTerminal?.ledger?.('telemetry.submitted', {
-      receipt: body.receipt?.id,
-      session_id: row.session_id
-    });
-    return { ok: true, receipt: body.receipt, row };
+    return {
+      ok: accepted.length > 0,
+      message_id: routed.message.id,
+      receipts: routed.receipts,
+      row
+    };
   }
 
   async function exec(command) {
