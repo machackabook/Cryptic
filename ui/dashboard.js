@@ -56,7 +56,7 @@ function draggable(el){
 }
 async function mountController(spec,root,instance){
   if(!spec.controller)return;
-  const mod=await import(spec.controller+'?v='+encodeURIComponent(manifest.version));
+  const mod=await import(new URL(spec.controller,location.href).href+'?v='+encodeURIComponent(manifest.version));
   if(typeof mod.mount==='function')await mod.mount(root,{spec,instance,dashboard:api});
 }
 async function mountBase(spec){
