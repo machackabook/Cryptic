@@ -1,4 +1,4 @@
-const CACHE='cryptic-v0.8.0';
+const CACHE='cryptic-v0.8.1';
 const ASSETS=[
   './',
   './index.html',
