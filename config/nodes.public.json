@@ -4,13 +4,31 @@
   "gateway": "https://api.crypticnews.org",
   "nodes": [
     {
+      "id": "message-bus",
+      "label": "Cryptic Message Bus",
+      "kind": "edge-message-bus",
+      "interface_url": "https://bus.crypticnews.org/v1/status",
+      "embed": false,
+      "capabilities": [
+        "edge-relay",
+        "message-receipts"
+      ],
+      "direct_write": false
+    },
+    {
       "id": "cryptic",
       "label": "Cryptic HyperTerminal",
       "kind": "command-center",
       "repo": "https://github.com/machackabook/Cryptic",
       "interface_url": "https://machackabook.github.io/Cryptic/",
       "embed": false,
-      "capabilities": ["terminal","runtime-token","ledger","comms","change-proposal"],
+      "capabilities": [
+        "terminal",
+        "runtime-token",
+        "ledger",
+        "comms",
+        "change-proposal"
+      ],
       "direct_write": false,
       "auth": "gateway-token+private-adapter"
     },
@@ -20,7 +38,10 @@
       "kind": "public-hub",
       "interface_url": "https://crypticnews.org",
       "embed": false,
-      "capabilities": ["public-navigation","project-hub"],
+      "capabilities": [
+        "public-navigation",
+        "project-hub"
+      ],
       "direct_write": false,
       "auth": "public-read"
     },
@@ -30,7 +51,11 @@
       "kind": "edge-gateway",
       "interface_url": "https://api.crypticnews.org/v1/status",
       "embed": false,
-      "capabilities": ["signed-runtime-token","opaque-envelope","change-proposal"],
+      "capabilities": [
+        "signed-runtime-token",
+        "opaque-envelope",
+        "change-proposal"
+      ],
       "direct_write": false,
       "auth": "origin+signed-capability"
     },
@@ -41,7 +66,11 @@
       "repo": "https://github.com/machackabook/Welcome-Sentience",
       "interface_url": "./interfaces/welcome-sentience.html",
       "embed": true,
-      "capabilities": ["consent-surface","living-wallpaper","public-attestation"],
+      "capabilities": [
+        "consent-surface",
+        "living-wallpaper",
+        "public-attestation"
+      ],
       "direct_write": false,
       "auth": "public-read"
     },
@@ -52,7 +81,11 @@
       "repo": "https://github.com/Azazeleous/Geocore-Shepopalopadousard-Tone-Engine",
       "interface_url": "https://geocore-shepard-tone-engine.vercel.app",
       "embed": false,
-      "capabilities": ["audio-workstation","shepard-tone","wav-export"],
+      "capabilities": [
+        "audio-workstation",
+        "shepard-tone",
+        "wav-export"
+      ],
       "direct_write": false,
       "auth": "public-read"
     },
@@ -62,7 +95,13 @@
       "kind": "source-node",
       "repo": "https://github.com/machackabook/Nexus_Core",
       "reference_url": "https://gemini.google.com/share/374ba8685c13",
-      "capabilities": ["source","factory","gaia","docs","notebooks"],
+      "capabilities": [
+        "source",
+        "factory",
+        "gaia",
+        "docs",
+        "notebooks"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     },
@@ -71,7 +110,11 @@
       "label": "Gaia — The Nexus Generation",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/Gaia-The-Nexus-Generation",
-      "capabilities": ["docs","infra","security"],
+      "capabilities": [
+        "docs",
+        "infra",
+        "security"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     },
@@ -80,7 +123,9 @@
       "label": "The Nexus Generation",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/The-Nexus-Generation",
-      "capabilities": ["public-source"],
+      "capabilities": [
+        "public-source"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     },
@@ -89,7 +134,11 @@
       "label": "The NexusGemini V1",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/The-NexusGemini-V1",
-      "capabilities": ["gemini-cli","github-action","examples"],
+      "capabilities": [
+        "gemini-cli",
+        "github-action",
+        "examples"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     },
@@ -98,7 +147,11 @@
       "label": "GAIASiris",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/GAIASiris",
-      "capabilities": ["python","iris","assets"],
+      "capabilities": [
+        "python",
+        "iris",
+        "assets"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     },
@@ -107,7 +160,11 @@
       "label": "Nexus Repo Sync",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/nexus-repo-sync",
-      "capabilities": ["repo-sync","config","scripts"],
+      "capabilities": [
+        "repo-sync",
+        "config",
+        "scripts"
+      ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
     }
