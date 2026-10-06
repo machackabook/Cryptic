@@ -1,13 +1,21 @@
-const CACHE='cryptic-v0.7.0';
+const CACHE='cryptic-v0.8.0';
 const ASSETS=[
   './',
   './index.html',
+  './panel.html',
   './manifest.webmanifest',
+  './ui/tokens.css',
+  './ui/dashboard.css',
+  './ui/modules.css',
+  './ui/dashboard.js',
+  './ui/panel.css',
+  './ui/panel.js',
+  './core/terminal-core.js',
   './cryptic-runtime.js',
   './cryptic-bus.js',
   './cryptic-console.js',
-  './config/nodes.public.json',
-  './interfaces/welcome-sentience.html'
+  './modules/manifest.json',
+  './config/nodes.public.json'
 ];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
