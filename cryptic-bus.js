@@ -96,7 +96,7 @@
       return receipt('edge',msg,false,{reason:e.message});
     }
   }
-  async function sendLocalhost(msg){
+  async function sendLocalhost(msg){\n    if(!window.CrypticTerminal?.gateOpen) return receipt('localhost',msg,false,{reason:'guardian_closed'});
     const url=sessionStorage.getItem('cryptic.bridge.url');
     const secret=sessionStorage.getItem('cryptic.bridge.secret');
     if(!url || !secret) return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
