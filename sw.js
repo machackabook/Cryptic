@@ -15,6 +15,7 @@ const ASSETS=[
   './cryptic-bus.js',
   './cryptic-console.js',
   './modules/manifest.json',
+  './modules/session-geometry.js',
   './config/nodes.public.json',
   './magic/',
   './magic/index.html',
@@ -22,6 +23,10 @@ const ASSETS=[
   './magic/magic.js',
   './magic/surfaces/home.html',
   './magic/surfaces/terminal.html',
+  './magic/surfaces/telemetry.html',
+  './magic/surfaces/bus.html',
+  './magic/surfaces/nodes.html',
+  './magic/surfaces/singularity.html',
   './magic/surfaces/welcome.html',
   './magic/surfaces/network.html'
 ];
