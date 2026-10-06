@@ -2,6 +2,8 @@
 
 **The HyperTerminal Sovereign Operating System** — first public promoted surface for the Cryptic / Nexus / GAIA lineage.
 
+Numeral remembered: `137451921129154222`. Continuity receipt: `docs/LEDGER-STAMP.md` (hop 467). This public tree is source-only. It does not store bridge tokens, provider keys, or device pair codes.
+
 Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
 
 ## v0.7.0 capabilities
@@ -18,7 +20,7 @@ Cryptic is a portable browser command environment with an optional localhost bri
 - HTTPS command deep-links and installed-PWA `web+cryptic:` protocol handling.
 - Dedicated edge relay at `https://bus.crypticnews.org`.
 - Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
-- Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner.
+- Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner. Doc cascade lives in `.github/workflows/cascade.yml` and only checks that README, SECURITY, and the stamp exist and that obvious secret filenames are absent.
 
 ## Run locally
 
@@ -44,7 +46,7 @@ bridge action git.status
 bridge action git.pull-ff
 ```
 
-Do not commit the bridge secret.
+Do not commit the bridge secret. Generate it in the shell. Leave it out of git.
 
 ## Developer Console + Message Bus
 
@@ -90,10 +92,9 @@ In **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/
 
 The Cosmic Guardian screen is a visual/consent gate, **not server-side access control**. GitHub Pages is static and public. Real restricted access belongs behind an authentication proxy or authenticated backend.
 
-Provider secrets, private Enclave material, and the uploaded Firebase configuration are intentionally excluded from this public repository.
+Provider secrets, private Enclave material, and the uploaded Firebase configuration are intentionally excluded from this public repository. Policy: `SECURITY.md`. Pairing note: `docs/PUBLIC-PRIVATE-PAIRING.md`.
 
 © 2026 Cryptic News LLC / The Architect. All rights reserved.
-
 
 ## Magic Window
 
