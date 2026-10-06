@@ -1,0 +1,15 @@
+{
+  "version":"0.8.0",
+  "modules":[
+    {"id":"visualizer","layer":"background","file":"./modules/visualizer.html","controller":"./modules/visualizer.js"},
+    {"id":"guardian","layer":"guardian","file":"./modules/guardian.html","controller":"./modules/guardian.js"},
+    {"id":"header","title":"CRYPTIC // HYPERTERMINAL SOVEREIGN OS","file":"./modules/header.html","controller":"./modules/header.js","chrome":false},
+    {"id":"terminal","title":"Æ // COMMAND FABRIC","file":"./modules/terminal.html","controller":"./modules/terminal.js"},
+    {"id":"nodes","title":"PUBLIC NODE SURFACES","file":"./modules/nodes.html","controller":"./modules/nodes.js"},
+    {"id":"viewport","title":"GAIA // COMPLEX ORBIT VISUALIZER","file":"./modules/viewport.html","controller":"./modules/viewport.js"},
+    {"id":"bus","title":"CRYPTIC MESSAGE HUB // AGGREGATE ROUTES","file":"./modules/bus.html","controller":"./modules/bus.js"},
+    {"id":"telemetry","title":"BROWSER TELEMETRY // DATASET","file":"./modules/telemetry.html","controller":"./modules/telemetry.js"},
+    {"id":"runtime","title":"RUNTIME // CAPABILITY STATE","file":"./modules/runtime.html","controller":"./modules/runtime.js"},
+    {"id":"controls","title":"PANEL FABRIC // CONTROL PLANE","file":"./modules/controls.html","controller":"./modules/controls.js"}
+  ]
+}
