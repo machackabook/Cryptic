@@ -1,0 +1,5 @@
+export function mount(root){
+ const gate=root.querySelector('#runtimeGate'),tok=root.querySelector('#runtimeTokens'),edge=root.querySelector('#runtimeEdge'),bridge=root.querySelector('#runtimeBridge'),receipt=root.querySelector('#runtimeReceipt');
+ const refresh=()=>{gate.textContent=window.CrypticTerminal?.gateOpen?'OPEN':'CLOSED';gate.className=window.CrypticTerminal?.gateOpen?'good':'warn';tok.textContent=window.CrypticTerminal?.tokens?.length||0;bridge.textContent=sessionStorage.getItem('cryptic.bridge.url')?'ONLINE':'OFFLINE';bridge.className=sessionStorage.getItem('cryptic.bridge.url')?'good':'muted';try{const a=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]'),x=a.at(-1);receipt.textContent=x?x.event+' · '+x.ts:'none'}catch{}};
+ refresh();setInterval(refresh,1200);fetch('https://api.crypticnews.org/v1/status',{cache:'no-store'}).then(r=>{edge.textContent=r.ok?'ONLINE':'DEGRADED';edge.className=r.ok?'good':'warn'}).catch(()=>{edge.textContent='UNREACHABLE';edge.className='warn'});
+}
