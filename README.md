@@ -4,7 +4,7 @@
 
 Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
 
-## v0.6.0 capabilities
+## v0.7.0 capabilities
 
 - Cosmic Guardian entry gate and consent boundary.
 - HyperTerminal command fabric with a local evidence ledger.
@@ -12,7 +12,7 @@ Cryptic is a portable browser command environment with an optional localhost bri
 - Provider request surfaces for Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson and the local bridge.
 - 963 Hz Web Audio sonification.
 - Mandelbrot-inspired global-space traversal field.
-- BottomRight.AI expandable pocket widget.
+- BottomRight.AI expandable pocket widget.\n- DevTools API through `CrypticConsole`.\n- Multi-transport routing through `CrypticBus`.\n- HTTPS command deep-links and installed-PWA `web+cryptic:` protocol handling.\n- Dedicated edge relay at `https://bus.crypticnews.org`.
 - Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
 - Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner.
 
@@ -37,6 +37,30 @@ bridge status\nbridge action git.status\nbridge action git.pull-ff
 ```
 
 Do not commit the bridge secret.
+
+## Developer Console + Message Bus
+
+On the Cryptic page, Developer Tools can call the runtime directly:
+
+```js
+CrypticConsole.exec("status")
+CrypticConsole.telemetry.snapshot()
+await CrypticConsole.telemetry.send("devtools")
+
+CrypticBus.routes()
+await CrypticBus.command("status")
+await CrypticBus.bridge("git.status")
+```
+
+The aggregate bus can reuse one message ID across loopback, same-origin BroadcastChannel, localhost, and the dedicated edge relay. The localhost bridge stores signed telemetry bus frames in `.cryptic/telemetry.jsonl`.
+
+URL form:
+
+```text
+https://machackabook.github.io/Cryptic/terminal/?cmd=status&autorun=1
+```
+
+See `docs/DEVTOOLS-MESSAGE-BUS.md`.
 
 ## Capability gateway
 
