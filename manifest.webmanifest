@@ -6,5 +6,16 @@
   "background_color": "#03050a",
   "theme_color": "#03050a",
   "description": "Portable local-first command surface with scoped runtime request tokens.",
-  "icons": []
+  "icons": [],
+  "version": "0.7.0",
+  "scope": "./",
+  "protocol_handlers": [
+    {
+      "protocol": "web+cryptic",
+      "url": "./terminal/?cmd=%s"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }
