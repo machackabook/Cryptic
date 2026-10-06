@@ -12,7 +12,11 @@ Cryptic is a portable browser command environment with an optional localhost bri
 - Provider request surfaces for Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson and the local bridge.
 - 963 Hz Web Audio sonification.
 - Mandelbrot-inspired global-space traversal field.
-- BottomRight.AI expandable pocket widget.\n- DevTools API through `CrypticConsole`.\n- Multi-transport routing through `CrypticBus`.\n- HTTPS command deep-links and installed-PWA `web+cryptic:` protocol handling.\n- Dedicated edge relay at `https://bus.crypticnews.org`.
+- BottomRight.AI expandable pocket widget.
+- DevTools API through `CrypticConsole`.
+- Multi-transport routing through `CrypticBus`.
+- HTTPS command deep-links and installed-PWA `web+cryptic:` protocol handling.
+- Dedicated edge relay at `https://bus.crypticnews.org`.
 - Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
 - Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner.
 
@@ -26,14 +30,18 @@ python3 -m http.server 8080
 ## Optional local bridge
 
 ```bash
-export CRYPTIC_BRIDGE_TOKEN="$(openssl rand -hex 24)"\nexport CRYPTIC_WORKSPACE_ROOT="$PWD"\nnode runtime/bridge.mjs
+export CRYPTIC_BRIDGE_TOKEN="$(openssl rand -hex 24)"
+export CRYPTIC_WORKSPACE_ROOT="$PWD"
+node runtime/bridge.mjs
 ```
 
 Use the same local session token value when connecting from Cryptic. In Cryptic, run:
 
 ```text
 bridge connect http://127.0.0.1:7331 <CRYPTIC_BRIDGE_TOKEN>
-bridge status\nbridge action git.status\nbridge action git.pull-ff
+bridge status
+bridge action git.status
+bridge action git.pull-ff
 ```
 
 Do not commit the bridge secret.
