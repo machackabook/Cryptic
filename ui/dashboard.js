@@ -92,11 +92,20 @@ function restoreAll(){
   const s=state();for(const el of mounted.values()){el.classList.remove('panel-ghost','panel-collapsed','panel-hidden');s[el.dataset.module]={}}saveState(s)
 }
 function show(id){const el=mounted.get(id);if(el){el.classList.remove('panel-hidden');remember(el,'hidden',false)}}
-const api={get manifest(){return manifest},mounted,spawn,popout,ghostAll,restoreAll,show,moduleSpec};
+function setClearUI(on){
+  const active=Boolean(on);
+  document.documentElement.classList.toggle('cryptic-ui-clear',active);
+  localStorage.setItem('cryptic.dashboard.clear-ui',active?'1':'0');
+  window.dispatchEvent(new CustomEvent('cryptic:ui-clear',{detail:{active}}));
+  return active;
+}
+function toggleClearUI(){return setClearUI(!document.documentElement.classList.contains('cryptic-ui-clear'))}
+const api={get manifest(){return manifest},mounted,spawn,popout,ghostAll,restoreAll,show,moduleSpec,setClearUI,toggleClearUI,get clearUI(){return document.documentElement.classList.contains('cryptic-ui-clear')}};
 
 async function boot(){
   const r=await fetch(MANIFEST_URL,{cache:'no-store'});manifest=await r.json();
   window.CrypticDashboard=api;
+  if(localStorage.getItem('cryptic.dashboard.clear-ui')==='1')setClearUI(true);
   for(const spec of manifest.modules)await mountBase(spec);
   await import('../core/terminal-core.js?v='+manifest.version);
   await import('../cryptic-runtime.js?v='+manifest.version);
