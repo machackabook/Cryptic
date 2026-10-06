@@ -71,8 +71,11 @@
     <div class="browser-actions">
       <button hx-get="./surfaces/home.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="home">HOME</button>
       <button hx-get="./surfaces/terminal.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="terminal">TERMINAL</button>
+      <button hx-get="./surfaces/singularity.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="singularity">SINGULARITY</button>
+      <button hx-get="./surfaces/telemetry.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="telemetry">TELEMETRY</button>
+      <button hx-get="./surfaces/bus.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="comms">COMMS</button>
+      <button hx-get="./surfaces/nodes.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="nodes">NODES</button>
       <button hx-get="./surfaces/welcome.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="welcome">WELCOME</button>
-      <button hx-get="./surfaces/network.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="network">MESH</button>
     </div>
   </div>
   <div id="magicStage" class="magic-stage" hx-get="./surfaces/home.html" hx-trigger="load" hx-swap="innerHTML"></div>
