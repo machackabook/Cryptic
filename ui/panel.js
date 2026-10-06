@@ -21,10 +21,10 @@ const api={
 };
 window.CrypticDashboard=api;
 
-await import('./core/terminal-core.js?v='+manifest.version);
-await import('./cryptic-runtime.js?v='+manifest.version);
-await import('./cryptic-bus.js?v='+manifest.version);
-await import('./cryptic-console.js?v='+manifest.version);
+await import('../core/terminal-core.js?v='+manifest.version);
+await import('../cryptic-runtime.js?v='+manifest.version);
+await import('../cryptic-bus.js?v='+manifest.version);
+await import('../cryptic-console.js?v='+manifest.version);
 if(spec.controller){
  const mod=await import(new URL(spec.controller,location.href).href+'?v='+manifest.version);
  if(typeof mod.mount==='function')await mod.mount(section.querySelector('.panel-body'),{spec,instance:'popout',dashboard:api});
