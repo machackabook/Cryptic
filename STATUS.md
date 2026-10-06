@@ -1,37 +1,48 @@
 # Cryptic Runtime Status
 
-## v0.8.0 — Modular visual command center
+## v0.9.0 — Magic Window convergence
 
-**Repository / publication**
-- Repository: `machackabook/Cryptic`.
-- Visibility: public.
-- GitHub reports Pages enabled.
-- Default branch: `main`.
+### Public command surfaces
 
-**Dashboard architecture**
-- The previous monolithic `index.html` has been replaced by a thin compositor shell.
-- The dashboard is composed from independent panel HTML/controller files through `modules/manifest.json`.
-- Shared borders, radius, glass, glow, spacing, and 12-pixel snap geometry are defined centrally.
-- Visualizer, Terminal, Nodes, Message Bus, Telemetry, Runtime, Controls, Header, and Guardian are independent modules.
-- `panel.html?module=<id>` opens the same source module as a standalone panel.
-- Unlimited fly-out instances are created through the compositor rather than by copying markup.
-- Panel visibility, collapse, and glass state can be changed independently.
+- `/` — modular Cryptic snap-dashboard compositor.
+- `/panel.html?module=<id>` — reusable single-module view.
+- `/magic/` — HTMX 2.x Magic Window command browser derived from the historical Drive artifact **MAGIC WINDOW OF ܞ - MONOLITH NEURAL POLYMORPH.html**.
+- The dashboard control-plane panel and header Magic Window link launch `/magic/`.
 
-**Visualizer**
-- Full-page complex-orbit rendering is active behind the snap fabric.
-- The field uses iterative complex trajectories derived from `z[n+1] = z[n]^2 + c`.
-- It deliberately avoids a conventional black escape-time Mandelbrot blot.
-- The center viewport remains transparent so the live visual field is visible through the dashboard.
+### Magic Window
 
-**Command/runtime continuity**
-- Existing Cryptic capability gateway, node registry, runtime tokens, message bus, telemetry API, local bridge, communications envelopes, and controlled bridge actions remain separate from presentation.
-- The terminal command engine now lives in `core/terminal-core.js`.
-- DevTools Console, Message Bus, and Runtime adapters are loaded by the compositor after the panels are mounted.
+Verified repository structure now includes:
 
-**Security boundary**
-- No provider credential is intentionally embedded into the dashboard modules.
-- Public page code remains an interface; privileged system changes still require the authenticated capability/bridge path.
+- full-screen Three.js polymorphic visualizer;
+- top-left root control for clear-UI visualizer reveal;
+- four dockable corner modules;
+- Cryptic ledger display;
+- message-route state;
+- public surface registry;
+- live telemetry counts;
+- Terminal surface;
+- Singularity surface;
+- Telemetry surface;
+- Communications/Message Bus surface;
+- Nodes surface;
+- Welcome Sentience surface.
 
-**Verification boundary**
-- Repository structure and Pages-enabled status have been read back from GitHub.
-- This environment cannot directly resolve the public GitHub Pages host for a visual browser render, so the exact live rendered frame is not claimed as independently screenshot-verified in this pass.
+The historical WSS panel used synthetic timer-generated traffic labels. The public implementation does not treat that as production evidence; it uses Cryptic ledger/telemetry/route/gateway state instead.
+
+### Rendering architecture
+
+The normal dashboard remains modular through `modules/manifest.json`. Magic Window uses HTMX static-fragment swaps so the surrounding visualizer/window remains mounted while the central capability surface changes.
+
+### Security boundary
+
+- No reusable provider credential is intentionally embedded in the public page.
+- Cloudflare Ray IDs are correlation/diagnostic identifiers, not authentication credentials.
+- Bot challenges/Turnstile are anti-abuse controls, not authorization.
+- Privileged local actions still require the separately authenticated capability + bridge path.
+- Private device operational evidence belongs in paired private repositories, never the public Pages tree.
+
+### Evidence
+
+- GitHub repository is public and Pages-enabled.
+- Active JavaScript modules in the Cryptic runtime and Magic Window parse successfully in the current verification pass.
+- Public Pages rendering could not be independently fetched by the available external browser probe, so a pixel-level live render is not claimed here.
