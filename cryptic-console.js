@@ -296,8 +296,13 @@
 
   async function handleDeepLink() {
     const p = new URLSearchParams(location.search);
-    const command = p.get('cmd');
+    let command = p.get('cmd');
     if (!command) return;
+
+    if (/^web\+cryptic:/i.test(command)) {
+      command = command.replace(/^web\+cryptic:(?:\/\/)?/i,'');
+      try { command = decodeURIComponent(command); } catch {}
+    }
 
     const autorun = p.get('autorun') === '1';
     const safe = /^(help|about|status|nodes|tokens|ledger|telemetry(?:\s+(?:snapshot|summary))?)$/i.test(command.trim());
