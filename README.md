@@ -93,3 +93,14 @@ The Cosmic Guardian screen is a visual/consent gate, **not server-side access co
 Provider secrets, private Enclave material, and the uploaded Firebase configuration are intentionally excluded from this public repository.
 
 © 2026 Cryptic News LLC / The Architect. All rights reserved.
+
+
+## Magic Window
+
+The public HTMX command-browser workspace is available at:
+
+`https://machackabook.github.io/Cryptic/magic/`
+
+It preserves the mechanics of the historical **MAGIC WINDOW OF ܞ - MONOLITH NEURAL POLYMORPH** artifact while replacing its synthetic WSS labels with real Cryptic runtime state. Terminal, Singularity, Telemetry, Communications, Nodes and Welcome surfaces swap inside the stable visual shell.
+
+The top-left root control toggles the UI clear so the live visualizer can be exposed without destroying state.
