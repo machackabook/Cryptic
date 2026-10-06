@@ -2,7 +2,7 @@
   'use strict';
 
   const VERSION='0.7.0';
-  const CHANNEL='cryptic.message.bus.v1';
+  const CHANNEL='cryptic.message.bus.v1';\n  const EDGE='https://bus.crypticnews.org';
   const SEEN_KEY='cryptic.bus.seen.v1';
   const MAX_SEEN=256;
   const sessionId=sessionStorage.getItem('cryptic.bus.session') || crypto.randomUUID();
@@ -72,27 +72,62 @@
     ctl.postMessage({type:'CRYPTIC_BUS_FRAME',frame:msg});
     return receipt('service-worker',msg,true);
   }
-  async function sendEdge(msg){
-    const runtime=window.CrypticRuntime;
-    if(!runtime?.signedToken) return receipt('edge',msg,false,{reason:'runtime_unavailable'});
-    const token=await runtime.signedToken(msg.target,'bus.publish.'+msg.kind);
-    if(!token) return receipt('edge',msg,false,{reason:'token_unavailable'});
-    const res=await fetch(runtime.gateway+'/v1/bus/publish',{
+  async function edgeToken(target='cryptic'){
+    const res=await fetch(EDGE+'/v1/token',{
       method:'POST',
-      headers:{'content-type':'application/json','x-cryptic-token':token},
-      body:JSON.stringify(msg)
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({target})
     });
     const body=await res.json().catch(()=>({}));
-    return receipt('edge',msg,res.ok,{status:res.status,gateway_receipt:body.receipt||null,error:body.error||null});
+    if(!res.ok || !body.token) throw new Error(body.error||'edge_token_failed');
+    return body.token;
+  }
+  async function sendEdge(msg){
+    try{
+      const token=await edgeToken(msg.target);
+      const res=await fetch(EDGE+'/v1/publish',{
+        method:'POST',
+        headers:{'content-type':'application/json','x-cryptic-bus-token':token},
+        body:JSON.stringify(msg)
+      });
+      const body=await res.json().catch(()=>({}));
+      return receipt('edge',msg,res.ok,{status:res.status,gateway_receipt:body.receipt||null,state:body.state||null,error:body.error||null});
+    }catch(e){
+      return receipt('edge',msg,false,{reason:e.message});
+    }
+  }
+  async function sendLocalhost(msg){
+    const url=sessionStorage.getItem('cryptic.bridge.url');
+    const secret=sessionStorage.getItem('cryptic.bridge.secret');
+    if(!url || !secret) return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
+    const runtime=window.CrypticRuntime;
+    if(!runtime?.signedToken) return receipt('localhost',msg,false,{reason:'runtime_unavailable'});
+    try{
+      const signed=await runtime.signedToken('bridge','bridge.bus.publish');
+      if(!signed) return receipt('localhost',msg,false,{reason:'signed_capability_unavailable'});
+      const res=await fetch(url.replace(/\/$/,'')+'/v1/bus',{
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'authorization':'Bearer '+secret,
+          'x-cryptic-request-token':signed
+        },
+        body:JSON.stringify(msg)
+      });
+      const body=await res.json().catch(()=>({}));
+      return receipt('localhost',msg,res.ok,{status:res.status,bridge_receipt:body.receipt||null,result:body.result||null,error:body.error||null});
+    }catch(e){
+      return receipt('localhost',msg,false,{reason:e.message});
+    }
   }
   async function sendBridgeAction(msg){
-    if(msg.kind!=='bridge.action') return receipt('localhost',msg,false,{reason:'kind_not_supported'});
+    if(msg.kind!=='bridge.action') return receipt('localhost-action',msg,false,{reason:'kind_not_supported'});
     const action=String(msg.payload?.action||'');
     try{
       const result=await window.CrypticRuntime?.bridgeAction?.(action);
-      return receipt('localhost',msg,true,{result:result??null});
+      return receipt('localhost-action',msg,true,{result:result??null});
     }catch(e){
-      return receipt('localhost',msg,false,{reason:e.message});
+      return receipt('localhost-action',msg,false,{reason:e.message});
     }
   }
   function deepLink(msg,open=false){
@@ -108,7 +143,7 @@
     loopback: async msg=>emitLocal(msg),
     broadcast: async msg=>sendBroadcast(msg),
     'service-worker': sendServiceWorker,
-    localhost: sendBridgeAction,
+    localhost: sendLocalhost,
     edge: sendEdge,
     deeplink: async msg=>deepLink(msg,false)
   };
@@ -151,11 +186,14 @@
   }
 
   async function bridge(action,opts={}){
-    return send('bridge.action',{action:String(action||'')},{...opts,route:opts.route||['localhost'],target:'bridge',scope:'bridge.action.'+action});
+    const msg=frame('bridge.action',{action:String(action||'')},{...opts,target:'bridge',scope:'bridge.action.'+action});
+    const r=await sendBridgeAction(msg);
+    window.CrypticTerminal?.ledger?.('bus.bridge.action',{message_id:msg.id,action,ok:r.ok});
+    return {message:msg,receipts:[r]};
   }
 
   async function aggregate(kind,payload={},opts={}){
-    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','edge']});
+    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','localhost','edge']});
   }
 
   function on(kind,handler){
@@ -183,7 +221,7 @@
   }
 
   window.CrypticBus=Object.freeze({
-    version:VERSION,
+    version:VERSION,\n    edge:EDGE,
     session:sessionId,
     send,
     command,
@@ -196,7 +234,7 @@
       broadcast:'BroadcastChannel' in window,
       serviceWorker:false,
       localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url')),
-      edge:Boolean(window.CrypticRuntime?.gateway),
+      edge:EDGE,
       deeplink:true
     }),
     url:(command,opts={})=>deepLink(frame('terminal.command',{command:String(command),autorun:Boolean(opts.autorun)},opts),false).url,
