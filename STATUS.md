@@ -1,35 +1,37 @@
 # Cryptic Runtime Status
 
-## v0.6.0 — Public command-center convergence
+## v0.8.0 — Modular visual command center
 
-**Verified configuration**
-- Repository `machackabook/Cryptic` is public.
-- GitHub reports Pages enabled for Cryptic.
-- Cloudflare reports `api.crypticnews.org` attached and enabled for Worker `cryptic-capability-gateway`.
-- Cloudflare reports secrets `CRYPTIC_SIGNING_KEY` and `CRYPTIC_PRIVATE_NODE_MAP` bound to the Worker.
-- The node registry contains only public URLs, public repository references, capability labels, and auth-mode metadata; no private node endpoint is committed.
+**Repository / publication**
+- Repository: `machackabook/Cryptic`.
+- Visibility: public.
+- GitHub reports Pages enabled.
+- Default branch: `main`.
 
-**Implemented**
-- Cosmic Guardian entry gate.
-- Browser HyperTerminal command fabric.
-- Local per-request runtime receipts plus edge-signed 5-minute capability tokens.
-- Public node dock and command routing.
-- Welcome-Sentience integrated as a same-origin usable interface.
-- Cryptic News, Geocore Tone Engine, Nexus Core, GAIA/Nexus source repositories, Gemini integration repo, GAIASiris, and repo-sync represented as public nodes.
-- ECDH P-256 + AES-256-GCM client-side Cryptic envelope sealing after a real recipient public key is paired.
-- Gateway accepts ciphertext opaquely and does not decrypt/persist plaintext.
-- Signed, hashed change-proposal receipts.
-- Local bridge actions protected by both a local secret and exact-scope edge capability token.
-- Native bridge action allowlist: `runtime.info`, `git.status`, `git.fetch`, `git.pull-ff`.
-- PWA cache updated for node registry, runtime module, and integrated interface.
+**Dashboard architecture**
+- The previous monolithic `index.html` has been replaced by a thin compositor shell.
+- The dashboard is composed from independent panel HTML/controller files through `modules/manifest.json`.
+- Shared borders, radius, glass, glow, spacing, and 12-pixel snap geometry are defined centrally.
+- Visualizer, Terminal, Nodes, Message Bus, Telemetry, Runtime, Controls, Header, and Guardian are independent modules.
+- `panel.html?module=<id>` opens the same source module as a standalone panel.
+- Unlimited fly-out instances are created through the compositor rather than by copying markup.
+- Panel visibility, collapse, and glass state can be changed independently.
 
-**Deliberately not claimed**
-- The Cosmic Guardian page is not server-side authentication.
-- Public runtime tokens are capabilities/receipts, not provider credentials.
-- A change proposal is not an applied change.
-- Private node routing is not active until real private endpoints are provisioned into the Worker secret map.
-- No arbitrary shell execution endpoint exists.
-- Other public machackabook repositories audited in this pass do not currently report GitHub Pages enabled; they are linked as source/capability nodes instead of being falsely labeled as live Pages sites.
+**Visualizer**
+- Full-page complex-orbit rendering is active behind the snap fabric.
+- The field uses iterative complex trajectories derived from `z[n+1] = z[n]^2 + c`.
+- It deliberately avoids a conventional black escape-time Mandelbrot blot.
+- The center viewport remains transparent so the live visual field is visible through the dashboard.
 
-**External render probe**
-- A Cloudflare Browser Rendering verification request was attempted after deployment but Cloudflare returned rate-limit error 2001. Configuration/readback checks above succeeded; visual HTTP rendering should be rerun when the Browser Rendering quota is available.
+**Command/runtime continuity**
+- Existing Cryptic capability gateway, node registry, runtime tokens, message bus, telemetry API, local bridge, communications envelopes, and controlled bridge actions remain separate from presentation.
+- The terminal command engine now lives in `core/terminal-core.js`.
+- DevTools Console, Message Bus, and Runtime adapters are loaded by the compositor after the panels are mounted.
+
+**Security boundary**
+- No provider credential is intentionally embedded into the dashboard modules.
+- Public page code remains an interface; privileged system changes still require the authenticated capability/bridge path.
+
+**Verification boundary**
+- Repository structure and Pages-enabled status have been read back from GitHub.
+- This environment cannot directly resolve the public GitHub Pages host for a visual browser render, so the exact live rendered frame is not claimed as independently screenshot-verified in this pass.
