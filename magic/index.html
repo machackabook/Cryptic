@@ -54,7 +54,12 @@
 <section id="dashBR" class="corner-module br">
   <span class="docked-label">SYS</span>
   <div class="dash-content">
-    <div class="dash-header">LIVE METRICS</div>
+    <div class="dash-header">LIVE METRICS & CLOCK</div>
+    <div class="clock-widget" id="sysClockWidget">
+      <div class="clock-label">SYSTEM CLOCK // UTC</div>
+      <div class="clock-display" id="sysUtcClock">00:00:00 UTC</div>
+      <div class="clock-sub" id="sysUtcDate">SYNCHRONIZING...</div>
+    </div>
     <div class="metrics">
       <span>Ledger <b id="metricLedger">0</b></span>
       <span>Telemetry <b id="metricTelemetry">0</b></span>
@@ -76,6 +81,8 @@
       <button hx-get="./surfaces/bus.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="comms">COMMS</button>
       <button hx-get="./surfaces/nodes.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="nodes">NODES</button>
       <button hx-get="./surfaces/welcome.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="welcome">WELCOME</button>
+      <button hx-get="./surfaces/genie.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="genie">GENIE DJINN</button>
+      <button hx-get="./surfaces/matrix.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="matrix">MATRIX ENGINE</button>
     </div>
   </div>
   <div id="magicStage" class="magic-stage" hx-get="./surfaces/home.html" hx-trigger="load" hx-swap="innerHTML"></div>

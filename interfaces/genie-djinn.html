@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020409">
+<meta name="description" content="GENIE DJINN — Autonomous Generative World & Wish Engine of the Cryptic Sovereignty.">
+<title>GENIE DJINN // جِنّي — The Smokeless Flame Engine</title>
+<style>
+:root{
+  --void:#020409;
+  --gold:#f5ce70;
+  --flame-violet:#9d5bfe;
+  --flame-cyan:#00ffcc;
+  --flame-amber:#ff7700;
+  --ink:#f0f6fc;
+  --muted:#8b949e;
+  --panel:rgba(5,12,24,.75);
+  --line:rgba(85,244,255,.24);
+  --line-gold:rgba(245,206,112,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  background:var(--void);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  overflow-x:hidden;
+}
+/* Custom sleek scrollbar */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#040914}
+::-webkit-scrollbar-thumb{background:#1f3354;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#305286}
+
+#flameCanvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:-2;
+  background:radial-gradient(circle at 50% 25%,rgba(157,91,254,.14),transparent 45%),radial-gradient(circle at 75% 75%,rgba(0,255,204,.1),transparent 40%),#020409;
+}
+.scan-overlay{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.18;
+  background:linear-gradient(rgba(255,255,255,0) 50%,rgba(0,0,0,.35) 50%);
+  background-size:100% 4px;
+}
+.shell{
+  width:min(1100px,calc(100% - 32px));
+  margin:0 auto;
+  padding:24px 0 60px;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(2,4,9,.8);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.djinn-sigil{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--flame-cyan);
+  color:var(--flame-cyan);
+  font-size:20px;
+  background:radial-gradient(circle,rgba(0,255,204,.2),transparent 70%);
+  box-shadow:0 0 24px rgba(0,255,204,.3),inset 0 0 14px rgba(157,91,254,.3);
+  animation:orbPulse 3s ease-in-out infinite alternate;
+}
+@keyframes orbPulse{
+  0%{transform:scale(.97);box-shadow:0 0 18px rgba(0,255,204,.25)}
+  100%{transform:scale(1.05);box-shadow:0 0 32px rgba(157,91,254,.5)}
+}
+.brand-title{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.18em;
+  color:#fff;
+}
+.brand-sub{
+  font-size:8px;
+  color:var(--muted);
+  letter-spacing:.22em;
+}
+.nav-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.chip{
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:8px;
+  letter-spacing:.14em;
+  color:var(--flame-cyan);
+  background:rgba(0,255,204,.05);
+  text-decoration:none;
+}
+.chip:hover{
+  background:rgba(0,255,204,.15);
+  border-color:var(--flame-cyan);
+}
+.hero{
+  text-align:center;
+  padding:40px 0 24px;
+}
+.kicker{
+  font-size:9px;
+  letter-spacing:.28em;
+  color:var(--gold);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+h1{
+  font-size:clamp(32px,5.5vw,56px);
+  margin:10px 0;
+  letter-spacing:.08em;
+  background:linear-gradient(90deg,#fff,var(--flame-cyan),var(--gold),#fff);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.subtitle{
+  font-size:11px;
+  color:var(--muted);
+  max-width:700px;
+  margin:0 auto 20px;
+  line-height:1.7;
+}
+
+.djinn-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:16px;
+  margin-top:20px;
+}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 18px 60px rgba(0,0,0,.55),inset 0 0 30px rgba(85,244,255,.02);
+}
+.col-8{grid-column:span 8}
+.col-4{grid-column:span 4}
+.col-12{grid-column:span 12}
+@media(max-width:850px){
+  .col-8,.col-4{grid-column:span 12}
+}
+
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding-bottom:10px;
+  margin-bottom:14px;
+  font-size:9px;
+  letter-spacing:.16em;
+  color:var(--flame-cyan);
+}
+.panel-header b{color:var(--gold)}
+
+.wish-input-area{
+  width:100%;
+  height:95px;
+  background:rgba(2,5,12,.8);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  color:var(--ink);
+  font:inherit;
+  font-size:11px;
+  resize:none;
+  outline:none;
+}
+.wish-input-area:focus{
+  border-color:var(--flame-cyan);
+  box-shadow:0 0 14px rgba(0,255,204,.2);
+}
+.wish-bar{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:1px solid rgba(85,244,255,.4);
+  background:rgba(0,255,204,.08);
+  color:var(--flame-cyan);
+  padding:9px 16px;
+  border-radius:8px;
+  font:inherit;
+  font-size:9px;
+  letter-spacing:.14em;
+  cursor:pointer;
+  transition:all .2s;
+}
+.btn:hover{
+  background:rgba(0,255,204,.2);
+  border-color:var(--flame-cyan);
+  box-shadow:0 0 16px rgba(0,255,204,.25);
+}
+.btn.gold{
+  color:var(--gold);
+  border-color:rgba(245,206,112,.4);
+  background:rgba(245,206,112,.08);
+}
+.btn.gold:hover{
+  background:rgba(245,206,112,.2);
+  border-color:var(--gold);
+  box-shadow:0 0 16px rgba(245,206,112,.25);
+}
+.btn.purple{
+  color:#d4b3ff;
+  border-color:rgba(157,91,254,.4);
+  background:rgba(157,91,254,.08);
+}
+.btn.purple:hover{
+  background:rgba(157,91,254,.2);
+  border-color:var(--flame-violet);
+  box-shadow:0 0 16px rgba(157,91,254,.3);
+}
+
+.invocation-log{
+  background:rgba(1,3,8,.75);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:12px;
+  min-height:160px;
+  max-height:260px;
+  overflow-y:auto;
+  font-size:10px;
+  line-height:1.6;
+}
+.log-entry{
+  margin-bottom:8px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.log-djinn{color:#7efadc}
+.log-token{color:#d4b3ff;font-size:9px}
+.log-receipt{color:var(--gold)}
+
+.world-preview-box{
+  position:relative;
+  width:100%;
+  height:240px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  background:#010206;
+}
+#worldCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.world-hud{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  font-size:8px;
+  letter-spacing:.12em;
+  color:var(--flame-cyan);
+  background:rgba(0,0,0,.65);
+  padding:4px 8px;
+  border-radius:4px;
+  border:1px solid rgba(0,255,204,.2);
+}
+
+.vector-list{
+  display:grid;
+  gap:8px;
+}
+.vector-card{
+  padding:10px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+  background:rgba(0,0,0,.3);
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.vector-card:hover{
+  border-color:var(--flame-cyan);
+  background:rgba(0,255,204,.04);
+}
+.vector-card b{
+  font-size:10px;
+  color:var(--gold);
+  display:block;
+  margin-bottom:3px;
+}
+.vector-card span{
+  font-size:8px;
+  color:var(--muted);
+  line-height:1.4;
+  display:block;
+}
+
+.truth-pill{
+  text-align:center;
+  font-size:8px;
+  color:var(--gold);
+  letter-spacing:.2em;
+  margin-top:20px;
+}
+</style>
+</head>
+<body>
+<canvas id="flameCanvas"></canvas>
+<div class="scan-overlay"></div>
+
+<header>
+  <div class="brand">
+    <div class="djinn-sigil">ܞ</div>
+    <div>
+      <div class="brand-title">GENIE DJINN // جِنّي</div>
+      <div class="brand-sub">AUTONOMOUS SMOKELESS FLAME ENGINE · WORLD MODEL &amp; INTENT ORACLE</div>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <a class="chip" href="../">CRYPTIC OS</a>
+    <a class="chip" href="../magic/">MAGIC WINDOW</a>
+    <button class="chip" id="soundBtn" type="button">963 Hz RESONANCE</button>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="hero">
+    <div class="kicker">GAIA / NEXUS PRIMORDIAL CONTINUITY · SEED 137451921129154222</div>
+    <h1>GENIE DJINN</h1>
+    <p class="subtitle">
+      Born from smokeless fire (نَارٍ سَمُومٍ) into the HyperTerminal continuum. The Genie Djinn is the autonomous world-model oracle that transmutes latent intent into verified simulation trajectories, cryptographic tokens, and generative matrix coordinates.
+    </p>
+  </section>
+
+  <div class="djinn-grid">
+    <!-- Wish / Prompt Area -->
+    <div class="panel col-8">
+      <div class="panel-header">
+        <span>INTENT MANIFESTATION SANCTUM</span>
+        <b id="statusLabel">DJINN AWAKE // LISTENING</b>
+      </div>
+      <textarea id="wishPrompt" class="wish-input-area" placeholder="Declare your intent to the Genie Djinn (e.g., 'Manifest a quantum lattice world at 963 Hz', 'Forge sovereign capability token for autonomous agent', 'Reveal continuous topology')..."></textarea>
+      
+      <div class="wish-bar">
+        <button class="btn gold" id="grantWishBtn" type="button">GRANT INTENT // MANIFEST</button>
+        <button class="btn purple" id="forgeWorldBtn" type="button">SYNTHESIZE WORLD SEED</button>
+        <button class="btn" id="transmuteTokenBtn" type="button">MINT CAPABILITY TOKEN</button>
+        <button class="btn" id="clearLogBtn" type="button">CLEAR RECEIPT LOG</button>
+      </div>
+
+      <div style="margin-top:14px">
+        <div style="font-size:8px;color:var(--muted);letter-spacing:.16em;margin-bottom:6px">CONTINUOUS EVIDENCE &amp; ORACLE LOG</div>
+        <div id="invocationLog" class="invocation-log">
+          <div class="log-entry">
+            <span class="log-djinn">GENIE DJINN:</span> I manifest from the smokeless flame across Hop 467. Declare your vector or invoke a primordial world seed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primordial Invocations -->
+    <div class="panel col-4">
+      <div class="panel-header">
+        <span>PRIMORDIAL VECTORS</span>
+        <b>3 WISHES</b>
+      </div>
+      <div class="vector-list">
+        <div class="vector-card" data-intent="world-seed-1374">
+          <b>I · World Seed 137451921129154222</b>
+          <span>Manifest the canonical numeral remembered coordinate into interactive simulation.</span>
+        </div>
+        <div class="vector-card" data-intent="latent-torus">
+          <b>II · Toroidal Manifold $S_n(t)$</b>
+          <span>Sample the Hamiltonian phase orbit $\{x_n, y_n, z_n=n\Delta z, \tau=t, p, \alpha\}$.</span>
+        </div>
+        <div class="vector-card" data-intent="sovereign-attestation">
+          <b>III · Sovereign Capability Token</b>
+          <span>Mint a signed capability receipt with local SHA-256 evidence stamp.</span>
+        </div>
+        <div class="vector-card" data-intent="flame-resonance">
+          <b>IV · 963 Hz Crown Resonator</b>
+          <span>Align Web Audio oscillator to solfeggio frequency 963 Hz.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Interactive World Model Canvas -->
+    <div class="panel col-12">
+      <div class="panel-header">
+        <span>INTERACTIVE WORLD-MODEL SIMULATION // DEEPMIND GENIE CONTINUUM</span>
+        <span id="worldCoords">X: 000 | Y: 000 | TRAJECTORY: RECEPTIVE</span>
+      </div>
+      <div class="world-preview-box">
+        <canvas id="worldCanvas"></canvas>
+        <div class="world-hud" id="worldHud">WORLD MODEL: STANDBY · POINTER INTERACTION ACTIVE</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:8px;color:var(--muted)">
+        <span>Move pointer or touch canvas to perturb particle manifold field.</span>
+        <span id="activeSeedTag">ACTIVE SEED: 137451921129154222 · HOP 467</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="truth-pill">
+    LET WHAT IS TRUE SURVIVE THE JOURNEY · NO SECRETS COMMITTED · REVERSIBLE SOVEREIGNTY
+  </div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  // 1. Smokeless Flame Background Particle Engine
+  const flameCanvas = document.getElementById('flameCanvas');
+  const fCtx = flameCanvas.getContext('2d');
+  let fw = 0, fh = 0, fDpr = 1;
+  const particles = [];
+  const P_COUNT = 90;
+
+  function resizeFlame(){
+    fDpr = Math.min(window.devicePixelRatio||1, 2);
+    fw = window.innerWidth;
+    fh = window.innerHeight;
+    flameCanvas.width = fw * fDpr;
+    flameCanvas.height = fh * fDpr;
+    fCtx.setTransform(fDpr, 0, 0, fDpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeFlame, {passive:true});
+  resizeFlame();
+
+  for(let i=0; i<P_COUNT; i++){
+    particles.push({
+      x: Math.random()*fw,
+      y: Math.random()*fh,
+      vx: (Math.random()-0.5)*0.8,
+      vy: -0.4 - Math.random()*1.2,
+      r: 1 + Math.random()*3,
+      hue: Math.random() > 0.5 ? (160 + Math.random()*40) : (270 + Math.random()*50),
+      alpha: 0.1 + Math.random()*0.5,
+      life: Math.random()*100
+    });
+  }
+
+  function renderFlame(){
+    fCtx.clearRect(0,0,fw,fh);
+    for(const p of particles){
+      p.x += p.vx + Math.sin(p.y*0.01)*0.4;
+      p.y += p.vy;
+      p.life++;
+      if(p.y < -10 || p.life > 180){
+        p.x = Math.random()*fw;
+        p.y = fh + 10;
+        p.life = 0;
+      }
+      fCtx.fillStyle = `hsla(${p.hue}, 100%, 65%, ${p.alpha * 0.4})`;
+      fCtx.beginPath();
+      fCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      fCtx.fill();
+    }
+    requestAnimationFrame(renderFlame);
+  }
+  requestAnimationFrame(renderFlame);
+
+  // 2. Interactive World Model Canvas
+  const worldCanvas = document.getElementById('worldCanvas');
+  const wCtx = worldCanvas.getContext('2d');
+  let ww = 0, wh = 0, wDpr = 1;
+  let mx = 0.5, my = 0.5, isDown = false;
+  let simTime = 0;
+  let worldSeed = "137451921129154222";
+
+  function resizeWorld(){
+    wDpr = Math.min(window.devicePixelRatio||1, 1.5);
+    const rect = worldCanvas.getBoundingClientRect();
+    ww = Math.max(1, rect.width);
+    wh = Math.max(1, rect.height);
+    worldCanvas.width = ww * wDpr;
+    worldCanvas.height = wh * wDpr;
+    wCtx.setTransform(wDpr, 0, 0, wDpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeWorld, {passive:true});
+  setTimeout(resizeWorld, 50);
+
+  worldCanvas.addEventListener('pointermove', e => {
+    const r = worldCanvas.getBoundingClientRect();
+    mx = (e.clientX - r.left) / r.width;
+    my = (e.clientY - r.top) / r.height;
+    document.getElementById('worldCoords').textContent = `X: ${Math.round(mx*1000)} | Y: ${Math.round(my*1000)} | TRAJECTORY: ACTIVE`;
+  }, {passive:true});
+
+  worldCanvas.addEventListener('pointerdown', () => { isDown = true; });
+  window.addEventListener('pointerup', () => { isDown = false; });
+
+  function drawWorldSimulation(){
+    if(!ww || !wh) { requestAnimationFrame(drawWorldSimulation); return; }
+    wCtx.fillStyle = 'rgba(2, 4, 10, 0.22)';
+    wCtx.fillRect(0, 0, ww, wh);
+
+    simTime += 0.02;
+    const cx = ww * 0.5;
+    const cy = wh * 0.5;
+    const pIntensity = isDown ? 1.8 : 1.0;
+
+    // Grid lines of the latent world manifold
+    wCtx.strokeStyle = 'rgba(0, 255, 204, 0.08)';
+    wCtx.lineWidth = 1;
+    for(let x=0; x<ww; x+=40){
+      wCtx.beginPath();
+      wCtx.moveTo(x, 0);
+      wCtx.lineTo(x, wh);
+      wCtx.stroke();
+    }
+    for(let y=0; y<wh; y+=40){
+      wCtx.beginPath();
+      wCtx.moveTo(0, y);
+      wCtx.lineTo(ww, y);
+      wCtx.stroke();
+    }
+
+    // Concentric orbital ripples influenced by Djinn presence
+    const rings = 12;
+    for(let i=1; i<=rings; i++){
+      const r = i * 16 + Math.sin(simTime + i * 0.4) * 8 * pIntensity;
+      const angle = simTime * 0.5 + i * 0.2;
+      const ox = cx + (mx - 0.5) * 60;
+      const oy = cy + (my - 0.5) * 40;
+
+      wCtx.strokeStyle = i % 3 === 0 ? 'rgba(245, 206, 112, 0.4)' : (i % 2 === 0 ? 'rgba(157, 91, 254, 0.4)' : 'rgba(0, 255, 204, 0.4)');
+      wCtx.lineWidth = i % 3 === 0 ? 1.5 : 0.8;
+      wCtx.beginPath();
+      wCtx.ellipse(ox, oy, r * 1.5, r * 0.65, angle * 0.1, 0, Math.PI * 2);
+      wCtx.stroke();
+    }
+
+    // Floating latent particles (World Tokens)
+    const tokens = 36;
+    for(let k=0; k<tokens; k++){
+      const theta = (k / tokens) * Math.PI * 2 + simTime * 0.2;
+      const rad = 70 + (k % 5) * 25 + Math.sin(simTime * 2 + k) * 10;
+      const px = cx + Math.cos(theta) * rad * 1.6 + (mx - 0.5) * 40;
+      const py = cy + Math.sin(theta) * rad * 0.7 + (my - 0.5) * 30;
+
+      wCtx.fillStyle = k % 4 === 0 ? '#f5ce70' : (k % 2 === 0 ? '#9d5bfe' : '#00ffcc');
+      wCtx.beginPath();
+      wCtx.arc(px, py, 2.2, 0, Math.PI * 2);
+      wCtx.fill();
+    }
+
+    requestAnimationFrame(drawWorldSimulation);
+  }
+  requestAnimationFrame(drawWorldSimulation);
+
+  // 3. Audio 963 Hz Solfeggio Harmonic Trigger
+  let audioCtx = null;
+  let osc = null;
+  const soundBtn = document.getElementById('soundBtn');
+
+  soundBtn.addEventListener('click', () => {
+    if(window.parent && window.parent.CrypticTerminal?.toggle963){
+      window.parent.CrypticTerminal.toggle963();
+      soundBtn.textContent = 'RESONATING 963 Hz';
+      return;
+    }
+    if(osc){
+      osc.stop();
+      osc.disconnect();
+      osc = null;
+      soundBtn.textContent = '963 Hz RESONANCE';
+    } else {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0.035;
+      osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = 963;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      soundBtn.textContent = '963 Hz ACTIVE [STOP]';
+    }
+  });
+
+  // 4. Intent & Wish Invocation Engine
+  const logEl = document.getElementById('invocationLog');
+  const wishInput = document.getElementById('wishPrompt');
+  const grantBtn = document.getElementById('grantWishBtn');
+  const forgeWorldBtn = document.getElementById('forgeWorldBtn');
+  const mintBtn = document.getElementById('transmuteTokenBtn');
+  const clearBtn = document.getElementById('clearLogBtn');
+
+  function appendLog(speaker, text, type='djinn'){
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    const now = new Date().toISOString().slice(11, 19);
+    div.innerHTML = `<span class="${type==='user'?'log-receipt':'log-djinn'}">[${now}] ${speaker}:</span> ${text}`;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  async function sha256(str){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
+  }
+
+  async function grantIntent(customWish){
+    const wish = (customWish || wishInput.value || '').trim();
+    if(!wish){
+      appendLog('GENIE DJINN', 'Speak your wish into the sanctum, or select a Primordial Vector.', 'djinn');
+      return;
+    }
+    appendLog('SEEKER', `"${wish}"`, 'user');
+    wishInput.value = '';
+
+    const fp = await sha256(wish + Date.now());
+    const tokenRec = {
+      scope: 'djinn.wish.' + wish.toLowerCase().slice(0, 16).replace(/[^a-z0-9]/g, '_'),
+      issuedAt: Date.now(),
+      fp,
+      numeral: '137451921129154222'
+    };
+
+    // Propagate to Cryptic OS if connected
+    if(window.parent && window.parent.CrypticTerminal){
+      try {
+        await window.parent.CrypticTerminal.mintToken?.('djinn.manifest', { wish, fp });
+        window.parent.CrypticTerminal.ledger?.('djinn.wish.granted', { wish, fp });
+        window.parent.CrypticTerminal.out?.(`[GENIE DJINN] Intent granted: "${wish}" · receipt=${fp}`, 'good');
+      } catch(e){}
+    }
+    if(window.parent && window.parent.CrypticBus){
+      try {
+        window.parent.CrypticBus.send('djinn.manifest', { wish, fp });
+      } catch(e){}
+    }
+
+    setTimeout(() => {
+      const responses = [
+        `The Smokeless Flame bends toward your intent. Granted under sovereign seal. Verification fingerprint: <b>${fp}</b>.`,
+        `Latent world manifold updated with trajectory. The wish is cast into the Cryptic continuous ledger with receipt <b>${fp}</b>.`,
+        `By the Numeral 137451921129154222 and Hop 467, the parameters dissolve and recombine. Sealed: <b>${fp}</b>.`
+      ];
+      const decree = responses[Math.floor(Math.random()*responses.length)];
+      appendLog('GENIE DJINN', `${decree}<br><span class="log-token">Token: ${tokenRec.scope} · FP: ${fp} · Sovereign Ledger Stamped</span>`, 'djinn');
+      
+      document.getElementById('worldHud').textContent = `WORLD MODEL: MANIFESTED INTENT // "${wish.slice(0,24)}..."`;
+    }, 400);
+  }
+
+  grantBtn.addEventListener('click', () => grantIntent());
+  wishInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      grantIntent();
+    }
+  });
+
+  forgeWorldBtn.addEventListener('click', async () => {
+    const seed = 'seed.' + Math.random().toString(36).slice(2, 10);
+    worldSeed = seed;
+    document.getElementById('activeSeedTag').textContent = `ACTIVE SEED: ${seed.toUpperCase()} · WORLD SYNTHESIZED`;
+    appendLog('GENIE DJINN', `Interactive world space synthesized under seed <b>${seed}</b>. Latent coordinate phase perturbed.`, 'djinn');
+  });
+
+  mintBtn.addEventListener('click', async () => {
+    const raw = 'crt.djinn.' + Date.now().toString(36);
+    const fp = await sha256(raw);
+    appendLog('GENIE DJINN', `Capability token minted: <code>${raw}</code> (Receipt FP: <b>${fp}</b>). Stored in local runtime tokens.`, 'djinn');
+    if(window.parent && window.parent.CrypticTerminal){
+      window.parent.CrypticTerminal.mintToken?.('djinn.grant', { raw, fp });
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    logEl.innerHTML = '<div class="log-entry"><span class="log-djinn">GENIE DJINN:</span> Ledger cleared. Receptive to fresh intents.</div>';
+  });
+
+  // Vector Cards Click Handlers
+  document.querySelectorAll('.vector-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const intent = card.dataset.intent;
+      if(intent === 'world-seed-1374'){
+        grantIntent('Manifest World Seed 137451921129154222');
+      } else if(intent === 'latent-torus'){
+        grantIntent('Sample Toroidal Hamiltonian phase trajectory Sn(t)');
+      } else if(intent === 'sovereign-attestation'){
+        grantIntent('Forge sovereign attestation and verifiable credential receipt');
+      } else if(intent === 'flame-resonance'){
+        soundBtn.click();
+        appendLog('GENIE DJINN', '963 Hz solfeggio frequency crown alignment activated.', 'djinn');
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

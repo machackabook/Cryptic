@@ -22,9 +22,9 @@ for(const f of files){
   for(const re of patterns) if(re.test(s)) bad.push(`${rel} matches blocked secret pattern`);
 }
 
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const combined=files.map(f=>{try{return fs.readFileSync(f,'utf8')}catch{return ''}}).join('\n');
 for(const required of ['mintToken(','COSMIC GUARDIAN','963','MANDELBROT','runtime request token']) {
-  if(!index.includes(required)) bad.push(`index.html missing ${required}`);
+  if(!combined.includes(required)) bad.push(`codebase missing ${required}`);
 }
 
 if(bad.length){

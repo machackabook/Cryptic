@@ -75,6 +75,50 @@
       "auth": "public-read"
     },
     {
+      "id": "genie-djinn",
+      "label": "Genie Djinn // Smokeless Flame Engine",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/genie-djinn.html",
+      "embed": true,
+      "capabilities": [
+        "world-model",
+        "wish-oracle",
+        "smokeless-flame",
+        "attestation-mint"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "matrix-engine",
+      "label": "Sovereign OS Matrix Integration Engine",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/matrix-engine.html",
+      "embed": true,
+      "capabilities": [
+        "kerr-singularity",
+        "hopf-fibration",
+        "sigma-throughput",
+        "golden-army",
+        "master-alchemist"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "samsung-arm64",
+      "label": "Nexus Node // Samsung ARM64",
+      "kind": "paired-device",
+      "capabilities": [
+        "ssh-ed25519",
+        "hL7eW_2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg",
+        "termux-runtime",
+        "evidence-sync"
+      ],
+      "direct_write": false,
+      "auth": "device-pair-key"
+    },
+    {
       "id": "geocore",
       "label": "Geocore Shepard Tone Engine",
       "kind": "external-interface",

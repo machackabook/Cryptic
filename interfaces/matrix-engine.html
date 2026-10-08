@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sovereign OS — Matrix Integration Engine</title>
+<style>
+:root{
+  --bg:#020204;
+  --cyan:#00ffd0;
+  --violet:#8a2be2;
+  --violet-deep:#4a0e8f;
+  --gold:#f5ce70;
+  --ink:#e6f8f5;
+  --muted:#6f8b96;
+  --line:rgba(0,255,208,0.22);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body,html{
+  width:100%;height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:var(--cyan);
+}
+/* Custom sleek scrollbar */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#040714}
+::-webkit-scrollbar-thumb{background:#1f3354;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#305286}
+
+#matrixCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+}
+.hud-layer{
+  position:absolute;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+  padding:16px 24px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.header-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding-bottom:10px;
+  background:linear-gradient(90deg,rgba(0,255,208,0.06),rgba(138,43,226,0.04),transparent);
+}
+.brand-group{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.sigil{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:1px solid var(--cyan);
+  display:grid;
+  place-items:center;
+  font-size:16px;
+  color:var(--cyan);
+  background:rgba(0,255,208,0.12);
+  box-shadow:0 0 16px rgba(0,255,208,0.25);
+}
+.title-block b{
+  font-size:12px;
+  letter-spacing:.16em;
+  color:#fff;
+  display:block;
+}
+.title-block small{
+  font-size:8px;
+  color:var(--muted);
+  letter-spacing:.2em;
+}
+.top-meta{
+  display:flex;
+  gap:12px;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+.tag-cyan{color:var(--cyan)}
+.tag-violet{color:#c58aff}
+.tag-gold{color:var(--gold)}
+
+.controls-bar{
+  position:absolute;
+  top:62px;
+  right:24px;
+  z-index:20;
+  pointer-events:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:rgba(4,9,20,0.85);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  backdrop-filter:blur(14px);
+  width:260px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);
+}
+.ctrl-title{
+  font-size:8px;
+  letter-spacing:.18em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  padding-bottom:4px;
+}
+.ctrl-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:9px;
+}
+.ctrl-btn{
+  background:rgba(0,255,208,0.08);
+  border:1px solid var(--line);
+  color:var(--cyan);
+  padding:5px 9px;
+  border-radius:6px;
+  font:inherit;
+  font-size:8px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.ctrl-btn:hover{
+  background:rgba(0,255,208,0.2);
+  border-color:var(--cyan);
+  box-shadow:0 0 10px rgba(0,255,208,0.3);
+}
+.ctrl-btn.active{
+  background:rgba(245,206,112,0.18);
+  border-color:var(--gold);
+  color:var(--gold);
+}
+.slider{
+  width:100px;
+  accent-color:var(--cyan);
+  cursor:pointer;
+}
+
+.bottom-telemetry{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  background:linear-gradient(0deg,rgba(2,2,6,0.92),rgba(2,2,6,0.6) 70%,transparent);
+  padding-top:16px;
+  border-top:1px solid rgba(0,255,208,0.14);
+}
+.tele-col{
+  font-size:10px;
+  line-height:1.7;
+}
+.tele-col b{
+  color:#fff;
+  font-weight:600;
+}
+.tele-gold{color:var(--gold)}
+.tele-violet{color:#c58aff}
+.tele-green{color:#00ffd0}
+
+@media(max-width:768px){
+  .controls-bar{position:static;width:100%;margin-top:10px}
+  .bottom-telemetry{grid-template-columns:1fr;gap:10px}
+}
+</style>
+</head>
+<body>
+<canvas id="matrixCanvas"></canvas>
+
+<div class="hud-layer">
+  <div class="header-bar">
+    <div class="brand-group">
+      <div class="sigil">ܞ</div>
+      <div class="title-block">
+        <b>SOVEREIGN OS // MATRIX INTEGRATION ENGINE</b>
+        <small>GOLDEN ARMY PROTOCOL · NEXUS GUARDIAN SIGMA · MASTER ALCHEMIST</small>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span class="tag-cyan" id="runtimeState">RUNTIME: ACTIVE</span>
+      <span class="tag-violet" id="seedChecksum">CHECKSUM: 0x74446C2E</span>
+      <span class="tag-gold" id="loopTick">LOOP: 0001</span>
+    </div>
+  </div>
+
+  <div class="bottom-telemetry">
+    <div class="tele-col">
+      <div>SYSTEM_TIME_TICKER &nbsp;: <span class="tele-green" id="teleTime">0.000 s</span></div>
+      <div>SIGMA_THROUGHPUT &nbsp;&nbsp;&nbsp;: <span class="tele-green" id="teleThroughput">15000.0 px/s</span></div>
+      <div>ENTROPY_SHARDS_V15 &nbsp;: <span class="tele-gold" id="teleEntropy">420 Units</span></div>
+      <div>JACCARD_CONVERGENCE : <span class="tele-green" id="teleJaccard">0.8420 J(A,B)</span></div>
+      <div>TRAJECTORY_SLICE &nbsp;&nbsp;&nbsp;: <span class="tele-violet" id="teleState">Sₙ(t) = {xₙ, yₙ, zₙ=nΔz, τ=t, p, α}</span></div>
+    </div>
+    <div class="tele-col" style="text-align:right">
+      <div>SRC_VAL_GOLDEN_ARMY &nbsp;: <span class="tele-violet" id="teleGA">0x74446C2E [ONLINE]</span></div>
+      <div>SRC_VAL_NEXUS_SIGMA &nbsp;&nbsp;: <span class="tele-violet" id="teleNS">0x4F8A91BC [INTEGRATED]</span></div>
+      <div>SRC_VAL_GRIMOIRE_ALC &nbsp;: <span class="tele-violet" id="teleMA">0x913E02A1 [COMPILED]</span></div>
+      <div>HARDWARE_NODE_TARGET &nbsp;: <span class="tele-cyan" id="teleNode">NODE_042 / 720 [SAMSUNG:ARM64]</span></div>
+      <div>TOPOLOGY_STATUS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="tele-gold" id="teleStatus">HOPF_FIBRATION ⇄ KERR_SINGULARITY</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="ctrl-title">DYNAMIC MATRIX CONTROLS</div>
+  <div class="ctrl-row">
+    <span>ARRAY LAYOUT</span>
+    <button class="ctrl-btn" id="btnLayout" type="button">TWIN ARRAY</button>
+  </div>
+  <div class="ctrl-row">
+    <span>KERR LENSING</span>
+    <input type="range" min="0.4" max="1.6" step="0.05" value="0.85" class="slider" id="kerrSlider">
+  </div>
+  <div class="ctrl-row">
+    <span>HOPF SPEED</span>
+    <input type="range" min="0.1" max="2.0" step="0.1" value="0.5" class="slider" id="hopfSlider">
+  </div>
+  <div class="ctrl-row">
+    <span>RESONANCE 963Hz</span>
+    <button class="ctrl-btn" id="btnAudio" type="button">SONIFY</button>
+  </div>
+  <div class="ctrl-row">
+    <span>MINT EVIDENCE TOKEN</span>
+    <button class="ctrl-btn" id="btnMint" type="button">MINT</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const SOURCE_DOCS = {
+    golden_army: "GoldenArmyContinuousEngine::KerrMetric+HopfFibration::Checksum=0x74446C2E::128UnitsToInfinite",
+    nexus_sigma: "NexusGuardianSigma::AlphaSigmaThroughput::720Nodes::SamsungArm64::SSH=hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg",
+    master_alchemist: "GrimoireMasterAlchemist::CliffordSpinors+RiemannManifolds::Iteration01v2.0::0x74446C2E"
+  };
+
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0, dpr = 1;
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize, {passive:true});
+  resize();
+
+  const sysTime = { start: performance.now(), current: performance.now(), elapsed: 0 };
+  const metrics = {
+    throughputSigma: 15000,
+    entropyShards: 420,
+    kerrDistortion: 0.85,
+    hopfSpeed: 0.5,
+    jaccardConvergence: 0.8420,
+    activeNode: 42,
+    loopCounter: 1,
+    layoutMode: 'twin' // 'twin', 'merged', 'overlaid'
+  };
+
+  // 1. Dual Geometric Renderers
+  function drawBackground(){
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    const colorShift = (Math.sin(sysTime.elapsed * 0.1) + 1) * 25;
+    grad.addColorStop(0, `hsla(${260 + colorShift}, 48%, 4%, 1)`);
+    grad.addColorStop(0.5, '#020205');
+    grad.addColorStop(1, `hsla(${180 + colorShift}, 52%, 3%, 1)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Subtle matrix text stream watermark
+    ctx.save();
+    ctx.font = '8px monospace';
+    ctx.fillStyle = 'rgba(0, 255, 208, 0.035)';
+    ctx.fillText(SOURCE_DOCS.golden_army, 40, h * 0.35);
+    ctx.fillText(SOURCE_DOCS.nexus_sigma, 40, h * 0.38);
+    ctx.fillText(SOURCE_DOCS.master_alchemist, 40, h * 0.41);
+    ctx.restore();
+  }
+
+  function drawHopfFibrationTorus(cx, cy, r){
+    ctx.save();
+    ctx.translate(cx, cy);
+    const tf = sysTime.elapsed * metrics.hopfSpeed * 0.8;
+    ctx.lineWidth = 1;
+
+    const fibers = 42;
+    for(let i=0; i<fibers; i+=2){
+      const phi = (i / fibers) * Math.PI * 2 + tf;
+      ctx.beginPath();
+      for(let j=0; j<=360; j+=15){
+        const theta = (j / 360) * Math.PI * 2;
+        const x = (r + r * 0.5 * Math.cos(theta)) * Math.cos(phi + theta * 0.1);
+        const y = (r + r * 0.5 * Math.cos(theta)) * Math.sin(phi + theta * 0.1);
+        if(j === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `hsla(${170 + i * 2.5}, 100%, 55%, ${0.08 + (metrics.jaccardConvergence * 0.18)})`;
+      ctx.stroke();
+    }
+
+    // Hopf Core Anchor
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#00ffd0';
+    ctx.shadowColor = '#00ffd0';
+    ctx.shadowBlur = 15;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawKerrSingularity(cx, cy, radius){
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // Lensing distortion rings
+    const rings = 7;
+    for(let i=0; i<rings; i++){
+      const cr = radius * (1 + i * 0.22) * metrics.kerrDistortion;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, cr, cr * 0.38, sysTime.elapsed * (0.2 + i * 0.04), 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(138, 43, 226, ${0.45 / (i + 1)})`;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+
+    // Central Singularity Pulse
+    const pulse = radius * 0.38 + Math.sin(sysTime.elapsed * 4.5) * 5;
+    const radGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, pulse);
+    radGrad.addColorStop(0, '#00ffd0');
+    radGrad.addColorStop(0.25, 'rgba(138, 43, 226, 0.85)');
+    radGrad.addColorStop(0.7, 'rgba(74, 14, 143, 0.35)');
+    radGrad.addColorStop(1, 'rgba(2, 2, 5, 0)');
+    ctx.fillStyle = radGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // 2. Loop Execution & Telemetry Updates
+  function step(){
+    sysTime.current = performance.now();
+    sysTime.elapsed = (sysTime.current - sysTime.start) / 1000;
+
+    metrics.throughputSigma = 15000 + Math.sin(sysTime.elapsed * 2) * 4200;
+    metrics.entropyShards = Math.floor(400 + Math.cos(sysTime.elapsed * 0.5) * 180);
+    metrics.jaccardConvergence = 0.80 + Math.sin(sysTime.elapsed * 0.3) * 0.08;
+    metrics.activeNode = (Math.floor(sysTime.elapsed * 8) % 720) + 1;
+
+    if(Math.floor(sysTime.elapsed) % 10 === 0 && metrics.loopCounter < Math.floor(sysTime.elapsed/10)+1){
+      metrics.loopCounter = Math.floor(sysTime.elapsed/10)+1;
+    }
+
+    // Update DOM telemetry
+    document.getElementById('teleTime').textContent = sysTime.elapsed.toFixed(3) + ' s';
+    document.getElementById('teleThroughput').textContent = metrics.throughputSigma.toFixed(1) + ' px/s';
+    document.getElementById('teleEntropy').textContent = metrics.entropyShards + ' Units';
+    document.getElementById('teleJaccard').textContent = metrics.jaccardConvergence.toFixed(4) + ' J(A,B)';
+    document.getElementById('teleNode').textContent = `NODE_${String(metrics.activeNode).padStart(3,'0')} / 720 [SAMSUNG:ARM64]`;
+    document.getElementById('loopTick').textContent = `LOOP: ${String(metrics.loopCounter).padStart(4,'0')}`;
+  }
+
+  function frame(){
+    step();
+    drawBackground();
+
+    const minDim = Math.min(w, h);
+    if(metrics.layoutMode === 'twin'){
+      const cx1 = w * 0.32;
+      const cx2 = w * 0.68;
+      const cy = h * 0.46;
+      drawHopfFibrationTorus(cx1, cy, minDim * 0.18);
+      drawKerrSingularity(cx2, cy, minDim * 0.16);
+    } else if(metrics.layoutMode === 'overlaid'){
+      const cx = w * 0.50;
+      const cy = h * 0.46;
+      drawHopfFibrationTorus(cx, cy, minDim * 0.22);
+      drawKerrSingularity(cx, cy, minDim * 0.18);
+    } else {
+      const cx = w * 0.50;
+      const cy = h * 0.46;
+      drawHopfFibrationTorus(cx, cy, minDim * 0.15);
+      drawKerrSingularity(cx, cy, minDim * 0.25);
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // 3. Interactive UI Controls
+  const btnLayout = document.getElementById('btnLayout');
+  const kerrSlider = document.getElementById('kerrSlider');
+  const hopfSlider = document.getElementById('hopfSlider');
+  const btnAudio = document.getElementById('btnAudio');
+  const btnMint = document.getElementById('btnMint');
+
+  btnLayout.onclick = () => {
+    if(metrics.layoutMode === 'twin'){
+      metrics.layoutMode = 'overlaid';
+      btnLayout.textContent = 'OVERLAID ARRAY';
+    } else if(metrics.layoutMode === 'overlaid'){
+      metrics.layoutMode = 'merged';
+      btnLayout.textContent = 'MERGED ARRAY';
+    } else {
+      metrics.layoutMode = 'twin';
+      btnLayout.textContent = 'TWIN ARRAY';
+    }
+  };
+
+  kerrSlider.oninput = e => {
+    metrics.kerrDistortion = parseFloat(e.target.value);
+  };
+  hopfSlider.oninput = e => {
+    metrics.hopfSpeed = parseFloat(e.target.value);
+  };
+
+  let audioCtx = null, osc = null;
+  btnAudio.onclick = () => {
+    if(window.parent?.CrypticTerminal?.toggle963){
+      window.parent.CrypticTerminal.toggle963();
+      btnAudio.classList.toggle('active');
+      return;
+    }
+    if(osc){
+      osc.stop(); osc.disconnect(); osc = null;
+      btnAudio.classList.remove('active');
+      btnAudio.textContent = 'SONIFY';
+    } else {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const g = audioCtx.createGain(); g.gain.value = 0.035;
+      osc = audioCtx.createOscillator();
+      osc.type = 'sine'; osc.frequency.value = 963;
+      osc.connect(g).connect(audioCtx.destination);
+      osc.start();
+      btnAudio.classList.add('active');
+      btnAudio.textContent = '963Hz [ON]';
+    }
+  };
+
+  btnMint.onclick = async () => {
+    const raw = 'crt.matrix.' + Date.now().toString(36);
+    let fp = '0x74446C2E';
+    if(window.parent?.CrypticTerminal?.mintToken){
+      const t = await window.parent.CrypticTerminal.mintToken('matrix.evidence', {
+        checksum: '0x74446C2E',
+        kerr: metrics.kerrDistortion,
+        hopf: metrics.hopfSpeed
+      });
+      fp = t.fp;
+      window.parent.CrypticTerminal.out?.(`[MATRIX INTEGRATION] Evidence token minted: receipt=${fp}`, 'good');
+    }
+    btnMint.textContent = 'FP: ' + fp.slice(0, 8);
+    setTimeout(() => { btnMint.textContent = 'MINT'; }, 2000);
+  };
+
+})();
+</script>
+</body>
+</html>

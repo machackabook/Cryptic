@@ -85,6 +85,25 @@ function updateSignal(){
 }
 
 function renderData(){renderLedger();updateSignal()}
+
+function updateSystemClock(){
+  const now=new Date();
+  const hh=String(now.getUTCHours()).padStart(2,'0');
+  const mm=String(now.getUTCMinutes()).padStart(2,'0');
+  const ss=String(now.getUTCSeconds()).padStart(2,'0');
+  const clk=$('#sysUtcClock');
+  if(clk) clk.textContent=`${hh}:${mm}:${ss} UTC`;
+  const dt=$('#sysUtcDate');
+  if(dt){
+    const yr=now.getUTCFullYear();
+    const mo=String(now.getUTCMonth()+1).padStart(2,'0');
+    const da=String(now.getUTCDate()).padStart(2,'0');
+    dt.textContent=`${yr}-${mo}-${da} · CONTINUITY TICK`;
+  }
+}
+updateSystemClock();
+setInterval(updateSystemClock,1000);
+
 setInterval(()=>{renderData();renderRoutes()},3500);
 window.addEventListener('storage',e=>{if(e.key==='cryptic.ledger'||e.key==='cryptic.telemetry.v1')renderData()});
 

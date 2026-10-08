@@ -1,5 +1,16 @@
 @import url("./tokens.css");
 *{box-sizing:border-box}
+
+/* Custom scrollbar for a sleeker look */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Basic markdown styles for AI output */
+.ai-output strong { color: #818cf8; font-weight: 700; }
+.ai-output p { margin-bottom: 0.75rem; }
+
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void-0);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 button,input,select{font:inherit}
 button{cursor:pointer}

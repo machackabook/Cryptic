@@ -30,6 +30,26 @@ export function sampleTorusTube(major, minor, phi, theta, t, idx) {
   };
 }
 
+/**
+ * State space slice sampler:
+ * Sₙ(t) = { xₙ, yₙ, zₙ=nΔz, τ=t, p, α, stateₙ } | O=(0,0,0)
+ */
+export function sampleStateSpace(n, t, deltaZ = 0.5, p = 1.0, alpha = 0.08) {
+  const theta = (n * 0.28) + t * 0.05;
+  const h = sampleHamiltonianXZ(theta, 6 * p, t);
+  return {
+    n,
+    xn: h.x,
+    yn: h.y,
+    zn: n * deltaZ,
+    tau: t,
+    p,
+    alpha,
+    staten: `S_${n}(${t.toFixed(2)})`,
+    origin: { x: 0, y: 0, z: 0 }
+  };
+}
+
 export function sessionGeometryHolds() {
   const a = sampleHamiltonianXZ(0.4, 10, 0);
   const b = sampleHamiltonianXZ(0.4, 10, Math.PI / 2);

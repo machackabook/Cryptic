@@ -1,0 +1,15 @@
+{
+  "name": "cryptic",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build complete')\"",
+    "lint": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

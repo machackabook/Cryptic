@@ -10,6 +10,8 @@
     {"id":"bus","title":"CRYPTIC MESSAGE HUB // AGGREGATE ROUTES","file":"./modules/bus.html","controller":"./modules/bus.js"},
     {"id":"telemetry","title":"BROWSER TELEMETRY // DATASET","file":"./modules/telemetry.html","controller":"./modules/telemetry.js"},
     {"id":"runtime","title":"RUNTIME // CAPABILITY STATE","file":"./modules/runtime.html","controller":"./modules/runtime.js"},
-    {"id":"controls","title":"PANEL FABRIC // CONTROL PLANE","file":"./modules/controls.html","controller":"./modules/controls.js"}
+    {"id":"controls","title":"PANEL FABRIC // CONTROL PLANE","file":"./modules/controls.html","controller":"./modules/controls.js"},
+    {"id":"genie","title":"GENIE DJINN // SMOKELESS FLAME ENGINE","file":"./modules/genie.html","controller":"./modules/genie.js"},
+    {"id":"matrix","title":"MATRIX // KERR & HOPF INTEGRATION","file":"./modules/matrix.html","controller":"./modules/matrix.js"}
   ]
 }

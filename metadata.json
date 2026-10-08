@@ -1,0 +1,8 @@
+{
+  "name": "Cryptic",
+  "description": "Cryptic — modular HyperTerminal Sovereign OS command center.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
