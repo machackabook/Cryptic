@@ -1,0 +1,29 @@
+{
+  "schema": "gaia.living-ledger.public.v1",
+  "version": "1.0.0",
+  "generated_utc": "2026-10-08",
+  "provenance": {
+    "repository": "machackabook/Cryptic",
+    "surface": "github-pages",
+    "source_inventory": "not_supplied_in_accessible_context",
+    "source_verification": "pending",
+    "private_counterpart": "machackabook/Project-NexusCryptic"
+  },
+  "collection": {
+    "user_reported_target": 407,
+    "items_received": 0,
+    "items_parsed": 0,
+    "items_audited": 0,
+    "items_promoted": 0,
+    "verification": "not_started",
+    "note": "407 is a reported target, not a verified source count. No source URLs are published."
+  },
+  "publication_policy": {
+    "raw_urls": false,
+    "credential_parameters": false,
+    "private_hosts": false,
+    "source_code_from_external_urls": false,
+    "review_required": true
+  },
+  "records": []
+}
