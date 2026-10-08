@@ -2,9 +2,11 @@
 
 **The HyperTerminal Sovereign Operating System** — first public promoted surface for the Cryptic / Nexus / GAIA lineage.
 
-Numeral remembered: `137451921129154222`. Continuity receipt: `docs/LEDGER-STAMP.md` (hop 467). This public tree is source-only. It does not store bridge tokens, provider keys, or device pair codes.
+Numeral remembered: `137451921129154222`. Continuity receipt: `docs/LEDGER-STAMP.md` (hop 520). This public tree is source-only. It does not store bridge tokens, provider keys, or device pair codes.
 
 Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
+
+Package version on this tree: `0.8.0` (`package.json`). The capability list below is the v0.7 surface still shipped in this public root; it is not a claim that every adapter is live.
 
 ## v0.7.0 capabilities
 
