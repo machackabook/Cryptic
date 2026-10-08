@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#05080e">
+<meta name="description" content="GAIA Living Ledger: provenance-aware public evidence portal for Cryptic.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>GAIA Living Ledger v1 | Cryptic</title>
+<style>
+:root{color-scheme:dark;--bg:#05080e;--surface:#0c1220;--stroke:#233247;--text:#e8effa;--muted:#97a9c2;--cyan:#71e9e1;--violet:#b5a2ff;--amber:#e8c37d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 83% 0%,#1d2646 0%,transparent 45%),radial-gradient(ellipse at 10% 36%,#102e37 0%,transparent 38%),var(--bg);min-height:100vh;color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:var(--cyan)}a:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+header,main,footer{width:min(1100px,92vw);margin:auto}header{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:29px 0 13px;border-bottom:1px solid var(--stroke)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:760;letter-spacing:.14em}.sigil{display:grid;place-items:center;border:1px solid #4c7479;width:35px;height:35px;border-radius:50%;color:var(--cyan);font-size:22px}
+nav{display:flex;flex-wrap:wrap;gap:19px}nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--text)}
+.hero{padding:88px 0 47px;max-width:820px}.eyebrow{font-size:12px;font-weight:760;letter-spacing:.19em;color:var(--cyan);text-transform:uppercase}h1{font-size:clamp(37px,6.3vw,75px);line-height:1.07;letter-spacing:-.055em;margin:15px 0 20px}h1 span{color:var(--cyan)}
+p{color:var(--muted);margin:0 0 13px}.lead{font-size:clamp(16px,2.1vw,20px);max-width:700px}
+.status{display:inline-flex;gap:9px;align-items:center;border:1px solid #65563b;color:var(--amber);background:#3c2e171f;border-radius:99px;padding:7px 12px;margin-top:20px;font-size:12px;letter-spacing:.04em}
+.status:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:21px 0 30px}
+.stat,.panel{border:1px solid var(--stroke);border-radius:16px;background:linear-gradient(155deg,#121b2bdf,#090e18ec);box-shadow:0 12px 34px #0003}
+.stat{padding:22px 20px}.stat b{font-size:clamp(28px,3vw,40px);font-variant-numeric:tabular-nums;display:block;letter-spacing:-.04em}.stat small{color:var(--muted)}
+.cols{display:grid;grid-template-columns:1.35fr 1fr;gap:15px}.panel{padding:25px}h2{font-size:19px;letter-spacing:-.02em;margin:0 0 14px}h3{font-size:14px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin:15px 0 7px}
+.steps{display:flex;gap:7px;flex-wrap:wrap;margin:21px 0}.steps span{border:1px solid #2b4754;background:#0b2430;padding:5px 11px;border-radius:99px;color:#9ededd;font-size:12px}
+.notice{border-left:3px solid var(--amber);background:#30281740;padding:13px 17px;margin:19px 0;border-radius:0 10px 10px 0}
+.mini{font-size:13px}.muted{color:var(--muted)}strong{color:var(--text)}
+.find{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin:16px 0}input{width:100%;padding:13px 15px;border-radius:10px;background:#0b1524;color:var(--text);border:1px solid var(--stroke);font:inherit}
+#records{display:grid;gap:12px}article.record{border:1px solid var(--stroke);border-radius:12px;padding:14px;background:#111a28}
+.record small{color:var(--cyan)}.record h3{color:var(--text);margin:5px 0;font-size:17px;letter-spacing:0;text-transform:none}
+footer{margin-top:50px;padding:24px 0 35px;border-top:1px solid var(--stroke);color:var(--muted);font-size:12px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.hero{padding-top:55px}}@media(max-width:450px){.grid{grid-template-columns:1fr 1fr}.stat{padding:15px}.stat b{font-size:30px}header{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<div class="mark"><span class="sigil" aria-hidden="true">◈</span> CRYPTIC / GAIA</div>
+<nav aria-label="Site navigation">
+<a href="../../">Command Center</a>
+<a href="../../magic/">Magic Window</a>
+<a href="../../docs/GAIA-URL-ASSIMILATION-v1.md">Publication Contract</a>
+</nav>
+</header>
+<main>
+<section class="hero" aria-labelledby="title">
+<div class="eyebrow">Living System / Evidence-first / v1.0</div>
+<h1 id="title">The <span>Living Ledger.</span></h1>
+<p class="lead">A provenance-aware reading surface for the GAIA / NEXUS / ADAM lineage. Only separately reviewed, publish-safe source records appear here.</p>
+<div class="status" id="status">Source inventory pending verification</div>
+</section>
+<section aria-label="Assimilation statistics">
+<div class="grid">
+<div class="stat"><b id="target">407</b><small>Operator-reported URL target</small></div>
+<div class="stat"><b id="received">0</b><small>Source records received</small></div>
+<div class="stat"><b id="audited">0</b><small>Source records audited</small></div>
+<div class="stat"><b id="published">0</b><small>Reviewed and promoted</small></div>
+</div>
+</section>
+<div class="cols">
+<section class="panel">
+<h2>Assimilation gates</h2>
+<p>Evidence must move from discovery to verification before any material is promoted. Encoding is not authorization, and readable content is not necessarily safe to publish.</p>
+<div class="steps" aria-label="Lifecycle"><span>Discover</span><span>Observe</span><span>Normalize</span><span>Classify</span><span>Verify</span><span>Fingerprint</span><span>Review</span><span>Promote</span></div>
+<div class="notice"><strong>Publication boundary:</strong> no raw bearer URLs, OAuth tokens, signed parameters, private endpoints, passwords, session cookies, or unreviewed encoded source. The original private ledger is never served by GitHub Pages.</div>
+</section>
+<section class="panel">
+<h2>Provenance contract</h2>
+<h3>Public surface</h3><p>Cryptic GitHub Pages — independently reviewed static derivatives only.</p>
+<h3>Private source</h3><p>ADAM/NEXUS project ledger and device-controlled evidence. No auto-promotion.</p>
+<h3>Receipt integrity</h3><p>Source and publication revision IDs remain distinct. A SHA-256 fingerprint never substitutes for proof of source authenticity.</p>
+</section>
+</div>
+<section class="panel" style="margin-top:15px" aria-labelledby="catalog-title">
+<h2 id="catalog-title">Reviewed public catalog</h2>
+<p class="mini">Every entry requires a verified source, a safe attribution, and an explicit publication decision.</p>
+<div class="find"><input id="search" aria-label="Filter catalog entries" type="search" placeholder="Search approved entries only..." autocomplete="off"></div>
+<div id="records" aria-live="polite"><p>No records have been promoted. This is a real empty evidence set, not simulated data.</p></div>
+</section>
+</main>
+<footer>Cryptic News LLC · GAIA Living Ledger v1 · Append-only lineage, separately reviewed publication. No authentication state is exposed by this page.</footer>
+<script>
+"use strict";
+const el=id=>document.getElementById(id);
+const state={records:[]};
+function render(){
+ const query=el("search").value.trim().toLowerCase();
+ const list=state.records.filter(r=>[r.title,r.category,r.attribution].join(" ").toLowerCase().includes(query));
+ const slot=el("records");slot.replaceChildren();
+ if(!list.length){const p=document.createElement("p");p.textContent=state.records.length?"No entries match your search.":"No records have been promoted. This is a real empty evidence set, not simulated data.";slot.append(p);return}
+ for(const r of list){
+ const card=document.createElement("article");card.className="record";
+ const label=document.createElement("small");label.textContent=String(r.category||"Unclassified");
+ const title=document.createElement("h3");title.textContent=String(r.title||"Untitled source");
+ const note=document.createElement("p");note.textContent=String(r.attribution||"Attribution pending");
+ card.append(label,title,note);slot.append(card);
+ }
+}
+el("search").addEventListener("input",render);
+(async()=>{
+ try{
+ const res=await fetch("./catalog.public.json",{cache:"no-store",credentials:"omit",redirect:"error"});
+ if(!res.ok)throw new Error("Catalog HTTP "+res.status);
+ const data=await res.json();
+ if(data.schema!=="gaia.living-ledger.public.v1"||!Array.isArray(data.records))throw new Error("Catalog schema mismatch");
+ const coll=data.collection||{};
+ const counts=[["target","user_reported_target"],["received","items_received"],["audited","items_audited"],["published","items_promoted"]];
+ for(const [id,key] of counts)el(id).textContent=String(Number.isSafeInteger(coll[key])&&coll[key]>=0?coll[key]:0);
+ state.records=data.records.filter(r=>r&&typeof r==="object"&&r.review_status==="approved"&&typeof r.title==="string");
+ el("status").textContent=state.records.length?"Approved public records available":"Source inventory pending verification";
+ render();
+ }catch(err){el("status").textContent="Public catalog unavailable — not verified";el("records").textContent="Unable to load the approved catalog. No publication success is claimed.";console.error("GAIA Living Ledger: catalog unavailable",err.name);}
+})();
+</script>
+</body>
+</html>
