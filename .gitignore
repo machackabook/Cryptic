@@ -16,3 +16,12 @@ service-account*.json
 credentials*.json
 *secret*
 *.sparsebundle/
+
+# CRYPTIC Pages Vault: host-only approval inputs and quarantine
+approved-public*.json
+vault-quarantine/
+.vault-private/
+rclone.conf
+.rclone.conf
+vault/.catalog-*
+vault/assets/.staging-*

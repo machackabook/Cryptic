@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#030711">
+  <meta name="description" content="CRYPTIC Verified Vault: public, explicitly approved document releases and provenance receipts.">
+  <title>CRYPTIC // Verified Document Vault</title>
+  <link rel="stylesheet" href="./vault.css">
+  <script type="module" src="./vault.js"></script>
+</head>
+<body>
+<header class="mast">
+  <div class="brand"><span class="sigil" aria-hidden="true">◈</span><div><b>CRYPTIC NEXUS</b><small>PUBLIC DOCUMENT VAULT · 0.0.0 · VERIFIED RELEASE CHANNEL</small></div></div>
+  <nav aria-label="Navigation"><a href="../">COMMAND CENTER</a><a href="../magic/">MAGIC WINDOW</a><a href="../docs/PUBLIC-PRIVATE-PAIRING.md">TRUST MODEL</a></nav>
+</header>
+<main>
+  <section class="hero"><span class="eyebrow">CRYPTIC // PAGES VAULT</span>
+    <h1>Verified releases.<br><em>Public by approval.</em></h1>
+    <p>This site displays a curated, immutable-hash catalog of documents explicitly cleared for public distribution. Google Drive, internal device queues, encrypted Enclave material, and repository credentials are <strong>not exposed here</strong>.</p>
+    <div class="metrics"><div><strong id="docCount">—</strong><span>Public documents</span></div><div><strong id="vaultState">CHECKING</strong><span>Catalog state</span></div><div><strong>SHA-256</strong><span>Content fingerprints</span></div></div>
+  </section>
+  <section class="shelf" aria-labelledby="recordsTitle"><div class="section-head"><div><span class="eyebrow">EVIDENCE INDEX</span><h2 id="recordsTitle">Approved publications</h2></div><input id="search" type="search" autocomplete="off" placeholder="Search titles and TDOC IDs" aria-label="Search approved publications"></div>
+  <p id="notice" class="notice" role="status">Reading the publication catalog…</p>
+  <div id="records" class="records"></div>
+  </section>
+</main>
+<footer>© 2026 Cryptic News LLC · Public presentation only · Source content is reviewed before release · <a href="../SECURITY.md">Security policy</a></footer>
+</body>
+</html>
