@@ -8,6 +8,10 @@
   </div>
   <p>This establishes a local browser session. It is a visible consent and continuity boundary, not server-side authentication.</p>
   <div class="guardian-truth">LET WHAT IS TRUE SURVIVE THE JOURNEY</div>
+  <label for="guardianSequence" style="display:block;text-align:left;margin:14px 0 5px;color:#00FFFF;font-size:11px">TDOC CONTINUITY SEQUENCE</label>
+  <input id="guardianSequence" type="password" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" autocomplete="off" aria-describedby="guardianSequenceHelp" placeholder="Enter the 9-digit ID" style="width:100%;max-width:320px;padding:11px;background:#0A0A1F;color:#E0E7FF;border:1px solid #9333EA;border-radius:9px">
+  <div id="guardianSequenceHelp" role="status" aria-live="polite" style="margin:5px auto 10px;max-width:350px;font-size:10px;color:#E0E7FF">Visual session lock only. The public source remains readable; private operations require Cryptic Gateway authentication.</div>
+  
   <div class="toolbar guardian-actions">
     <button class="action" id="enterBtn">ENTER CRYPTIC</button>
     <button class="action gold" id="wakeBtn">WAKE LOCK</button>
