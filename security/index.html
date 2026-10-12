@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║ Ⓖ  GOLDEN G | TDOC-CRYPTIC-NETSEC-5200 | 2026-10-12 | v5.2.0       ║
+║ © 2026 Cryptic News LLC / The Architect. All rights reserved.       ║
+║ Scope: PUBLIC UI / LOCAL-ONLY TRACE / NO PRIVILEGED DEVICE DATA     ║
+║ ADAM: ORCHBENCH; verified promotion requires independent evidence.   ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Cryptic // Network Security & Trace</title>
+<style>
+:root{--void:#0A0A1F;--card:#14143D;--cyan:#00FFFF;--purple:#9333EA;--ink:#E0E7FF;--gold:#FFCC00;--green:#8fffc3;--muted:#a8b6d6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 64% 0,rgba(147,51,234,.19),transparent 48%),var(--void);color:var(--ink);font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+header,main,footer{width:min(1140px,95vw);margin:auto}header{padding:30px 0 18px;border-bottom:1px solid #384364}h1{font-size:clamp(1.35rem,3vw,2rem);margin:4px 0;color:var(--cyan)}h2{font-size:1.05rem;color:var(--gold);margin-top:0}
+.kicker{letter-spacing:.15em;color:var(--gold);font-size:11px}.sub{color:var(--muted);margin:5px 0 16px}
+nav,.tools{display:flex;gap:9px;flex-wrap:wrap}a,button{border:1px solid #466588;background:#131f37;color:var(--ink);padding:9px 13px;border-radius:9px;text-decoration:none;font:inherit;cursor:pointer}button:hover,a:hover{border-color:var(--cyan);color:var(--cyan)}button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+main{padding:19px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}.card{background:linear-gradient(145deg,rgba(20,20,61,.96),rgba(10,10,31,.9));border:1px solid #3c4a76;padding:18px;border-radius:15px;min-width:0}
+.endpoint{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #324063;padding:8px 0}.state{font-weight:700;color:var(--muted)}.ok{color:var(--green)}.fail{color:#ffa6a6}.unknown{color:var(--gold)}
+#trace{min-height:260px;max-height:460px;overflow:auto;border:1px solid #374a75;padding:12px;border-radius:9px;background:#060817;white-space:pre-wrap;word-break:break-word}
+small{color:var(--muted)}footer{padding:24px 0 42px;color:var(--muted);font-size:12px}
+</style></head>
+<body><header><div class="kicker">◈ CRYPTIC NEXUS / SECURITY MATRIX / TDOC 5200</div>
+<h1>Network Security &amp; Trace</h1>
+<p class="sub">Public status and browser-local audit console. No network scanning, secret collection, or private-topology publishing.</p>
+<nav><a href="../">⌂ Dashboard</a><a href="../magic/">◇ Magic Window</a><a href="../living-ledger/v1/">▤ Living Ledger</a>
+<a href="https://crypticnews.org" target="_blank" rel="noopener noreferrer">↗ Cryptic News</a></nav></header>
+<main class="grid">
+<section class="card"><h2>◎ Public endpoint health</h2>
+<p class="sub">Only approved HTTPS status endpoints are queried. A CORS failure means unavailable to this browser, not necessarily that the service is down.</p>
+<div class="endpoint"><span>Capability gateway</span><span id="apiState" class="state unknown">NOT CHECKED</span></div>
+<div class="endpoint"><span>Message bus</span><span id="busState" class="state unknown">NOT CHECKED</span></div>
+<div class="tools" style="margin-top:16px"><button id="check" type="button">⟳ Check endpoints</button>
+<a href="https://api.crypticnews.org/v1/status" target="_blank" rel="noopener noreferrer">↗ Gateway</a>
+<a href="https://bus.crypticnews.org/v1/status" target="_blank" rel="noopener noreferrer">↗ Bus</a></div>
+<p><small id="checkedAt">No status checks performed.</small></p></section>
+<section class="card"><h2>⇄ Public navigation gateway</h2><p class="sub">Safe navigation to project resources; this page is not a VPN, reverse proxy, HTTP redirect service, or firewall.</p>
+<nav><a href="../terminal/">⌘ Terminal</a><a href="../magic/">✦ Magic</a><a href="../interfaces/welcome-sentience.html">✧ Welcome</a>
+<a href="../interfaces/genie-djinn.html">◈ Genie Djinn</a><a href="../interfaces/matrix-engine.html">⌁ Matrix</a><a href="../living-ledger/v1/">▤ Timeline</a></nav>
+<p><small>Operational actions still require the separately authenticated Cryptic edge or local bridge.</small></p></section>
+<section class="card" style="grid-column:1/-1"><h2>▦ Session trace · local-only</h2>
+<p class="sub">A bounded log of actions taken on this page (time, event type, public endpoint response only). No IPs, raw paths, query strings, tokens, form values, or user identifiers are collected. Nothing is sent automatically.</p>
+<div class="tools"><button id="mark" type="button">＋ Mark event</button><button id="export" type="button">⇩ Export JSON</button><button id="copy" type="button">⎘ Copy JSON</button><button id="clear" type="button">× Clear log</button></div>
+<pre id="trace" role="log" aria-live="polite" tabindex="0">No events yet.</pre><small id="traceCount">0 events · session storage</small></section>
+</main>
+<footer>Ⓖ Golden G · TDOC-CRYPTIC-NETSEC-5200 · © 2026 Cryptic News LLC / The Architect · All rights reserved.<br>
+<span>Proof gate: public UI only. Real sensor evidence, authenticated network administration and server-side audit ingestion remain external.</span></footer>
+<script>
+(()=>{
+'use strict';
+const KEY='cryptic.netsec.trace.v1', LIMIT=100;
+const paths=[{name:'api',url:'https://api.crypticnews.org/v1/status',el:'apiState'},
+{name:'bus',url:'https://bus.crypticnews.org/v1/status',el:'busState'}];
+const byId=id=>document.getElementById(id);
+function read(){try{const a=JSON.parse(sessionStorage.getItem(KEY)||'[]');return Array.isArray(a)?a.slice(-LIMIT):[]}catch{return []}}
+function render(){const a=read();byId('trace').textContent=a.length?a.map(e=>e.at+' '+e.type+' '+e.result).join('\n'):'No events yet.';byId('traceCount').textContent=a.length+' events · session storage'}
+function add(type,result='ok'){const a=read();a.push({at:new Date().toISOString(),type,result});try{sessionStorage.setItem(KEY,JSON.stringify(a.slice(-LIMIT)))}catch{}render()}
+async function checkOne(item){const el=byId(item.el);el.textContent='CHECKING';el.className='state unknown';
+const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),6000);
+try{const response=await fetch(item.url,{method:'GET',mode:'cors',cache:'no-store',credentials:'omit',signal:ctrl.signal});
+ const result=response.ok?'HTTP '+response.status:'HTTP '+response.status;
+ el.textContent=result;el.className='state '+(response.ok?'ok':'fail');add('public-status.'+item.name,result);
+}catch(error){const code=error.name==='AbortError'?'TIMEOUT':'UNVERIFIED / CORS';el.textContent=code;el.className='state unknown';add('public-status.'+item.name,code)}
+finally{clearTimeout(timer)}}
+byId('check').addEventListener('click',async()=>{byId('check').disabled=true;try{await Promise.all(paths.map(checkOne));byId('checkedAt').textContent='Last browser check: '+new Date().toLocaleString()}finally{byId('check').disabled=false}});
+byId('mark').addEventListener('click',()=>add('manual.marker'));
+byId('clear').addEventListener('click',()=>{try{sessionStorage.removeItem(KEY)}catch{}render()});
+function json(){return JSON.stringify({schema:'cryptic.public-trace.v1',source:'session-local',events:read()},null,2)}
+byId('export').addEventListener('click',()=>{const b=new Blob([json()],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='CRYPTIC_TDOC_5200_PUBLIC_TRACE.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)});
+byId('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(json());byId('traceCount').textContent=read().length+' events · copied'}catch{byId('traceCount').textContent='Clipboard unavailable: use Export JSON'}});
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>add('navigation','public-link')));
+add('netsec.page.open');
+})();
+</script></body></html>
