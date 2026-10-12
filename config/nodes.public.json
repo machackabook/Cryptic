@@ -1,8 +1,23 @@
 {
   "schema": "cryptic.nodes.public.v1",
-  "updated": "2026-10-05",
+  "updated": "2026-10-12",
   "gateway": "https://api.crypticnews.org",
   "nodes": [
+    {
+      "id": "network-security",
+      "label": "Cryptic Network Security & Trace",
+      "kind": "public-security-console",
+      "interface_url": "./security/",
+      "embed": true,
+      "capabilities": [
+        "public-health",
+        "session-trace",
+        "safe-navigation",
+        "evidence-export"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
     {
       "id": "message-bus",
       "label": "Cryptic Message Bus",

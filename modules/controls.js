@@ -1,5 +1,6 @@
 export function mount(root){
- const a=root.querySelector('#magicLauncher');
- if(!a)return;
- a.addEventListener('click',()=>window.CrypticTerminal?.ledger?.('magic.launch',{source:'control-panel',href:a.href}));
+ for(const [selector,type] of [['#magicLauncher','magic.launch'],['#securityLauncher','security.launch']]){
+   const el=root.querySelector(selector);
+   el?.addEventListener('click',()=>window.CrypticTerminal?.ledger?.(type,{source:'control-panel'}));
+ }
 }
