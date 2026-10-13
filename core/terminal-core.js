@@ -120,38 +120,36 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
    const op=(args[0]||'').toLowerCase();
    if(op==='open') return window.CrypticRuntime?.open?.('genie-djinn');
    if(op==='world'){
-     const seed=args.slice(1).join(' ')||'137451921129154222';
-     const t=await mintToken('djinn.world',{seed});
-     ledger('djinn.world.synthesized',{seed,fp:t.fp});
-     out(`**GENIE DJINN**: "Latent world model generated under seed '${seed}'. Receipt [${t.fp}] stamped into evidence ledger."`,'ai');
-     return t;
+     const seed=args.slice(1).join(' ').trim()||'137451921129154222';
+     const t=await mintToken('djinn.world.proposal');
+     ledger('djinn.world.requested',{fp:t.fp});
+     out('[GENIE DJINN] World-generation request recorded locally (seed fingerprint only). No model was invoked and no world was generated. receipt='+t.fp,'warn');
+     return {ok:false,status:'MODEL_ADAPTER_NOT_CONFIGURED',seedProvided:Boolean(seed),receipt:t.fp};
    }
    if(op==='token'){
-     const t=await mintToken('djinn.capability',{scope:args.slice(1).join('.')||'sovereign.grant'});
-     ledger('djinn.token.minted',{scope:t.scope,fp:t.fp});
-     out(`**GENIE DJINN**: "Capability token minted: ${t.scope} (FP: ${t.fp})."`,'ai');
-     return t;
+     const t=await mintToken('djinn.request.receipt');
+     ledger('djinn.request.receipt',{scope:t.scope,fp:t.fp});
+     out('[GENIE DJINN] Local correlation receipt minted. This is not a provider capability or authorization grant. fp='+t.fp,'warn');
+     return {ok:false,status:'LOCAL_RECEIPT_ONLY',fp:t.fp};
    }
    const wish=args.join(' ').trim();
    if(!wish){
      out('GENIE DJINN (جِنّي // ܞ) — The Smokeless Flame Engine\nCommands:\n genie wish <intent> (manifest intent into token & ledger)\n genie world <seed> (synthesize latent world simulation)\n genie token <capability> (mint sovereign grant)\n genie open (mount visual interactive sanctum)\n /genie <intent>','good');
      return {ok:true,entity:'Genie Djinn',state:'ready'};
    }
-   const t=await mintToken('djinn.wish',{wish,numeral:'137451921129154222'});
-   ledger('djinn.invoked',{wish,fp:t.fp});
-   out(`**GENIE DJINN**: "By the smokeless fire and numeral 137451921129154222, your intent '${wish}' is manifested across the continuum. Verification token [${t.fp}] sealed."`,'ai');
-   window.CrypticBus?.send?.('djinn.manifest',{wish,fp:t.fp});
-   return t;
+   const t=await mintToken('djinn.wish.request');
+   ledger('djinn.wish.requested',{fp:t.fp});
+   out('[GENIE DJINN] Intent request recorded as a local receipt only. No external model call or action occurred. receipt='+t.fp,'warn');
+   return {ok:false,status:'MODEL_ADAPTER_NOT_CONFIGURED',fp:t.fp};
  }
  if(lower.startsWith('/')){
    const map={'/gemini':'gemini','/github':'github','/drive':'drive','/ollama':'ollama','/openai':'openai','/q':'amazon-q','/watson':'watson','/genie':'genie','/djinn':'genie'};
    if(map[lower]){
      if(map[lower]==='genie'){
-       const wish=args.join(' ').trim()||'Autonomous manifestation';
-       const t=await mintToken('djinn.wish',{wish});
-       ledger('djinn.invoked',{wish,fp:t.fp});
-       out(`**GENIE DJINN**: "By the smokeless flame, your intent '${wish}' is granted. Receipt [${t.fp}]."`,'ai');
-       return t;
+       const t=await mintToken('djinn.wish.request');
+       ledger('djinn.wish.requested',{fp:t.fp});
+       out('[GENIE DJINN] Intent request recorded locally only. No model call or action occurred. receipt='+t.fp,'warn');
+       return {ok:false,status:'MODEL_ADAPTER_NOT_CONFIGURED',fp:t.fp};
      }
      return requestAdapter(map[lower],args.join(' '));
    }
@@ -170,58 +168,43 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
    const op=(args[0]||'').toLowerCase();
    if(op==='open'||op==='sphere')return window.CrypticRuntime?.open?.('embedding');
    if(op==='cosine'){
-     out(`[GEMINI EMBEDDING 2] Cosine Distance Computation:
- • Vector A : "What is the meaning of life?" + image_bytes + audio_bytes
- • Vector B : "To be or not to be" + image_bytes + audio_bytes
- • Cosine Similarity : 0.8842 (Super-High Cross-Modal Affinity)
- • Manifold Dimension : 768-D Poincaré projection`,'good');
-     return {similarity:0.8842,model:'gemini-embedding-2-preview'};
+     out('[EMBEDDING] Cosine similarity requires two real embedding vectors. No sample vectors or model adapter are configured, so no similarity score was produced.','warn');
+     return {ok:false,status:'EMBEDDING_ADAPTER_NOT_CONFIGURED'};
    }
-   const query=args.join(' ').trim()||'What is the meaning of life?';
-   const t=await mintToken('gemini.embed',{query,model:'gemini-embedding-2-preview'});
-   ledger('gemini.embedded',{query,fp:t.fp});
-   out(`[GEMINI EMBEDDING 2 PREVIEW] Multimodal content embedded:
- Contents: ["${query}", types.Part.from_bytes(data=image_bytes, mime_type="image/png"), types.Part.from_bytes(data=audio_bytes, mime_type="audio/mpeg")]
- Model: gemini-embedding-2-preview
- Latent Vector: 768-D [0.0341, -0.0712, 0.1284, ... -0.0415]
- Norm: ||v|| = 1.000 · Stamped token [${t.fp}]`,'good');
-   return t;
+   const t=await mintToken('gemini.embed.request');
+   ledger('gemini.embedding.requested',{fp:t.fp});
+   out('[EMBEDDING] Request receipt created, but no embedding API was called. Configure an authenticated Gemini embedding adapter to produce a real vector. receipt='+t.fp,'warn');
+   return {ok:false,status:'EMBEDDING_ADAPTER_NOT_CONFIGURED',fp:t.fp};
  }
  if(lower==='sentinel'||lower==='tdoc'){
    const op=(args[0]||'verify').toLowerCase();
    if(op==='open')return window.CrypticRuntime?.open?.('sentinel');
    if(op==='quine'){
-     out(`[TDOC QUINE LOOP] Self-replicating loop verification: PASS.
- Hash: 0x74446C2E · Node: samsung-arm64 · Zero payload drift.`,'good');
-     return {quine:'pass'};
+     out('[TDOC QUINE] No independent quine verifier is wired to this command. No verification pass is claimed.','warn');
+     return {ok:false,status:'VERIFIER_NOT_CONFIGURED'};
    }
    if(op==='audit'){
-     out(`[TDOC AUDIT] Debloat evidence receipt:
- Evidence: /data/data/com.termux/files/home/Æ/logs/evidence/bootstrap-20261007T063508Z
- Outbox:   /data/data/com.termux/files/home/Æ/sync/outbox
- Status:   PENDING_PAIR_AUTH · Debloat locked until verified Chromebook pair.`,'system');
-     return {status:'locked'};
+     out('[TDOC AUDIT] Local evidence bridge is not connected in this browser session. No device paths, pair state, or debloat status can be verified from this public page.','warn');
+     return {ok:false,status:'LOCAL_BRIDGE_NOT_CONNECTED'};
    }
-   const t=await mintToken('tdoc.sentinel.verify');
-   ledger('tdoc.sentinel.verified',{fp:t.fp});
-   out(`[TDOC SENTINEL MASTER V11] Dual Authority Identity:
- Node SSH Public Key : ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGteDQk53+YlXIALXcls03EZ3B7IXdgYr+knG5dYZuUt nexus:samsung-arm64
- SHA256 Fingerprint  : 256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg (ED25519)
- Commands Check      : ssh OK | sshd OK | rsync OK | git OK | python OK | node OK | jq OK
- Receipt             : [${t.fp}] · DUAL AUTHORITY VERIFIED`,'good');
-   return t;
+   const t=await mintToken('tdoc.sentinel.request');
+   ledger('tdoc.sentinel.requested',{fp:t.fp,status:'UNVERIFIED'});
+   out('[TDOC SENTINEL] Verification request receipt created. No SSH identity, device pairing, command inventory, or dual-authority authentication was checked. Connect the authenticated local bridge to verify those claims. receipt='+t.fp,'warn');
+   return {ok:false,status:'VERIFIER_NOT_CONNECTED',fp:t.fp};
  }
  if(lower==='consensus'||lower==='d3'||lower==='quorum'){
    const op=(args[0]||'vote').toLowerCase();
    if(op==='open'||op==='graph')return window.CrypticRuntime?.open?.('consensus');
-   const t=await mintToken('consensus.round');
-   ledger('consensus.round.sealed',{fp:t.fp});
-   out(`[D3 MULTI-AI CONSENSUS] Epoch round sealed:
- • Supermajority Vote: 6 of 7 nodes agreeing (85.7% Supermajority)
- • Model Nodes: Gemini (96.4%), Genie Djinn (98.2%), TDOC Sentinel (99.9%), Claude (94.1%), GPT (93.8%), Ollama (91.5%), DeepSeek (92.9%)
- • Byzantine Tolerance: 33.3% threshold intact.
- • Stamped Quorum Receipt: [${t.fp}]`,'good');
-   return t;
+   const configured=window.CrypticConsensus;
+   if(!configured||typeof configured.vote!=='function'){
+     out('[D3 CONSENSUS] No live multi-model quorum adapter is connected. No votes, model scores, or Byzantine quorum were computed.','warn');
+     return {ok:false,status:'CONSENSUS_ADAPTER_NOT_CONFIGURED'};
+   }
+   const result=await configured.vote({scope:'cryptic-browser'});
+   const valid=Boolean(result&&Array.isArray(result.votes)&&result.votes.length>0&&result.verified===true);
+   if(valid){ledger('consensus.round.completed',{count:result.votes.length,status:'VERIFIED'});out('[D3 CONSENSUS] Verified adapter result: '+JSON.stringify({votes:result.votes.length,quorum:result.quorum,status:result.status}),'good');}
+   else out('[D3 CONSENSUS] Adapter returned no independently verifiable quorum.','warn');
+   return {ok:valid,status:valid?'VERIFIED':'UNVERIFIED',result:valid?result:undefined};
  }
  if(lower==='galaxies'||lower==='skybox'){
    const op=(args[0]||'status').toLowerCase();
@@ -231,26 +214,18 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
      out('[7 GALAXIES] Relativistic frame dragging boosted. Pulse wave triggered.','good');
      return {warp:true};
    }
-   out(`[7 GALAXIES SKYBOX & ASTRODYNAMICS]
- 1. Andromeda M31 | 2. Triangulum M33 | 3. Sombrero M104 | 4. Whirlpool M51
- 5. Cartwheel Ring | 6. Cigar M82 | 7. Cosmic Gateway Core
- Particles: 3,200 active Keplerian streams · Kerr velocity: 0.942 c · Rs: 2GM/c²`,'system');
-   return {galaxies:7};
+   out('[7 GALAXIES SKYBOX] Visual panel is available for rendering. Physical telemetry and relativistic measurements are not connected or measured by this command.','system');
+   return {galaxies:7,status:'VISUALIZATION_ONLY'};
  }
  if(lower==='voice'||lower==='neuromorphic'){
    if(args[0]==='open')return window.CrypticRuntime?.open?.('voice');
-   toggle963(true);
-   out('[POLYNEUROMORPHIC VOICE] 48 synaptic channels active. 963 Hz solfeggio oscillator running.','good');
-   return {voice:true};
+   try{await toggle963(true);out('[VOICE] 963 Hz oscillator requested. Browser speech input/output and 48-channel neural processing are not configured by this command.','warn');return {oscillator:'requested',speechAdapter:'NOT_CONFIGURED'}}catch(e){out('[VOICE] Audio unavailable: '+e.message,'warn');return {oscillator:'UNAVAILABLE',speechAdapter:'NOT_CONFIGURED'}}
  }
  if(lower==='quine'){
    if(args[0]==='open')return window.CrypticRuntime?.open?.('quine');
    const bytes=new TextEncoder().encode(document.documentElement.outerHTML).length;
-   out(`[POLYGLOT QUINE SHELL] Zero-payload living artifact container.
- DOM Payload Size: ${(bytes/1024).toFixed(2)} KB (${bytes} bytes)
- Webpack Chunks: 3 dynamic split imports
- Self-Replicating Quine: IDEMPOTENT PASS`,'good');
-   return {bytes};
+   out('[POLYGLOT QUINE SHELL] Measured current DOM size: '+(bytes/1024).toFixed(2)+' KB ('+bytes+' bytes). No self-replication, idempotence test, or chunk inventory was performed.','system');
+   return {bytes,status:'DOM_MEASURED_ONLY'};
  }
  if(lower==='aurora'){
    return window.CrypticRuntime?.open?.('aurora');
@@ -258,26 +233,17 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
  if(lower==='irc'){
    if(!args.length)return window.CrypticRuntime?.open?.('irc');
    const msg=args.join(' ');
-   window.CrypticBus?.send?.('irc.broadcast.msg',{text:msg,sender:'Terminal'});
-   out(`[NEXUS IRC #cryptic] <Terminal> ${msg}`,'good');
-   return {sent:true};
+   const result=await window.CrypticBus?.send?.('irc.broadcast.msg',{text:msg,sender:'Terminal'});
+   const sent=Boolean(result&&result.ok===true);
+   out('[NEXUS IRC] '+(sent?'Message handed to a bus route.':'No confirmed message transport receipt returned. No server delivery is claimed.'),'warn');
+   return {sent,status:sent?'BUS_ACCEPTED':'UNCONFIRMED',receipt:result||null};
  }
  if(lower==='docs'||lower==='pdf'||lower==='corpus'){
    if(args[0]==='open')return window.CrypticRuntime?.open?.('documents');
-   const query=args.join(' ').toLowerCase();
-   const t=await mintToken('docs.corpus.query',{query});
-   ledger('docs.corpus.accessed',{query,fp:t.fp});
-   out(`[SOVEREIGN PDF KNOWLEDGE CORPUS] 8/8 Specifications Incorporated:
-  1. TDOC Sentinel Master V11    : Dual Authority & Sovereign Runtime (SAMSUNG <-> CHROMEBOOK)
-  2. PNT Hardware Matrix         : Navigation, Atomic Clocks & Disciplined Oscillators
-  3. Polyglot Quine Shell        : Zero-Payload Multimodal Living Container & Code Splitting
-  4. GAIA Autonomous Suite       : 14-Step Verification, Mesh Topology & Node Enrollment
-  5. Gemini Multimodal Embed 2   : 768-D Poincaré Latent Vector Manifold (Text+Img+Audio)
-  6. 7 Galaxies Deep Skybox      : Relativistic Kerr Accretion Disks & 3,200 Particle Orbitals
-  7. D3 Multi-AI Consensus       : Byzantine Fault Tolerance & 7-Model Topological Quorum
-  8. Polyneuromorphic Live Voice : 48 Synaptic Channels & 963 Hz Solfeggio Resonator
-Type 'open documents' to launch the interactive viewer. Stamped receipt [${t.fp}].`,'good');
-   return {corpus:8,active:true,fp:t.fp};
+   const query=args.join(' ').trim();
+   if(!query){out('[DOCUMENT CORPUS] No query supplied. Open the Documents panel to inspect available local content.','system');return {ok:true,status:'PANEL_AVAILABLE'}}
+   out('[DOCUMENT CORPUS] Local document search is not connected to an indexed corpus in this command. No result count or specifications are claimed. Open the Documents panel or connect a real search adapter.','warn');
+   return {ok:false,status:'DOCUMENT_SEARCH_NOT_CONFIGURED'};
  }
  if(lower==='guardian')return showGate();
  out('Unknown command: '+cmd+'. Type help.','warn')
