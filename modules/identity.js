@@ -26,20 +26,20 @@ export function mount(root){
    const fp='SHA256:'+bytesToBase64(dig).replace(/=+$/,'');
    return {type,blob,b64:bytesToBase64(blob),comment:comment.slice(0,160),fingerprint:fp,line:type+' '+bytesToBase64(blob)+(comment?' '+comment:'')};
  }
- function decodeWireText(s){
+ async function decodeWireText(s){
    if(/BEGIN (?:OPENSSH|RSA|EC|DSA) PRIVATE KEY|PRIVATE KEY-----/i.test(s))throw Error('PRIVATE_KEY_BLOCKED: never paste private-key material into this public page');
-   if(/HULE1:|cryptic\.hule\.v1/i.test(s))throw Error('LACE_ENVELOPE: decode locally with scripts/cryptic-lace.py before parsing; do not guess at alias glyphs');
-   const text=cleanText(s);
-   const lines=text.split(/[\r\n]+/).map(x=>x.trim()).filter(Boolean);
-   for(const line of lines){const parts=line.split(/\s+/);if(parts.length>=2&&keyTypes.has(parts[0])){return {type:parts[0],b64:parts[1],comment:parts.slice(2).join(' ')}}}
-   const foundType=[...keyTypes].find(t=>text.includes(t));
-   if(!foundType)throw Error('PUBLIC_KEY_TYPE_MISSING: provide a complete SSH public-key type, or select a known-good public-key inventory plus an expected fingerprint');
-   let after=text.slice(text.indexOf(foundType)+foundType.length);
-   const chunks=after.split(/\s+/).map(x=>x.trim()).filter(Boolean);
-   const b64Chunks=[];
-   for(const chunk of chunks){if(/^[A-Za-z0-9+/]+={0,2}$/.test(chunk)){b64Chunks.push(chunk);continue}if(b64Chunks.length)break}
-   if(!b64Chunks.length)throw Error('NO_PUBLIC_KEY_BASE64_FOUND');
-   return {type:foundType,b64:b64Chunks.join(''),comment:''};
+   if(/HULE1:|cryptic\\.hule\\.v1/i.test(s))throw Error('LACE_ENVELOPE: decode locally with scripts/cryptic-lace.py before parsing; do not guess at alias glyphs');
+   const text=cleanText(s),foundType=[...keyTypes].find(t=>text.includes(t));
+   if(!foundType)throw Error('PUBLIC_KEY_TYPE_MISSING: include the OpenSSH algorithm label or supply a known-good inventory and expected fingerprint');
+   const after=text.slice(text.indexOf(foundType)+foundType.length);
+   const chunks=after.split(/\\s+/).map(x=>x.trim()).filter(Boolean);
+   let assembled='';
+   for(const chunk of chunks){
+     if(!/^[A-Za-z0-9+/]+={0,2}$/.test(chunk))break;
+     assembled+=chunk;
+     try{return await parseKey(foundType,assembled,'')}catch{}
+   }
+   throw Error('KEY_INCOMPLETE: the fragments did not form a complete SSH public-key blob; missing bytes cannot be inferred');
  }
  async function parseInventory(text){const out=[];for(const line of cleanText(text).split(/[\r\n]+/)){const parts=line.trim().split(/\s+/);if(parts.length<2||!keyTypes.has(parts[0]))continue;try{out.push(await parseKey(parts[0],parts[1],parts.slice(2).join(' ')))}catch{}}return out}
  alias?.addEventListener('input',()=>{const label=alias.value.trim().replace(/[^A-Za-z0-9_.-]/g,'-').slice(0,48)||'cryptic-node';command.textContent='ssh-keygen -t ed25519 -a 100 -f "$HOME/.ssh/cryptic_ed25519" -C "cryptic:'+label+'"';});
@@ -47,15 +47,15 @@ export function mount(root){
  validate.addEventListener('click',async()=>{
    normalizedPublic='';copyPublic.disabled=true;result.textContent='Inspecting public-key bytes locally…';
    try{
-     let candidate=null,src=source.value.trim(),required=expected.value.trim();
-     if(src){const parsed=decodeWireText(src);candidate=await parseKey(parsed.type,parsed.b64,parsed.comment)}
-     if(required&&!/^SHA256:[A-Za-z0-9+/]{20,}=?$/.test(required))throw Error('EXPECTED_FINGERPRINT_FORMAT_INVALID');
+     let candidate=null,src=source.value.trim(),required=expected.value.trim(),parseFailure='';
+     if(src){try{candidate=await decodeWireText(src)}catch(e){parseFailure=String(e.message||e);if(parseFailure.includes('PRIVATE_KEY_BLOCKED')||parseFailure.includes('LACE_ENVELOPE'))throw e}}
+     if(required&&!/^SHA256:/[A-Za-z0-9+/]{20,}=?$/.test(required))throw Error('EXPECTED_FINGERPRINT_FORMAT_INVALID');
      if(candidate&&required&&candidate.fingerprint!==required)candidate=null;
      if(!candidate&&inventoryFile.files?.length&&required){
        const inv=await parseInventory(await inventoryFile.files[0].text());const matches=inv.filter(k=>k.fingerprint===required);
        if(matches.length===1)candidate=matches[0];else if(matches.length>1)throw Error('AMBIGUOUS_INVENTORY_MATCH');
      }
-     if(!candidate)throw Error(required?'NO_COMPLETE_KEY_MATCHES_REQUIRED_FINGERPRINT':'KEY_INCOMPLETE: no complete public key validated; missing bytes cannot be inferred. Select an intact known-good inventory and supply its trusted fingerprint, or rotate the identity.');
+     if(!candidate)throw Error(required?'NO_COMPLETE_KEY_MATCHES_REQUIRED_FINGERPRINT':(parseFailure||'KEY_INCOMPLETE: no complete public key validated; missing bytes cannot be inferred. Select an intact known-good inventory and supply its trusted fingerprint, or rotate the identity.'));
      if(required&&candidate.fingerprint!==required)throw Error('FINGERPRINT_MISMATCH');
      normalizedPublic=candidate.line;copyPublic.disabled=false;
      result.textContent=JSON.stringify({ok:true,status:'PUBLIC_KEY_VALIDATED',type:candidate.type,fingerprint:candidate.fingerprint,normalized_public_key:candidate.line,private_key_touched:false,private_key_or_payload_uploaded:false,missing_bytes_invented:false,note:'This validates public-key bytes only. Device authentication still requires a fresh challenge signature and a receiver allowlist.'},null,2);
