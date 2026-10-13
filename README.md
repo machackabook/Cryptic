@@ -6,14 +6,14 @@ Numeral remembered: `137451921129154222`. Continuity receipt: `docs/LEDGER-STAMP
 
 Cryptic is a portable browser command environment with an optional localhost bridge. The public runtime intentionally separates **what the browser can truly execute** from native or provider operations that require authenticated adapters.
 
-Package version on this tree: `0.8.0` (`package.json`). The capability list below is the v0.7 surface still shipped in this public root; it is not a claim that every adapter is live.
+Package version on this tree: `0.9.2` (`package.json`). This is a browser-first public surface. Adapter labels and local receipts are not proof that provider actions, device pairing, or remote operations have occurred.
 
 ## v0.7.0 capabilities
 
 - Cosmic Guardian entry gate and consent boundary.
 - HyperTerminal command fabric with a local evidence ledger.
 - **A new scoped runtime request token for every requested adapter operation.** Tokens are short-lived correlation receipts, not secrets or provider credentials.
-- Provider request surfaces for Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson and the local bridge.
+- Provider request entry points for Gemini, GitHub, Google Drive, Ollama, OpenAI, Amazon Q, IBM Watson and the local bridge. Provider API execution requires an authenticated adapter; an action that is not connected reports `NOT_CONFIGURED`.
 - 963 Hz Web Audio sonification.
 - Mandelbrot-inspired global-space traversal field.
 - BottomRight.AI expandable pocket widget.
@@ -22,7 +22,19 @@ Package version on this tree: `0.8.0` (`package.json`). The capability list belo
 - HTTPS command deep-links and installed-PWA `web+cryptic:` protocol handling.
 - Dedicated edge relay at `https://bus.crypticnews.org`.
 - Optional `runtime/bridge.mjs`, bound to localhost and restricted to safe status/version probes.
-- Manual evidence gate (`node scripts/verify.mjs`) with common secret-pattern scanning. The GitHub-hosted workflow is intentionally paused until this repository has an available Actions runner. Doc cascade lives in `.github/workflows/cascade.yml` and only checks that README, SECURITY, and the stamp exist and that obvious secret filenames are absent.
+- Manual evidence gate (`node scripts/verify.mjs`) and test suites (`node --test tests/security.test.mjs` and `node --test tests/public-surface.test.mjs`). Workflows are configured to run these checks, but the most recent GitHub Actions run failed before any job steps because no runner was assigned. Do not treat the suites as CI-passed until a run shows executed steps and a successful conclusion.
+
+## v0.9.2 security and truthfulness improvements
+
+- Browser entry CSP narrows loopback connections to the documented local ports, adds canonical/social metadata, keyboard skip navigation, and a no-JavaScript fallback.
+- `_headers` defines response security headers for Cloudflare Pages deployments. GitHub Pages does not interpret `_headers`; the CSP meta tag is the fallback, and response-only directives such as `frame-ancestors` need a header-capable edge/proxy.
+- `robots.txt` and the page metadata preserve the existing no-index/no-AI-crawling policy. These are advisory controls: they do not make publicly published files private.
+- Terminal output now escapes HTML in AI-marked text. Local ledger writes allowlist metadata fields and scrub legacy raw payloads; runtime correlation receipts are no longer restored from browser storage.
+- Commands no longer report synthetic device pairing, SSH identity, model-quorum scores, embedding vectors, successful filesystem recovery, or production promotion when no connected service performed those actions.
+- Panel controls expose accessible labels and state; the pop-out uses the separate `panel.html` surface and falls back to an in-page panel if the browser blocks pop-ups.
+- Security review: [`docs/PUBLIC-SECURITY-REVIEW.md`](docs/PUBLIC-SECURITY-REVIEW.md).
+
+The no-index choice deliberately favors the current publication/privacy policy over search-engine discoverability. Automated scores must be interpreted against that policy; no Lighthouse, SEO, accessibility, or penetration-test score is claimed until the deployed artifact is actually measured.
 
 ## Run locally
 
