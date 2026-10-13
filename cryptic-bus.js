@@ -99,23 +99,14 @@
   }
   async function sendLocalhost(msg){
     if(!window.CrypticTerminal?.gateOpen) return receipt('localhost',msg,false,{reason:'guardian_closed'});
-    const url=sessionStorage.getItem('cryptic.bridge.url');
-    const secret=sessionStorage.getItem('cryptic.bridge.secret');
-    if(!url || !secret) return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
+    const bridge=window.CrypticBridgeSession;
+    if(!bridge?.active())return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
     const runtime=window.CrypticRuntime;
     if(!runtime?.signedToken) return receipt('localhost',msg,false,{reason:'runtime_unavailable'});
     try{
       const signed=await runtime.signedToken('bridge','bridge.bus.publish');
       if(!signed) return receipt('localhost',msg,false,{reason:'signed_capability_unavailable'});
-      const res=await fetch(url.replace(/\/$/,'')+'/v1/bus',{
-        method:'POST',
-        headers:{
-          'content-type':'application/json',
-          'authorization':'Bearer '+secret,
-          'x-cryptic-request-token':signed
-        },
-        body:JSON.stringify(msg)
-      });
+      const res=await bridge.request('/v1/bus',{token:signed,body:msg});
       const body=await res.json().catch(()=>({}));
       return receipt('localhost',msg,res.ok,{status:res.status,bridge_receipt:body.receipt||null,result:body.result||null,error:body.error||null});
     }catch(e){
@@ -127,7 +118,8 @@
     const action=String(msg.payload?.action||'');
     try{
       const result=await window.CrypticRuntime?.bridgeAction?.(action);
-      return receipt('localhost-action',msg,true,{result:result??null});
+      const ok=Boolean(result?.ok);
+      return receipt('localhost-action',msg,ok,{result:result??null});
     }catch(e){
       return receipt('localhost-action',msg,false,{reason:e.message});
     }
