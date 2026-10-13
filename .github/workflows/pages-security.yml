@@ -31,7 +31,7 @@ jobs:
       - name: Audit Cryptic source
         run: node scripts/pages-security-audit.mjs --local-only
       - name: Audit public Pages sites across connected owners
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         env:
           GITHUB_${{ github.token }}: TOKEN
           PAGES_AUDIT_OWNERS: machackabook,Azazeleous,crypticmetaverse,thearchitectofgaia-boop
