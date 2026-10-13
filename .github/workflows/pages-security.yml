@@ -33,6 +33,7 @@ jobs:
         run: |
           npm run lint
           npm run test:security
+          node --test tests/public-surface.test.mjs
       - name: Record revision and changed-file evidence
         run: node scripts/security-diff.mjs
       - name: Validate AI denial policy and publication boundaries
