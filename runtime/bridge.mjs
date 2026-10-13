@@ -29,15 +29,19 @@ const allowedOrigins=new Set([
 ]);
 
 function headers(origin=''){
-  return {
+  const result={
     'content-type':'application/json',
-    'access-control-allow-origin':allowedOrigins.has(origin)?origin:'https://machackabook.github.io',
-    'access-control-allow-headers':'authorization,content-type,x-cryptic-request-token',
-    'access-control-allow-methods':'GET,POST,OPTIONS',
-    'access-control-allow-private-network':'true',
     'vary':'Origin',
-    'cache-control':'no-store'
+    'cache-control':'no-store',
+    'x-content-type-options':'nosniff'
   };
+  if(allowedOrigins.has(origin)){
+    result['access-control-allow-origin']=origin;
+    result['access-control-allow-headers']='authorization,content-type,x-cryptic-request-token';
+    result['access-control-allow-methods']='GET,POST,OPTIONS';
+    result['access-control-allow-private-network']='true';
+  }
+  return result;
 }
 function send(res,status,body,origin=''){
   res.writeHead(status,headers(origin));
@@ -62,7 +66,7 @@ async function verifyCapability(req,requiredScope){
   if(!res.ok) return null;
   const data=await res.json();
   const claims=data?.claims;
-  if(!claims || claims.aud!=='cryptic-runtime' || claims.scope!==requiredScope) return null;
+  if(!claims || claims.aud!=='cryptic-runtime' || claims.scope!==requiredScope || claims.node!=='bridge' || !Number.isFinite(Number(claims.exp)) || Number(claims.exp)<=Math.floor(Date.now()/1000)) return null;
   return claims;
 }
 async function git(args){
@@ -102,6 +106,8 @@ async function appendFrame(frame){
 
 const server=http.createServer(async(req,res)=>{
   const origin=req.headers.origin||'';
+  // Origin is a browser boundary; CLI calls with no Origin still require bearer auth.
+  if(origin&&!allowedOrigins.has(origin))return send(res,403,{ok:false,error:'origin_denied'},origin);
   if(req.method==='OPTIONS') return send(res,204,{},origin);
   if(!localAuth(req)) return send(res,401,{ok:false,error:'local_bridge_unauthorized'},origin);
 
