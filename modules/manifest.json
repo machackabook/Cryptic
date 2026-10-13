@@ -127,6 +127,12 @@
       "title": "DOCUMENT CORPUS // SOVEREIGN PDF KNOWLEDGE CORE",
       "file": "./modules/documents.html",
       "controller": "./modules/documents.js"
+    },
+    {
+      "id": "identity",
+      "title": "CRYPTIC SSH IDENTITY // HULE-LACE",
+      "file": "./modules/identity.html",
+      "controller": "./modules/identity.js"
     }
   ]
 }
