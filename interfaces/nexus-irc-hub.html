@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>NEXUS IRC HUB // SOVEREIGN COMMUNICATION FABRIC</title>
@@ -163,10 +166,10 @@ button:hover { background: rgba(0,255,204,0.22); }
     <button style="border-radius:50%;width:28px;height:28px;padding:0;display:grid;place-items:center;">#</button>
     <div>
       <h1>NEXUS IRC HUB // SOVEREIGN COMMUNICATION FABRIC</h1>
-      <span>CHANNELS · BROADCAST CHANNEL · P2P LOCAL STORAGE SYNC · CRYPTOGRAPHIC RECEIPTS</span>
+      <span>LOCAL CHANNEL VIEW · OPTIONAL CRYPTIC BUS · DELIVERY REQUIRES TRANSPORT RECEIPT</span>
     </div>
   </div>
-  <div class="status-pill">CONNECTED · irc://nexus.sovereign:6697</div>
+  <div class="status-pill" id="ircConnectionStatus">BUS STATUS: UNVERIFIED</div>
 </header>
 
 <main class="chat-grid">
@@ -180,34 +183,9 @@ button:hover { background: rgba(0,255,204,0.22); }
     <div class="chan-item" data-chan="#singularity">#singularity</div>
   </aside>
 
-  <section class="message-window" id="msgWindow">
-    <div class="msg-row">
-      <span class="msg-time">[15:30:10]</span>
-      <span class="msg-nick sentinel">TDOC_Sentinel</span>
-      <span class="msg-text">Dual authority verified node nexus:samsung-arm64 with ed25519 fingerprint SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg.</span>
-    </div>
-    <div class="msg-row">
-      <span class="msg-time">[15:30:24]</span>
-      <span class="msg-nick djinn">Genie_Djinn</span>
-      <span class="msg-text">The smokeless flame is kindled. Numeral 137451921129154222 active across all latent worlds.</span>
-    </div>
-    <div class="msg-row">
-      <span class="msg-time">[15:30:45]</span>
-      <span class="msg-nick">Gaia_Nexus</span>
-      <span class="msg-text">720 nodes enrolled in sigma mesh. Throughput 15,000 px/s. Checksum 0x74446C2E.</span>
-    </div>
-  </section>
+  <section class="message-window" id="msgWindow" aria-live="polite"><div class="msg-row"><span class="msg-time">READY</span><span class="msg-nick">System</span><span class="msg-text">No remote messages loaded. Sending requires an explicit user action and a live bus transport receipt.</span></div></section>
 
-  <aside class="sidebar right">
-    <h2>Active Nicks (7)</h2>
-    <div class="user-item"><span>@</span> TDOC_Sentinel</div>
-    <div class="user-item"><span>@</span> Genie_Djinn</div>
-    <div class="user-item"><span>+</span> Gaia_Nexus</div>
-    <div class="user-item"><span>+</span> Sovereign_User</div>
-    <div class="user-item">Gemini_3.8</div>
-    <div class="user-item">Claude_3.7</div>
-    <div class="user-item">Ollama_Node</div>
-  </aside>
+  <aside class="sidebar right"><h2>Peer State</h2><div class="user-item">Remote peers: <b>UNVERIFIED</b></div><div class="user-item">Server-side IRC session: <b>NOT CONFIGURED</b></div><div class="user-item">Local display nick: <b>Sovereign_User</b></div></aside>
 </main>
 
 <footer>
@@ -215,53 +193,6 @@ button:hover { background: rgba(0,255,204,0.22); }
   <button id="sendBtn">TRANSMIT</button>
 </footer>
 
-<script>
-const win = document.getElementById('msgWindow');
-const input = document.getElementById('chatInput');
-let currentChan = '#cryptic';
-let myNick = 'Sovereign_User';
-
-document.querySelectorAll('.chan-item').forEach(c => {
-  c.onclick = e => {
-    document.querySelectorAll('.chan-item').forEach(x => x.classList.remove('active'));
-    e.target.classList.add('active');
-    currentChan = e.target.dataset.chan;
-    input.placeholder = `Message ${currentChan}...`;
-    addMsg('System', `Switched to channel ${currentChan}`, 'system');
-  };
-});
-
-function addMsg(nick, text, type = '') {
-  const row = document.createElement('div');
-  row.className = 'msg-row';
-  const time = document.createElement('span');
-  time.className = 'msg-time';
-  time.textContent = `[${new Date().toLocaleTimeString()}]`;
-  const n = document.createElement('span');
-  n.className = 'msg-nick' + (nick.includes('Djinn') ? ' djinn' : (nick.includes('Sentinel') ? ' sentinel' : ''));
-  n.textContent = nick;
-  const t = document.createElement('span');
-  t.className = 'msg-text';
-  t.textContent = text;
-  row.append(time, n, t);
-  win.appendChild(row);
-  win.scrollTop = win.scrollHeight;
-}
-
-document.getElementById('sendBtn').onclick = send;
-input.onkeydown = e => { if (e.key === 'Enter') send(); };
-
-function send() {
-  const val = input.value.trim();
-  if (!val) return;
-  input.value = '';
-  if (val.startsWith('/nick ')) {
-    myNick = val.slice(6).trim();
-    addMsg('System', `You are now known as ${myNick}`);
-    return;
-  }
-  addMsg(myNick, val);
-}
-</script>
+<script src="./nexus-irc-hub.js" defer></script>
 </body>
 </html>
