@@ -1,9 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>POLYNEUROMORPHIC LIVE VOICE // SYNAPSE OSCILLOSCOPE</title>
+<title>Cryptic // Local Audio Visualizer</title>
 <style>
 :root {
   --void: #020409;
@@ -181,7 +184,7 @@ button.violet {
   <div class="controls">
     <button id="btnVoice" class="gold">START NEURAL VOICE</button>
     <button id="btnSolfeggio" class="violet">963 HZ RESONANCE</button>
-    <button id="btnMic">ENABLE MIC STREAM</button>
+    <button id="btnMic" type="button" aria-pressed="false">ENABLE MIC STREAM</button>
   </div>
 </header>
 
@@ -226,172 +229,9 @@ button.violet {
     <div class="val" style="color:var(--green)">ONLINE</div>
     <div class="sub">Event-driven asynchronous spiking neural network emulator.</div>
   </div>
-</footer>
+</footer><p id="micStatus" class="muted" role="status" aria-live="polite">Microphone off. The idle waveform is illustrative only.</p>
 
-<script>
-const canvas = document.getElementById('audioCanvas');
-const ctx = canvas.getContext('2d');
-
-let w = 0, h = 0;
-function resize() {
-  w = canvas.width = canvas.clientWidth * window.devicePixelRatio;
-  h = canvas.height = canvas.clientHeight * window.devicePixelRatio;
-}
-window.addEventListener('resize', resize);
-resize();
-
-// Populate 48 Synaptic Nodes
-const grid = document.getElementById('neuronGrid');
-const neurons = [];
-for (let i = 0; i < 48; i++) {
-  const d = document.createElement('div');
-  d.className = 'neuron-node';
-  d.textContent = i + 1;
-  grid.appendChild(d);
-  neurons.push(d);
-}
-
-let audioCtx = null;
-let analyser = null;
-let osc = null;
-let isVoiceActive = false;
-let isSolfeggioActive = false;
-
-function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 512;
-  }
-}
-
-document.getElementById('btnVoice').onclick = () => {
-  initAudio();
-  isVoiceActive = !isVoiceActive;
-  document.getElementById('btnVoice').textContent = isVoiceActive ? 'PAUSE NEURAL VOICE' : 'START NEURAL VOICE';
-  if (isVoiceActive) playNeuralVoicePhrase();
-};
-
-document.getElementById('btnSolfeggio').onclick = () => {
-  initAudio();
-  if (isSolfeggioActive) {
-    if (osc) { osc.stop(); osc.disconnect(); osc = null; }
-    isSolfeggioActive = false;
-    document.getElementById('btnSolfeggio').textContent = '963 HZ RESONANCE';
-  } else {
-    osc = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    g.gain.value = 0.035;
-    osc.frequency.value = 963;
-    osc.type = 'sine';
-    osc.connect(g);
-    g.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    osc.start();
-    isSolfeggioActive = true;
-    document.getElementById('btnSolfeggio').textContent = 'STOP 963 HZ';
-    document.getElementById('peakFreq').textContent = '963 Hz';
-  }
-};
-
-document.getElementById('btnMic').onclick = async () => {
-  initAudio();
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const src = audioCtx.createMediaStreamSource(stream);
-    src.connect(analyser);
-    document.getElementById('btnMic').textContent = 'MIC STREAMING';
-    document.getElementById('btnMic').style.borderColor = '#22c55e';
-    document.getElementById('btnMic').style.color = '#22c55e';
-  } catch (e) {
-    alert('Microphone access unavailable or denied: ' + e.message);
-  }
-};
-
-function playNeuralVoicePhrase() {
-  if (!isVoiceActive) return;
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  
-  const baseFreq = 140 + Math.random() * 90;
-  osc1.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-  osc1.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.35);
-  osc2.frequency.setValueAtTime(baseFreq * 2.02, audioCtx.currentTime);
-  
-  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.045, audioCtx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
-  
-  osc1.connect(gain);
-  osc2.connect(gain);
-  gain.connect(analyser);
-  analyser.connect(audioCtx.destination);
-  
-  osc1.start();
-  osc2.start();
-  osc1.stop(audioCtx.currentTime + 0.45);
-  osc2.stop(audioCtx.currentTime + 0.45);
-  
-  setTimeout(playNeuralVoicePhrase, 300 + Math.random() * 500);
-}
-
-const timeData = new Uint8Array(256);
-const freqData = new Uint8Array(256);
-
-function renderLoop(t) {
-  requestAnimationFrame(renderLoop);
-  
-  ctx.fillStyle = '#020409';
-  ctx.fillRect(0, 0, w, h);
-
-  if (analyser) {
-    analyser.getByteTimeDomainData(timeData);
-    analyser.getByteFrequencyData(freqData);
-  } else {
-    for (let i = 0; i < 256; i++) {
-      timeData[i] = 128 + Math.sin(t * 0.005 + i * 0.08) * 22;
-      freqData[i] = Math.max(0, 70 + Math.sin(t * 0.003 + i * 0.12) * 50 - i * 0.2);
-    }
-  }
-
-  // 1. Frequency Spectrum Bars (Synaptic ribbons)
-  const barWidth = (w / 128);
-  for (let i = 0; i < 128; i++) {
-    const val = freqData[i] / 255;
-    const barHeight = val * h * 0.55;
-    const hue = 175 + (i / 128) * 110;
-    ctx.fillStyle = `hsla(${hue}, 95%, 65%, 0.45)`;
-    ctx.fillRect(i * barWidth, h - barHeight, barWidth - 1, barHeight);
-  }
-
-  // 2. Multi-Channel Neuromorphic Waveform Oscilloscope
-  ctx.lineWidth = 2.5;
-  ctx.strokeStyle = '#00ffcc';
-  ctx.shadowColor = '#00ffcc';
-  ctx.shadowBlur = 12;
-  ctx.beginPath();
-
-  const sliceWidth = w / 256;
-  let x = 0;
-  for (let i = 0; i < 256; i++) {
-    const v = timeData[i] / 128.0;
-    const y = v * (h * 0.38) + (h * 0.15);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-    x += sliceWidth;
-  }
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-
-  // 3. Firing Random Spikes in Neuron Sidebar
-  if (Math.random() > 0.3) {
-    const idx = Math.floor(Math.random() * neurons.length);
-    neurons[idx].classList.add('active');
-    setTimeout(() => neurons[idx].classList.remove('active'), 120);
-  }
-}
-requestAnimationFrame(renderLoop);
-</script>
+<p class="muted" style="padding:8px;font-size:10px">Local oscillator and optional microphone visualization · no neural hardware endpoint is connected · <a href="https://github.com/machackabook/Cryptic/blob/main/interfaces/polyneuromorphic-live-voice.html" target="_blank" rel="noopener noreferrer">View source</a></p>
+<script src="./polyneuromorphic-live-voice.js" defer></script>
 </body>
 </html>
