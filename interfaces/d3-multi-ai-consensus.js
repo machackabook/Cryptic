@@ -1,0 +1,17 @@
+(() => {
+ const svg=document.getElementById('consensusSvg');
+ const voteLog=document.getElementById('voteLog');
+ const fill=document.getElementById('quorumFill');
+ const pct=document.getElementById('quorumPct');
+ const epoch=document.getElementById('epochNum');
+ const status=document.getElementById('consensusStatus');
+ const names=[['Gemini','#00ffcc'],['Genie Djinn','#f5ce70'],['TDOC Sentinel','#22c55e'],['Claude','#f59e0b'],['GPT','#10b981'],['Ollama local','#9d5bfe'],['DeepSeek','#38bdf8']];
+ const links=[[0,1],[0,2],[1,2],[0,3],[0,4],[2,5],[1,6],[3,4],[6,5],[2,4]];
+ let phase=0;
+ function addLog(message,tone=''){const row=document.createElement('div');row.className='vote-entry '+tone;row.textContent='['+new Date().toISOString()+'] '+message;voteLog.prepend(row);while(voteLog.children.length>30)voteLog.lastElementChild.remove()}
+ function draw(){const w=Math.max(320,svg.clientWidth),h=Math.max(260,svg.clientHeight);svg.replaceChildren();svg.setAttribute('viewBox','0 0 '+w+' '+h);const pts=names.map((n,i)=>({x:w/2+Math.cos(i/7*Math.PI*2+phase)*Math.min(w,h)*.30,y:h/2+Math.sin(i/7*Math.PI*2+phase)*Math.min(w,h)*.30,label:n[0],color:n[1]}));links.forEach(([a,b])=>{const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',pts[a].x);line.setAttribute('y1',pts[a].y);line.setAttribute('x2',pts[b].x);line.setAttribute('y2',pts[b].y);line.setAttribute('stroke','#00ffcc');line.setAttribute('stroke-opacity','.35');line.setAttribute('stroke-dasharray','4 4');svg.append(line)});pts.forEach(p=>{const g=document.createElementNS('http://www.w3.org/2000/svg','g');const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');circle.setAttribute('cx',p.x);circle.setAttribute('cy',p.y);circle.setAttribute('r','22');circle.setAttribute('fill',p.color);circle.setAttribute('fill-opacity','.2');circle.setAttribute('stroke',p.color);const text=document.createElementNS('http://www.w3.org/2000/svg','text');text.setAttribute('x',p.x);text.setAttribute('y',p.y+36);text.setAttribute('text-anchor','middle');text.setAttribute('fill','#fff');text.setAttribute('font-size','10');text.textContent=p.label;g.append(circle,text);svg.append(g)})}
+ document.getElementById('btnVote')?.addEventListener('click',async()=>{if(status)status.textContent='UNVERIFIED — no vote has been claimed.';addLog('Vote blocked: verified multi-model consensus adapter is not configured.','gold');const term=window.parent!==window?window.parent.CrypticTerminal:null;if(term?.exec){try{const result=await term.exec('consensus vote');addLog('Cryptic runtime response: '+String(result?.status||'NO_VERIFIED_RESULT'),'violet')}catch{addLog('Cryptic runtime probe failed; no vote recorded.','violet')}}fill.style.width='0%';pct.textContent='UNVERIFIED';if(epoch)epoch.textContent='NO VERIFIED EPOCH'});
+ document.getElementById('btnPerturb')?.addEventListener('click',()=>{phase+=.22;draw();addLog('Local graph perturbation rendered. No model/node was contacted.','violet')});
+ document.getElementById('btnReset')?.addEventListener('click',()=>{phase=0;draw();fill.style.width='0%';pct.textContent='UNVERIFIED';if(epoch)epoch.textContent='NO VERIFIED EPOCH';addLog('Visualization reset. No consensus state was modified.')});
+ window.addEventListener('resize',draw,{passive:true});draw();
+})();
