@@ -43,7 +43,7 @@ test('main page navigation, page targets, and panel controls are wired in source
     assert.ok(js.includes('data-panel="' + control + '"'), 'missing control ' + control);
   }
   for (const control of ['ghost', 'collapse', 'hide', 'duplicate', 'pop']) {
-    assert.ok(js.includes("data-panel=\\" + control), 'missing listener selector ' + control);
+    assert.ok(js.includes("q('[data-panel=\\"" + control + "\\"]'"), 'missing listener selector ' + control);
   }
   assert.match(js, /Pop-up blocked; opened an in-page panel instead/);
   assert.match(js, /dashboard could not initialize/);
