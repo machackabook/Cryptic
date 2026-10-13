@@ -1,21 +1,13 @@
 export function mount(root) {
-  const voteBtn = root.querySelector('#consensusVoteBtn');
-  const openBtn = root.querySelector('#consensusOpenBtn');
-  const out = root.querySelector('#consensusOutput');
-
-  if (voteBtn) {
-    voteBtn.onclick = async () => {
-      let t = { fp: 'crt.' + Math.random().toString(36).slice(2, 8) };
-      try { t = await window.CrypticTerminal?.mintToken?.('consensus.quorum.vote'); } catch {}
-      if (out) {
-        out.innerHTML = `[QUORUM ROUND RATIFIED] Token [${t.fp}] stamped into evidence ledger.<br>Result: 7/7 AI agents affirmed sovereign state continuity. Byzantine weight: 0.00% drift.`;
-      }
-    };
-  }
-
-  if (openBtn) {
-    openBtn.onclick = () => {
-      window.CrypticRuntime?.open?.('consensus');
-    };
-  }
+  const voteBtn=root.querySelector('#consensusVoteBtn');
+  const openBtn=root.querySelector('#consensusOpenBtn');
+  const out=root.querySelector('#consensusOutput');
+  if(voteBtn) voteBtn.addEventListener('click',async()=>{
+    if(out) out.textContent='Checking for a live consensus adapter…';
+    const result=await window.CrypticTerminal?.exec?.('consensus vote');
+    if(out) out.textContent=result?.ok===true&&result?.status==='VERIFIED'
+      ? 'Consensus adapter returned a verified result. Inspect the terminal ledger for its evidence.'
+      : 'UNVERIFIED — no configured live multi-model consensus adapter returned independent votes. No quorum score was assigned.';
+  });
+  if(openBtn) openBtn.addEventListener('click',()=>window.CrypticRuntime?.open?.('consensus'));
 }
