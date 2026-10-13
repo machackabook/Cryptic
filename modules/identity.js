@@ -28,11 +28,11 @@ export function mount(root){
  }
  async function decodeWireText(s){
    if(/BEGIN (?:OPENSSH|RSA|EC|DSA) PRIVATE KEY|PRIVATE KEY-----/i.test(s))throw Error('PRIVATE_KEY_BLOCKED: never paste private-key material into this public page');
-   if(/HULE1:|cryptic\\.hule\\.v1/i.test(s))throw Error('LACE_ENVELOPE: decode locally with scripts/cryptic-lace.py before parsing; do not guess at alias glyphs');
+   if(/HULE1:|cryptic\.hule\.v1/i.test(s))throw Error('LACE_ENVELOPE: decode locally with scripts/cryptic-lace.py before parsing; do not guess at alias glyphs');
    const text=cleanText(s),foundType=[...keyTypes].find(t=>text.includes(t));
    if(!foundType)throw Error('PUBLIC_KEY_TYPE_MISSING: include the OpenSSH algorithm label or supply a known-good inventory and expected fingerprint');
    const after=text.slice(text.indexOf(foundType)+foundType.length);
-   const chunks=after.split(/\\s+/).map(x=>x.trim()).filter(Boolean);
+   const chunks=after.split(/\s+/).map(x=>x.trim()).filter(Boolean);
    let assembled='';
    for(const chunk of chunks){
      if(!/^[A-Za-z0-9+/]+={0,2}$/.test(chunk))break;
@@ -49,7 +49,7 @@ export function mount(root){
    try{
      let candidate=null,src=source.value.trim(),required=expected.value.trim(),parseFailure='';
      if(src){try{candidate=await decodeWireText(src)}catch(e){parseFailure=String(e.message||e);if(parseFailure.includes('PRIVATE_KEY_BLOCKED')||parseFailure.includes('LACE_ENVELOPE'))throw e}}
-     if(required&&!/^SHA256:/[A-Za-z0-9+/]{20,}=?$/.test(required))throw Error('EXPECTED_FINGERPRINT_FORMAT_INVALID');
+     if(required&&!/^SHA256:[A-Za-z0-9+/]{20,}=?$/.test(required))throw Error('EXPECTED_FINGERPRINT_FORMAT_INVALID');
      if(candidate&&required&&candidate.fingerprint!==required)candidate=null;
      if(!candidate&&inventoryFile.files?.length&&required){
        const inv=await parseInventory(await inventoryFile.files[0].text());const matches=inv.filter(k=>k.fingerprint===required);
