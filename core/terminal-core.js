@@ -11,12 +11,12 @@ function out(text,type='system'){
   if(type==='ai'||type==='ai-output'){
     d.classList.add('ai-output');
     // Render lightweight bold Markdown as DOM text, never as executable HTML.
-    for (const [pi,paragraph] of String(text).split('\\n\\n').entries()) {
-      if(pi) d.appendChild(document.createTextNode('\\n\\n'));
+    for (const [pi,paragraph] of String(text).split('\n\n').entries()) {
+      if(pi) d.appendChild(document.createTextNode('\n\n'));
       const p=document.createElement('p');
-      for(const [li,line] of paragraph.split('\\n').entries()){
+      for(const [li,line] of paragraph.split('\n').entries()){
         if(li)p.appendChild(document.createElement('br'));
-        const chunks=line.split(/(\\*\\*[^*]+\\*\\*)/g);
+        const chunks=line.split(/(\*\*[^*]+\*\*)/g);
         for(const chunk of chunks){
           if(!chunk)continue;
           if(chunk.startsWith('**')&&chunk.endsWith('**')&&chunk.length>4){
@@ -133,7 +133,7 @@ async function gaiaCommand(args){
   out('GAIA commands: status | mesh | storage | verify | test | init | login | models | mcp | evolve | promote | rollback | recover','system');
   return {ok:false,error:'unknown_gaia_command'};
 }
-async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+(/^bridge\\s+connect\\s+/i.test(v)?'bridge connect [LOCAL URL] [REDACTED SECRET]':v),'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
+async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+(/^bridge\s+connect\s+/i.test(v)?'bridge connect [LOCAL URL] [REDACTED SECRET]':v),'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
  if(lower==='help')return help();
  if(lower==='about')return out('Cryptic '+VERSION+' modular HyperTerminal command center.','good');
  if(lower==='status'){const x={gate:gateOpen,online:navigator.onLine,tokens:tokens.length,bus:window.CrypticBus?.routes?.()||null,panels:[...(window.CrypticDashboard?.mounted?.keys?.()||[])]};out(JSON.stringify(x,null,2),'system');return x}
