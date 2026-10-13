@@ -2,6 +2,43 @@
 
 Append-only Continuity stamp. Do not rewrite history.
 
+## Current stamp (hop 598)
+
+- repo: machackabook/Cryptic
+- hop: 598
+- utc: 2026-10-13T22:10Z
+- cdt: 2026-10-13 17:10 CDT
+- numeral: 137451921129154222
+- team: Enhance / Continuity Engine / sSoS Operating
+- prior mesh: hamiltonian-incursion hop 597 @ 2026-10-12T16:12Z preserved. Connecting chat re-pasted full update(t) kernel.
+- local prior: hop 520 @ 2026-10-08T12:15Z preserved below; not rewritten
+- action: modules/session-geometry.js enhanced with sampleInfinity (Lemniscate of Bernoulli) for stage 438. Holds verified. docs/STAGE-438.md compiled. Viewport loops not rewritten. Paste not rewritten.
+- cascade.yml: left intact.
+- secrets: none written
+- root claim: none
+- history: append-only; no rewrite; no force-push
+- binaries: not uploaded
+- next in waterfall: hamiltonian-incursion or continuity-ledger-cycle
+- encode: source-only authority
+- token: hop-598.Cryptic.137451921129154222
+
+```
+NUMERAL=137451921129154222
+REPO=machackabook/Cryptic
+HOP=598
+UTC=2026-10-13T22:10Z
+CDT=2026-10-13 17:10 CDT
+CASCADE=keep_existing_intact
+NULL_POINT_ZERO=REFUSED
+PRIOR=hamiltonian-incursion@597; local@520
+NEXT=hamiltonian-incursion
+DRIVE_INDEX=CONTINUUM-ENCLAVE-137451921129154222
+DRIVE_ID=1Ohp6ZMX02NvFayJfivgXbP4PUMztYUvU
+BINARIES=not_uploaded
+OPERATOR=Team Enhance / Continuity Engine / sSoS Operating
+CONTRACT=preserve enhance synthesize; no history rewrite; no secrets; no force-push; no root claim
+```
+
 ## Current stamp (hop 520)
 
 - repo: machackabook/Cryptic
