@@ -1,4 +1,4 @@
-const VERSION='0.8.1';
+const VERSION='0.9.2';
 const providers=[['gemini','Gemini'],['github','GitHub'],['drive','Google Drive'],['ollama','Ollama'],['openai','OpenAI'],['amazon-q','Amazon Q'],['watson','IBM Watson'],['bridge','Local Bridge'],['genie','Genie Djinn']];
 const tokens=[];
 try{sessionStorage.removeItem('cryptic.runtime.tokens')}catch{}
