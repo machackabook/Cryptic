@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.crypticnews.org; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>GEMINI MULTIMODAL EMBEDDING 2 // VECTOR MANIFOLD</title>
@@ -158,8 +161,8 @@ textarea { height: 70px; resize: none; }
     </div>
   </div>
   <div class="controls">
-    <button class="gold" id="btnEmbed">EMBED MULTIMODAL CONTENT</button>
-    <button class="violet" id="btnCosine">COMPUTE COSINE DISTANCE</button>
+    <button class="gold" id="btnEmbed" type="button" aria-label="Check embedding adapter status">EMBED MULTIMODAL CONTENT</button>
+    <button class="violet" id="btnCosine" type="button" aria-label="Check whether real vector comparison is available">COMPUTE COSINE DISTANCE</button>
   </div>
 </header>
 
@@ -201,7 +204,7 @@ print(result.embeddings)
 
     <h2>Similarity Metric Output</h2>
     <div id="similarityOutput" style="font-size:8px;color:var(--cyan);background:rgba(0,0,0,0.45);padding:8px;border-radius:6px;border:1px solid rgba(0,255,204,0.2);">
-      Cosine Similarity vs Baseline ("To be or not to be"): <b>0.8842</b><br>
+      Embedding API status: <b>NOT CONFIGURED</b><br>
       Semantic Cluster: <b>Existential Metaphysics / Toroidal State</b>
     </div>
   </section>
@@ -215,108 +218,6 @@ print(result.embeddings)
   </section>
 </main>
 
-<script>
-const canvas = document.getElementById('sphereCanvas');
-const ctx = canvas.getContext('2d');
-
-let w = 0, h = 0;
-function resize() {
-  w = canvas.width = canvas.clientWidth * window.devicePixelRatio;
-  h = canvas.height = canvas.clientHeight * window.devicePixelRatio;
-}
-window.addEventListener('resize', resize);
-resize();
-
-// 3D Poincaré Embedding Projection
-const vectors = [
-  { label: 'Query Text', color: '#00ffcc', x: 0.5, y: 0.2, z: 0.8 },
-  { label: 'Image Part', color: '#9d5bfe', x: 0.45, y: -0.3, z: 0.75 },
-  { label: 'Audio Part', color: '#f5ce70', x: 0.6, y: 0.1, z: 0.7 },
-  { label: 'Baseline ("To be...")', color: '#38bdf8', x: 0.42, y: 0.28, z: 0.82 },
-  { label: 'GAIA Node Mesh', color: '#22c55e', x: -0.5, y: 0.4, z: 0.6 }
-];
-
-let rotX = 0, rotY = 0;
-function render(t) {
-  requestAnimationFrame(render);
-  
-  ctx.fillStyle = '#010206';
-  ctx.fillRect(0, 0, w, h);
-
-  const cx = w * 0.5;
-  const cy = h * 0.5;
-  const r = Math.min(w, h) * 0.35;
-
-  rotY += 0.005;
-  rotX = Math.sin(t * 0.001) * 0.2;
-
-  // Draw 3-Sphere wireframe rings
-  ctx.strokeStyle = 'rgba(85,244,255,0.14)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, r, r * 0.4, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, r * 0.4, r, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Plot Vectors
-  vectors.forEach(v => {
-    // 3D rotation
-    const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
-    const x1 = v.x * cosY - v.z * sinY;
-    const z1 = v.x * sinY + v.z * cosY;
-
-    const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-    const y1 = v.y * cosX - z1 * sinX;
-    const z2 = v.y * sinX + z1 * cosX;
-
-    const px = cx + x1 * r;
-    const py = cy + y1 * r;
-
-    // Vector Ray from Center
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(px, py);
-    ctx.strokeStyle = v.color;
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // Node Dot
-    ctx.beginPath();
-    ctx.arc(px, py, 4, 0, Math.PI * 2);
-    ctx.fillStyle = v.color;
-    ctx.fill();
-
-    // Label
-    ctx.fillStyle = '#fff';
-    ctx.font = '9px monospace';
-    ctx.fillText(v.label, px + 8, py + 3);
-  });
-}
-requestAnimationFrame(render);
-
-document.getElementById('btnEmbed').onclick = () => {
-  const query = document.getElementById('textInput').value;
-  document.getElementById('similarityOutput').innerHTML = `
-    Embedded <b>${query}</b> + image_bytes + audio_bytes.<br>
-    Vector Hash: <span style="color:var(--green)">0x74446C2E</span> · Model: <b>gemini-embedding-2-preview</b><br>
-    Token Receipt: [crt.m29.embed] stamped to evidence ledger.
-  `;
-};
-
-document.getElementById('btnCosine').onclick = () => {
-  const sim = (0.85 + Math.random() * 0.12).toFixed(4);
-  document.getElementById('similarityOutput').innerHTML = `
-    Cosine Distance Computed: <b>${sim}</b> (High Semantic Affinity)<br>
-    Multimodal cross-attention verified across text, image, and 963 Hz audio.
-  `;
-};
-</script>
+<script src="./gemini-multimodal-embedding.js" defer></script>
 </body>
 </html>
