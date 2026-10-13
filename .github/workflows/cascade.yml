@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: runtime security regression tests
         run: node --test tests/security.test.mjs
+      - name: public surface and control-wiring regression tests
+        run: node --test tests/public-surface.test.mjs
       - name: secret-pattern and source verification
         run: node scripts/verify.mjs
       - name: require README and SECURITY
