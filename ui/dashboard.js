@@ -113,4 +113,4 @@ async function boot(){
   await import('../cryptic-console.js?v='+manifest.version);
   window.dispatchEvent(new CustomEvent('cryptic:dashboard-ready',{detail:{version:manifest.version}}));
 }
-boot().catch(e=>{document.body.innerHTML='<pre style="color:#ff6e88;padding:24px">CRYPTIC DASHBOARD BOOT FAILURE\n'+String(e.stack||e)+'</pre>'});
+boot().catch(e=>{const pre=document.createElement('pre');pre.style.cssText='color:#ff6e88;padding:24px';pre.textContent='CRYPTIC DASHBOARD BOOT FAILURE\n'+String(e.stack||e);document.body.replaceChildren(pre)});
