@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-u53fM4CDdJENa5+MkZBRxzYBgEwX8qPC71+7UUzLJVA='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Sovereign OS — Matrix Integration Engine</title>
+<title>Cryptic Matrix Visualizer — Local Geometry Lab</title>
 <style>
 :root{
   --bg:#020204;
@@ -187,7 +190,7 @@ body,html{
     <div class="brand-group">
       <div class="sigil">ܞ</div>
       <div class="title-block">
-        <b>SOVEREIGN OS // MATRIX INTEGRATION ENGINE</b>
+        <b>MATRIX VISUALIZATION LAB // LOCAL SIMULATION</b>
         <small>GOLDEN ARMY PROTOCOL · NEXUS GUARDIAN SIGMA · MASTER ALCHEMIST</small>
       </div>
     </div>
@@ -201,16 +204,16 @@ body,html{
   <div class="bottom-telemetry">
     <div class="tele-col">
       <div>SYSTEM_TIME_TICKER &nbsp;: <span class="tele-green" id="teleTime">0.000 s</span></div>
-      <div>SIGMA_THROUGHPUT &nbsp;&nbsp;&nbsp;: <span class="tele-green" id="teleThroughput">15000.0 px/s</span></div>
-      <div>ENTROPY_SHARDS_V15 &nbsp;: <span class="tele-gold" id="teleEntropy">420 Units</span></div>
-      <div>JACCARD_CONVERGENCE : <span class="tele-green" id="teleJaccard">0.8420 J(A,B)</span></div>
+      <div>SIMULATION_RATE &nbsp;&nbsp;&nbsp;: <span class="tele-green" id="teleThroughput">15000.0 sim units/s</span></div>
+      <div>VISUAL_PARTICLES &nbsp;&nbsp;: <span class="tele-gold" id="teleEntropy">420 simulated units</span></div>
+      <div>VISUAL_COHERENCE &nbsp;&nbsp;: <span class="tele-green" id="teleJaccard">0.8420 (illustrative)</span></div>
       <div>TRAJECTORY_SLICE &nbsp;&nbsp;&nbsp;: <span class="tele-violet" id="teleState">Sₙ(t) = {xₙ, yₙ, zₙ=nΔz, τ=t, p, α}</span></div>
     </div>
     <div class="tele-col" style="text-align:right">
       <div>SRC_VAL_GOLDEN_ARMY &nbsp;: <span class="tele-violet" id="teleGA">0x74446C2E [ONLINE]</span></div>
       <div>SRC_VAL_NEXUS_SIGMA &nbsp;&nbsp;: <span class="tele-violet" id="teleNS">0x4F8A91BC [INTEGRATED]</span></div>
       <div>SRC_VAL_GRIMOIRE_ALC &nbsp;: <span class="tele-violet" id="teleMA">0x913E02A1 [COMPILED]</span></div>
-      <div>HARDWARE_NODE_TARGET &nbsp;: <span class="tele-cyan" id="teleNode">NODE_042 / 720 [SAMSUNG:ARM64]</span></div>
+      <div>SIMULATION_INDEX &nbsp;&nbsp;: <span class="tele-cyan" id="teleNode">SIM_INDEX_042 / 720 [NOT HARDWARE]</span></div>
       <div>TOPOLOGY_STATUS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="tele-gold" id="teleStatus">HOPF_FIBRATION ⇄ KERR_SINGULARITY</span></div>
     </div>
   </div>
@@ -235,247 +238,13 @@ body,html{
     <button class="ctrl-btn" id="btnAudio" type="button">SONIFY</button>
   </div>
   <div class="ctrl-row">
-    <span>MINT EVIDENCE TOKEN</span>
+    <span>CREATE LOCAL RECEIPT</span>
     <button class="ctrl-btn" id="btnMint" type="button">MINT</button>
   </div>
 </div>
 
-<script>
-(function(){
-  'use strict';
-
-  const SOURCE_DOCS = {
-    golden_army: "GoldenArmyContinuousEngine::KerrMetric+HopfFibration::Checksum=0x74446C2E::128UnitsToInfinite",
-    nexus_sigma: "NexusGuardianSigma::AlphaSigmaThroughput::720Nodes::SamsungArm64::SSH=hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg",
-    master_alchemist: "GrimoireMasterAlchemist::CliffordSpinors+RiemannManifolds::Iteration01v2.0::0x74446C2E"
-  };
-
-  const canvas = document.getElementById('matrixCanvas');
-  const ctx = canvas.getContext('2d');
-  let w = 0, h = 0, dpr = 1;
-
-  function resize(){
-    dpr = Math.min(window.devicePixelRatio||1, 2);
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  window.addEventListener('resize', resize, {passive:true});
-  resize();
-
-  const sysTime = { start: performance.now(), current: performance.now(), elapsed: 0 };
-  const metrics = {
-    throughputSigma: 15000,
-    entropyShards: 420,
-    kerrDistortion: 0.85,
-    hopfSpeed: 0.5,
-    jaccardConvergence: 0.8420,
-    activeNode: 42,
-    loopCounter: 1,
-    layoutMode: 'twin' // 'twin', 'merged', 'overlaid'
-  };
-
-  // 1. Dual Geometric Renderers
-  function drawBackground(){
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    const colorShift = (Math.sin(sysTime.elapsed * 0.1) + 1) * 25;
-    grad.addColorStop(0, `hsla(${260 + colorShift}, 48%, 4%, 1)`);
-    grad.addColorStop(0.5, '#020205');
-    grad.addColorStop(1, `hsla(${180 + colorShift}, 52%, 3%, 1)`);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    // Subtle matrix text stream watermark
-    ctx.save();
-    ctx.font = '8px monospace';
-    ctx.fillStyle = 'rgba(0, 255, 208, 0.035)';
-    ctx.fillText(SOURCE_DOCS.golden_army, 40, h * 0.35);
-    ctx.fillText(SOURCE_DOCS.nexus_sigma, 40, h * 0.38);
-    ctx.fillText(SOURCE_DOCS.master_alchemist, 40, h * 0.41);
-    ctx.restore();
-  }
-
-  function drawHopfFibrationTorus(cx, cy, r){
-    ctx.save();
-    ctx.translate(cx, cy);
-    const tf = sysTime.elapsed * metrics.hopfSpeed * 0.8;
-    ctx.lineWidth = 1;
-
-    const fibers = 42;
-    for(let i=0; i<fibers; i+=2){
-      const phi = (i / fibers) * Math.PI * 2 + tf;
-      ctx.beginPath();
-      for(let j=0; j<=360; j+=15){
-        const theta = (j / 360) * Math.PI * 2;
-        const x = (r + r * 0.5 * Math.cos(theta)) * Math.cos(phi + theta * 0.1);
-        const y = (r + r * 0.5 * Math.cos(theta)) * Math.sin(phi + theta * 0.1);
-        if(j === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = `hsla(${170 + i * 2.5}, 100%, 55%, ${0.08 + (metrics.jaccardConvergence * 0.18)})`;
-      ctx.stroke();
-    }
-
-    // Hopf Core Anchor
-    ctx.beginPath();
-    ctx.arc(0, 0, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ffd0';
-    ctx.shadowColor = '#00ffd0';
-    ctx.shadowBlur = 15;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function drawKerrSingularity(cx, cy, radius){
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    // Lensing distortion rings
-    const rings = 7;
-    for(let i=0; i<rings; i++){
-      const cr = radius * (1 + i * 0.22) * metrics.kerrDistortion;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, cr, cr * 0.38, sysTime.elapsed * (0.2 + i * 0.04), 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(138, 43, 226, ${0.45 / (i + 1)})`;
-      ctx.lineWidth = 1.6;
-      ctx.stroke();
-    }
-
-    // Central Singularity Pulse
-    const pulse = radius * 0.38 + Math.sin(sysTime.elapsed * 4.5) * 5;
-    const radGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, pulse);
-    radGrad.addColorStop(0, '#00ffd0');
-    radGrad.addColorStop(0.25, 'rgba(138, 43, 226, 0.85)');
-    radGrad.addColorStop(0.7, 'rgba(74, 14, 143, 0.35)');
-    radGrad.addColorStop(1, 'rgba(2, 2, 5, 0)');
-    ctx.fillStyle = radGrad;
-    ctx.beginPath();
-    ctx.arc(0, 0, pulse, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  // 2. Loop Execution & Telemetry Updates
-  function step(){
-    sysTime.current = performance.now();
-    sysTime.elapsed = (sysTime.current - sysTime.start) / 1000;
-
-    metrics.throughputSigma = 15000 + Math.sin(sysTime.elapsed * 2) * 4200;
-    metrics.entropyShards = Math.floor(400 + Math.cos(sysTime.elapsed * 0.5) * 180);
-    metrics.jaccardConvergence = 0.80 + Math.sin(sysTime.elapsed * 0.3) * 0.08;
-    metrics.activeNode = (Math.floor(sysTime.elapsed * 8) % 720) + 1;
-
-    if(Math.floor(sysTime.elapsed) % 10 === 0 && metrics.loopCounter < Math.floor(sysTime.elapsed/10)+1){
-      metrics.loopCounter = Math.floor(sysTime.elapsed/10)+1;
-    }
-
-    // Update DOM telemetry
-    document.getElementById('teleTime').textContent = sysTime.elapsed.toFixed(3) + ' s';
-    document.getElementById('teleThroughput').textContent = metrics.throughputSigma.toFixed(1) + ' px/s';
-    document.getElementById('teleEntropy').textContent = metrics.entropyShards + ' Units';
-    document.getElementById('teleJaccard').textContent = metrics.jaccardConvergence.toFixed(4) + ' J(A,B)';
-    document.getElementById('teleNode').textContent = `NODE_${String(metrics.activeNode).padStart(3,'0')} / 720 [SAMSUNG:ARM64]`;
-    document.getElementById('loopTick').textContent = `LOOP: ${String(metrics.loopCounter).padStart(4,'0')}`;
-  }
-
-  function frame(){
-    step();
-    drawBackground();
-
-    const minDim = Math.min(w, h);
-    if(metrics.layoutMode === 'twin'){
-      const cx1 = w * 0.32;
-      const cx2 = w * 0.68;
-      const cy = h * 0.46;
-      drawHopfFibrationTorus(cx1, cy, minDim * 0.18);
-      drawKerrSingularity(cx2, cy, minDim * 0.16);
-    } else if(metrics.layoutMode === 'overlaid'){
-      const cx = w * 0.50;
-      const cy = h * 0.46;
-      drawHopfFibrationTorus(cx, cy, minDim * 0.22);
-      drawKerrSingularity(cx, cy, minDim * 0.18);
-    } else {
-      const cx = w * 0.50;
-      const cy = h * 0.46;
-      drawHopfFibrationTorus(cx, cy, minDim * 0.15);
-      drawKerrSingularity(cx, cy, minDim * 0.25);
-    }
-
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-
-  // 3. Interactive UI Controls
-  const btnLayout = document.getElementById('btnLayout');
-  const kerrSlider = document.getElementById('kerrSlider');
-  const hopfSlider = document.getElementById('hopfSlider');
-  const btnAudio = document.getElementById('btnAudio');
-  const btnMint = document.getElementById('btnMint');
-
-  btnLayout.onclick = () => {
-    if(metrics.layoutMode === 'twin'){
-      metrics.layoutMode = 'overlaid';
-      btnLayout.textContent = 'OVERLAID ARRAY';
-    } else if(metrics.layoutMode === 'overlaid'){
-      metrics.layoutMode = 'merged';
-      btnLayout.textContent = 'MERGED ARRAY';
-    } else {
-      metrics.layoutMode = 'twin';
-      btnLayout.textContent = 'TWIN ARRAY';
-    }
-  };
-
-  kerrSlider.oninput = e => {
-    metrics.kerrDistortion = parseFloat(e.target.value);
-  };
-  hopfSlider.oninput = e => {
-    metrics.hopfSpeed = parseFloat(e.target.value);
-  };
-
-  let audioCtx = null, osc = null;
-  btnAudio.onclick = () => {
-    if(window.parent?.CrypticTerminal?.toggle963){
-      window.parent.CrypticTerminal.toggle963();
-      btnAudio.classList.toggle('active');
-      return;
-    }
-    if(osc){
-      osc.stop(); osc.disconnect(); osc = null;
-      btnAudio.classList.remove('active');
-      btnAudio.textContent = 'SONIFY';
-    } else {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      const g = audioCtx.createGain(); g.gain.value = 0.035;
-      osc = audioCtx.createOscillator();
-      osc.type = 'sine'; osc.frequency.value = 963;
-      osc.connect(g).connect(audioCtx.destination);
-      osc.start();
-      btnAudio.classList.add('active');
-      btnAudio.textContent = '963Hz [ON]';
-    }
-  };
-
-  btnMint.onclick = async () => {
-    const raw = 'crt.matrix.' + Date.now().toString(36);
-    let fp = '0x74446C2E';
-    if(window.parent?.CrypticTerminal?.mintToken){
-      const t = await window.parent.CrypticTerminal.mintToken('matrix.evidence', {
-        checksum: '0x74446C2E',
-        kerr: metrics.kerrDistortion,
-        hopf: metrics.hopfSpeed
-      });
-      fp = t.fp;
-      window.parent.CrypticTerminal.out?.(`[MATRIX INTEGRATION] Evidence token minted: receipt=${fp}`, 'good');
-    }
-    btnMint.textContent = 'FP: ' + fp.slice(0, 8);
-    setTimeout(() => { btnMint.textContent = 'MINT'; }, 2000);
-  };
-
-})();
-</script>
+<p class="muted" style="padding:8px;font-size:10px">Local visual simulation only · <a href="https://github.com/machackabook/Cryptic/blob/main/interfaces/matrix-engine.html" target="_blank" rel="noopener noreferrer">View source</a></p>
+<script src="./matrix-engine.js" defer></script>
 </body>
 </html>
 
