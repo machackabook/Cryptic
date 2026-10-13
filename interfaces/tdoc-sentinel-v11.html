@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>TDOC SENTINEL MASTER V11 // DUAL AUTHORITY &amp; SOVEREIGN RUNTIME</title>
@@ -173,7 +176,7 @@ button.green {
     <button style="border-radius:50%;width:28px;height:28px;padding:0;display:grid;place-items:center;">🛡</button>
     <div>
       <h1>TDOC SENTINEL MASTER V11 // DUAL AUTHORITY</h1>
-      <span>CRYPTOGRAPHIC ED25519 SOVEREIGN RUNTIME · SAMSUNG &times; CHROMEBOOK VERIFIED PAIR</span>
+      <span>CRYPTOGRAPHIC ED25519 SOVEREIGN RUNTIME · SAMSUNG / CHROMEBOOK PAIR STATUS: UNVERIFIED</span>
     </div>
   </div>
   <div class="controls">
@@ -194,7 +197,7 @@ button.green {
     
     <h2>SHA256 Fingerprint</h2>
     <div class="key-box" style="color:var(--green)">
-      256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg (ED25519)
+      256 [fingerprint not verified in this public browser] (ED25519)
     </div>
 
     <h2>Randomart Image</h2>
@@ -254,38 +257,6 @@ button.green {
   </section>
 </main>
 
-<script>
-const log = document.getElementById('logStream');
-
-function appendLog(text, color = '') {
-  const d = document.createElement('div');
-  d.className = 'log-line ' + color;
-  d.textContent = `[${new Date().toISOString()}] ${text}`;
-  log.appendChild(d);
-  log.scrollTop = log.scrollHeight;
-}
-
-document.getElementById('btnVerifyPair').onclick = () => {
-  appendLog('Verifying Samsung <-> Chromebook Dual Authority pair...', 'gold');
-  setTimeout(() => {
-    appendLog('Fingerprints matched: SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg', 'green');
-    appendLog('Dual Authority Handshake: VERIFIED & SEALED.', 'green');
-  }, 400);
-};
-
-document.getElementById('btnQuineLoop').onclick = () => {
-  appendLog('Executing TDOC Sentinel Quine Loop...', 'gold');
-  setTimeout(() => {
-    appendLog('Quine self-source hash matched: 0x74446C2E. Loop intact.', 'green');
-  }, 350);
-};
-
-document.getElementById('btnAudit').onclick = () => {
-  appendLog('Scanning debloat receipts in /logs/evidence/...', '');
-  setTimeout(() => {
-    appendLog('Debloat status: PENDING_PAIR_AUTH. Safety lock maintained.', 'gold');
-  }, 300);
-};
-</script>
+<script src="./tdoc-sentinel-v11.js" defer></script>
 </body>
 </html>
