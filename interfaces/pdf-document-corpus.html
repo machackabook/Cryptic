@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DOCUMENT CORPUS // SOVEREIGN PDF KNOWLEDGE CORE</title>
@@ -285,7 +288,7 @@ h1 {
 <div class="layout-grid">
   <div class="sidebar">
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search corpus & documents..." oninput="filterDocs(this.value)">
+      <input type="text" id="searchInput" placeholder="Search corpus & documents..." >
     </div>
     <ul class="doc-list" id="docList"></ul>
   </div>
@@ -296,10 +299,11 @@ h1 {
         <span>[CORPUS-01]</span> Select Document
       </div>
       <div class="toolbar-actions">
-        <button class="btn btn-gold" onclick="launchLiveOSModule()">LAUNCH LIVE OS SUBSYSTEM</button>
-        <button class="btn" onclick="copyDocumentText()">COPY EXCERPT</button>
-        <button class="btn" onclick="exportCorpusReceipt()">MINT RECEIPT</button>
+        <button class="btn btn-gold" id="launchLiveOSModuleBtn" type="button">LAUNCH LIVE OS SUBSYSTEM</button>
+        <button class="btn" id="copyDocumentTextBtn" type="button">COPY EXCERPT</button>
+        <button class="btn" id="exportCorpusReceiptBtn" type="button">MINT RECEIPT</button>
       </div>
+      <div id="corpusActionStatus" role="status" aria-live="polite" style="font-size:10px;color:var(--muted);padding:4px">Catalogue only · no production attestation.</div>
     </div>
     <div class="viewer-content" id="viewerContent">
       <p style="color:var(--muted)">Select an integrated document from the left corpus to inspect how it has been fully incorporated into the Cryptic Operating System architecture.</p>
@@ -307,270 +311,6 @@ h1 {
   </div>
 </div>
 
-<script>
-const DOCUMENTS = [
-  {
-    id: "tdoc-sentinel",
-    title: "TDOC Sentinel Master V11 — Dual Authority & Sovereign Runtime",
-    category: "Security & Sovereignty",
-    date: "2026-10-07",
-    osModule: "/interfaces/tdoc-sentinel-v11.html",
-    terminalCommand: "sentinel verify",
-    status: "ACTIVE OS KERNEL",
-    description: "Sovereign node pair verification between Samsung ARM64 and Chromebook x86 systems. Ed25519 node keypair authentication, quarantine receipts, and outbox/inbox pipeline.",
-    integrationSummary: "Incorporated directly as the dual authority gatekeeper and cryptographic sentinel module in Cryptic OS. Terminal command 'sentinel' executes real-time node key checks.",
-    content: `[IDENTITY] Establishing node key...
-Generating public/private ed25519 key pair.
-Identification saved: /data/data/com.termux/files/home/.ssh/nexus_ed25519
-Public key saved: /data/data/com.termux/files/home/.ssh/nexus_ed25519.pub
-SHA256 Fingerprint: 256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg nexus:samsung-arm64
-Public Key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGteDQk53+YlXIALXcls03EZ3B7IXdgYr+knG5dYZuUt nexus:samsung-arm64
-
-[OS SUBSYSTEM VERIFICATION]
-  ssh      OK  /data/data/com.termux/files/usr/bin/ssh
-  sshd     OK  /data/data/com.termux/files/usr/bin/sshd
-  rsync    OK  /data/data/com.termux/files/usr/bin/rsync
-  git      OK  /data/data/com.termux/files/usr/bin/git
-  python   OK  /data/data/com.termux/files/usr/bin/python
-  node     OK  /data/data/com.termux/files/usr/bin/node
-  jq       OK  /data/data/com.termux/files/usr/bin/jq
-
-STATUS: BOOTSTRAP COMPLETE · Role: SAMSUNG · Outbox: /data/data/com.termux/files/home/Æ/sync/outbox`
-  },
-  {
-    id: "pnt-matrix",
-    title: "PNT Hardware Matrix & Autonomous Navigation Timing Architecture",
-    category: "Hardware & Navigation",
-    date: "2026-09-28",
-    osModule: "/interfaces/pnt-hardware-matrix.html",
-    terminalCommand: "open pnt",
-    status: "ACTIVE OS SUBSYSTEM",
-    description: "Position, Navigation, and Timing (PNT) hardware matrix covering atomic clocks, GNSS constellation receivers (GPS, Galileo, GLONASS, BeiDou), INS/IMU, Kalman filtering, and disciplined oscillators.",
-    integrationSummary: "Integrated as a 71KB standalone interactive hardware diagnostic telemetry dashboard with real-time Allan deviation plots, satellite SNR constellation charts, and atomic clock drift compensators.",
-    content: `[PNT HARDWARE MATRIX SPECIFICATION]
-Position, Navigation, and Timing (PNT) Core Architecture:
-  1. Primary Reference Clocks: Rubidium Atomic Frequency Standard (10 MHz, 1 PPS).
-  2. Multi-GNSS Engine: Quad-constellation tracking (L1/L2/L5/E1/E5a).
-  3. Inertial Measurement Unit: 6-DoF tactical grade MEMS IMU with 1000 Hz loop rate.
-  4. State Estimation: 15-state Extended Kalman Filter (EKF) with position covariance < 0.05m².
-  5. Holdover Oscillator: Oven-Controlled Crystal Oscillator (OCXO) drift < 1 μs/24h.`
-  },
-  {
-    id: "polyglot-quine",
-    title: "Polyglot Quine Shell Living Artifact Architecture",
-    category: "Quine Runtime",
-    date: "2026-10-02",
-    osModule: "/interfaces/polyglot-quine-shell.html",
-    terminalCommand: "quine",
-    status: "ACTIVE OS SUBSYSTEM",
-    description: "Zero-payload, self-assembling, multimodal living artifact template. Dynamic Webpack chunking, code splitting, reactive HTML size monitor, and automated config generator.",
-    integrationSummary: "Incorporated into Cryptic OS as the self-assembling living container. The terminal command 'quine' verifies live DOM payload size, chunk splits, and idempotent code replication.",
-    content: `[POLYGLOT QUINE SHELL LIVING ARTIFACT]
-Specification:
-  - Zero-payload, self-assembling multimodal container.
-  - Environmental sensors & WebSockets telemetry hub.
-  - Dynamic auth & ephemeral scratchpad volume.
-  - Webpack chunking & code splitting engine.
-  - Real-time token streaming playground with DOM substitution.
-  - Multi-target router: Auto-Sphinx, ePub, Canvas, and Smart Contract IDE.`
-  },
-  {
-    id: "gaia-suite",
-    title: "GAIA Autonomous Verification Suite & Command Protocols",
-    category: "Autonomous Mesh",
-    date: "2026-10-04",
-    osModule: "/magic/surfaces/terminal.html",
-    terminalCommand: "gaia verify --everything",
-    status: "ACTIVE OS RUNTIME",
-    description: "Comprehensive 14-step autonomous verification and node lifecycle protocol: gaia verify, init, login, node enroll, mesh, storage, models, mcp, evolve, promote, rollback, recover.",
-    integrationSummary: "Directly wired into Cryptic OS terminal core ('terminal-core.js'). Operators can execute any gaia command to verify mesh throughput (15,000 px/s), node pairing, and ledger checksums.",
-    content: `[GAIA COMMAND PROTOCOL]
-Execution Pipeline:
-  1. gaia verify --everything
-  2. gaia init
-  3. gaia login
-  4. gaia node enroll <name>
-  5. gaia mesh verify
-  6. gaia storage verify
-  7. gaia models verify
-  8. gaia mcp verify
-  9. gaia image create
-  10. gaia test --full
-  11. gaia status
-  12. gaia evolve
-  13. gaia promote
-  14. gaia rollback / gaia recover`
-  },
-  {
-    id: "gemini-embedding",
-    title: "Gemini Multimodal Embedding 2 Preview Specification",
-    category: "Neural Embeddings",
-    date: "2026-10-05",
-    osModule: "/interfaces/gemini-multimodal-embedding.html",
-    terminalCommand: "embed",
-    status: "ACTIVE OS SUBSYSTEM",
-    description: "Multimodal content embedding (text, image, and audio) into 768/1536-dimensional latent vector spaces using gemini-embedding-2-preview and Poincaré hyper-spherical projections.",
-    integrationSummary: "Integrated as both an interactive vector manifold interface ('/interfaces/gemini-multimodal-embedding.html') and terminal command 'embed' with cosine similarity computation.",
-    content: `[GEMINI MULTIMODAL EMBEDDING 2 PREVIEW]
-API Calling Pattern:
-  from google import genai
-  from google.genai import types
-
-  client = genai.Client()
-  with open("example.png", "rb") as f: image_bytes = f.read()
-  with open("sample.mp3", "rb") as f: audio_bytes = f.read()
-
-  result = client.models.embed_content(
-      model="gemini-embedding-2-preview",
-      contents=[
-          "What is the meaning of life?",
-          types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
-          types.Part.from_bytes(data=audio_bytes, mime_type="audio/mpeg"),
-      ],
-  )
-  print(result.embeddings)`
-  },
-  {
-    id: "skybox-orbitals",
-    title: "7-Galaxies Deep Skybox & Relativistic Kerr Metric Orbitals",
-    category: "Graphics & Astrodynamics",
-    date: "2026-10-06",
-    osModule: "/interfaces/enhanced-skybox-7-galaxies.html",
-    terminalCommand: "galaxies warp",
-    status: "ACTIVE OS VISUALIZER",
-    description: "Deep celestial skybox featuring 7 major galaxies (Andromeda, Triangulum, Sombrero, Whirlpool, Cartwheel, Cigar, Gateway Core), Kerr black hole frame dragging, and 3,200 Keplerian orbital particles.",
-    integrationSummary: "Directly powers the Three.js 3D WebGL background visualizer in '/magic/magic.js' and standalone simulation '/interfaces/enhanced-skybox-7-galaxies.html'. Fully interactive with camera orbit controls.",
-    content: `[RELATIVISTIC ORBITAL & SKYBOX SPECIFICATION]
-Cosmic Objects:
-  - M31 Andromeda: Blue-violet spiral arm particle cloud (800 particles)
-  - M33 Triangulum: Cyan open-spiral star-forming region (450 particles)
-  - M104 Sombrero: Golden galactic bulge & dark dust lane (400 particles)
-  - M51 Whirlpool: Grand-design spiral with tidal interaction bridge
-  - Kerr Metric Black Hole: Horizon radius Rs = 2GM/c², spin a* = 0.942, frame-dragging accretion disk.`
-  },
-  {
-    id: "d3-consensus",
-    title: "D3 Multi-AI Consensus Quorum Engine Specification",
-    category: "AI Governance",
-    date: "2026-10-06",
-    osModule: "/interfaces/d3-multi-ai-consensus.html",
-    terminalCommand: "consensus",
-    status: "ACTIVE OS SUBSYSTEM",
-    description: "Byzantine fault-tolerant multi-agent consensus quorum engine spanning Gemini, Genie Djinn, Claude, GPT, Ollama, DeepSeek, and TDOC Sentinel with topological force-directed graph visualization.",
-    integrationSummary: "Incorporated as an interactive quorum dashboard with live voting, perturbation injection, cryptographic round sealing, and ledger receipts in Cryptic OS.",
-    content: `[D3 MULTI-AI CONSENSUS SPECIFICATION]
-Consensus Topology:
-  - 7 Active Sovereign Nodes
-  - Supermajority Quorum Threshold: 67% (2/3 + 1)
-  - Byzantine Fault Tolerance: 33.3% tolerance threshold
-  - Real-time cryptographic vote sealing into local continuity ledger.`
-  },
-  {
-    id: "polyneuromorphic-voice",
-    title: "Polyneuromorphic Live Voice & Synaptic Waveform Engine",
-    category: "Neuromorphic Audio",
-    date: "2026-10-06",
-    osModule: "/interfaces/polyneuromorphic-live-voice.html",
-    terminalCommand: "voice",
-    status: "ACTIVE OS SUBSYSTEM",
-    description: "Neuromorphic Web Audio synthesis engine with 48 synaptic channels, leaky integrate-and-fire neural spike trains, and 963 Hz solfeggio frequency harmonic driver.",
-    integrationSummary: "Fully operational live audio synthesis module with real-time synaptic plasticity oscilloscope, spike train canvas, and solfeggio harmonic resonance controls.",
-    content: `[POLYNEUROMORPHIC VOICE SPECIFICATION]
-Synaptic Parameters:
-  - 48 Continuous Hodgkin-Huxley / Leaky Integrate-and-Fire neurons
-  - 963 Hz solfeggio pure sine carrier wave
-  - Web Audio API real-time buffer scheduling
-  - Interactive tactile keyboard for manual pulse modulation.`
-  }
-];
-
-let activeDocIndex = 0;
-
-function renderDocList(filter = '') {
-  const listEl = document.getElementById('docList');
-  listEl.innerHTML = '';
-  DOCUMENTS.forEach((doc, idx) => {
-    if (filter && !doc.title.toLowerCase().includes(filter.toLowerCase()) && !doc.description.toLowerCase().includes(filter.toLowerCase())) return;
-    const li = document.createElement('li');
-    li.className = 'doc-item' + (idx === activeDocIndex ? ' active' : '');
-    li.onclick = () => selectDoc(idx);
-    li.innerHTML = `
-      <div class="doc-title">${doc.title}</div>
-      <div class="doc-meta">
-        <span>${doc.category}</span>
-        <span class="doc-status">${doc.status}</span>
-      </div>
-    `;
-    listEl.appendChild(li);
-  });
-}
-
-function selectDoc(idx) {
-  activeDocIndex = idx;
-  const doc = DOCUMENTS[idx];
-  document.querySelectorAll('.doc-item').forEach((el, i) => {
-    el.classList.toggle('active', i === idx);
-  });
-  
-  document.getElementById('activeDocTitle').innerHTML = `<span>[CORPUS-0${idx+1}]</span> ${doc.title}`;
-  
-  const contentEl = document.getElementById('viewerContent');
-  contentEl.innerHTML = `
-    <div class="os-mapping-card">
-      <div style="font-weight:700; color:var(--accent); margin-bottom:0.5rem;">SUBSYSTEM OPERATING SYSTEM INTEGRATION</div>
-      <div class="mapping-row"><span>Status in Cryptic OS:</span><span>${doc.status}</span></div>
-      <div class="mapping-row"><span>Integrated Interface:</span><span>${doc.osModule}</span></div>
-      <div class="mapping-row"><span>Terminal Command:</span><span>${doc.terminalCommand}</span></div>
-      <div class="mapping-row"><span>Integration Architecture:</span><span style="color:#f1f5f9; font-weight:normal;">${doc.integrationSummary}</span></div>
-    </div>
-    
-    <div class="doc-section">
-      <h2>DOCUMENT SPECIFICATION & EXCERPT</h2>
-      <p style="color:var(--muted);">${doc.description}</p>
-      <pre style="background:rgba(0,0,0,0.4); padding:1rem; border-radius:4px; border:1px solid rgba(255,255,255,0.05); overflow-x:auto;">${escapeHtml(doc.content)}</pre>
-    </div>
-  `;
-}
-
-function escapeHtml(text) {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function filterDocs(val) {
-  renderDocList(val);
-}
-
-function launchLiveOSModule() {
-  const doc = DOCUMENTS[activeDocIndex];
-  if (doc && doc.osModule) {
-    window.location.href = doc.osModule;
-  }
-}
-
-function copyDocumentText() {
-  const doc = DOCUMENTS[activeDocIndex];
-  if (doc) {
-    navigator.clipboard.writeText(doc.content).then(() => {
-      alert("Document text copied to clipboard!");
-    });
-  }
-}
-
-function exportCorpusReceipt() {
-  const doc = DOCUMENTS[activeDocIndex];
-  const receipt = {
-    id: "rcpt-" + Date.now().toString(36),
-    docId: doc.id,
-    title: doc.title,
-    ts: new Date().toISOString(),
-    status: doc.status,
-    osModule: doc.osModule
-  };
-  alert("Stamped Continuity Receipt: " + JSON.stringify(receipt));
-}
-
-renderDocList();
-selectDoc(0);
-</script>
+<script src="./pdf-document-corpus.js" defer></script>
 </body>
 </html>
