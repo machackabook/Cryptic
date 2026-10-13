@@ -100,7 +100,7 @@ async function allPages(){
  for(const owner of owners){
    try{
      for(let page=1;page<=4;page++){
-       const repos=await api('https://api.github.com/users/'+encodeURIComponent(owner)+'/repos?type=public&per_page=100&page='+page);
+       const repos=await api('https://api.github.com/users/'+encodeURIComponent(owner)+'/repos?type=owner&per_page=100&page='+page);
        if(!Array.isArray(repos))throw Error('invalid repository list');
        for(const r of repos.filter(x=>x.has_pages===true&&!x.private&&!x.archived))await inspect(r);
        if(repos.length<100)break;
@@ -114,13 +114,14 @@ const counts={critical:0,high:0,medium:0};
 for(const f of findings)counts[f.severity]++;
 const report={schema:'cryptic.pages.sentinel.v1',ts:new Date().toISOString(),mode:fleet?'public-fleet':'local',owners:fleet?owners:[],files_read:files,files_skipped:skipped,inventory,counts,findings,coverage_errors:errors,qualification:'Passive static review only; no production verification; public repositories only.'};
 fs.mkdirSync('reports/security',{recursive:true});
-fs.writeFileSync('reports/security/pages-audit.json',JSON.stringify(report,null,2)+'\n');
+const baseName=fleet?'pages-audit-fleet':'pages-audit-local';
+fs.writeFileSync('reports/security/'+baseName+'.json',JSON.stringify(report,null,2)+'\n');
 let md='# Cryptic Pages Sentinel\n\nMode: '+report.mode+' · '+report.ts+'\n\nFiles read: '+files+' · skipped: '+skipped+'\n\nCounts: '+JSON.stringify(counts)+'\n\n## Sites\n\n| Repository | HTTP | Files | Coverage |\n|---|---:|---:|---|\n';
 for(const r of inventory)md+='| '+r.name+' | '+(r.http??'?')+' | '+r.files+' | '+r.coverage+' |\n';
 md+='\n## Findings\n\n| Severity | Rule | Repo | File | Line |\n|---|---|---|---|---:|\n';
 for(const r of findings)md+='| '+r.severity+' | '+r.id+' | '+r.repository+' | '+r.path.replaceAll('|','_')+' | '+r.line+' |\n';
 md+='\n## Coverage limitations\n\n'+(errors.length?errors.map(x=>'- '+x.replaceAll('\n',' ')).join('\n'):'No scanner errors, but manual dynamic security verification remains necessary.')+'\n';
-fs.writeFileSync('reports/security/pages-audit.md',md);
+fs.writeFileSync('reports/security/'+baseName+'.md',md);
 if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,md.slice(0,900000));
-console.log(JSON.stringify({mode:report.mode,sites:inventory.length,files,counts,coverage_errors:errors.length,report:'reports/security/pages-audit.json'}));
+console.log(JSON.stringify({mode:report.mode,sites:inventory.length,files,counts,coverage_errors:errors.length,report:'reports/security/'+baseName+'.json'}));
 if(counts.critical||counts.high||errors.length)process.exitCode=1;
