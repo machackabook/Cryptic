@@ -18,7 +18,7 @@ function frame(spec,instanceId=spec.id){
   el.dataset.module=spec.id;
   if(spec.chrome===false)el.classList.add('no-chrome');
   if(spec.chrome!==false){
-    el.innerHTML='<div class="panel-titlebar"><span class="panel-title"></span><div class="panel-tools"><button data-panel="ghost" title="Transparency">◐</button><button data-panel="collapse" title="Collapse">—</button><button data-panel="duplicate" title="Fly out">＋</button><button data-panel="pop" title="Pop out">↗</button><button data-panel="hide" title="Hide">×</button></div></div><div class="panel-body"></div>';
+    el.innerHTML='<div class="panel-titlebar"><span class="panel-title"></span><div class="panel-tools"><button data-panel="ghost" title="Transparency" aria-label="Toggle panel transparency" aria-pressed="false">◐</button><button data-panel="collapse" title="Collapse" aria-label="Collapse or expand panel" aria-expanded="true">—</button><button data-panel="duplicate" title="Duplicate panel" aria-label="Duplicate panel">＋</button><button data-panel="pop" title="Pop out" aria-label="Open module in a separate window">↗</button><button data-panel="hide" title="Hide" aria-label="Hide panel">×</button></div></div><div class="panel-body"></div>';
     q('.panel-title',el).textContent=spec.title||spec.id.toUpperCase();
   }else el.innerHTML='<div class="panel-body"></div>';
   return el;
@@ -33,8 +33,8 @@ function remember(el,key,value){
   const s=state();s[el.dataset.module]??={};s[el.dataset.module][key]=value;saveState(s)
 }
 function controls(el){
-  q('[data-panel="ghost"]',el)?.addEventListener('click',()=>{el.classList.toggle('panel-ghost');remember(el,'ghost',el.classList.contains('panel-ghost'))});
-  q('[data-panel="collapse"]',el)?.addEventListener('click',()=>{el.classList.toggle('panel-collapsed');remember(el,'collapsed',el.classList.contains('panel-collapsed'))});
+  q('[data-panel="ghost"]',el)?.addEventListener('click',e=>{el.classList.toggle('panel-ghost');const on=el.classList.contains('panel-ghost');e.currentTarget.setAttribute('aria-pressed',String(on));remember(el,'ghost',on)});
+  q('[data-panel="collapse"]',el)?.addEventListener('click',e=>{el.classList.toggle('panel-collapsed');const collapsed=el.classList.contains('panel-collapsed');e.currentTarget.setAttribute('aria-expanded',String(!collapsed));remember(el,'collapsed',collapsed)});
   q('[data-panel="hide"]',el)?.addEventListener('click',()=>{el.classList.add('panel-hidden');remember(el,'hidden',true)});
   q('[data-panel="duplicate"]',el)?.addEventListener('click',()=>spawn(el.dataset.module));
   q('[data-panel="pop"]',el)?.addEventListener('click',()=>popout(el.dataset.module));
@@ -85,7 +85,12 @@ async function spawn(id){
   return el;
 }
 function popout(id){
-  const u=new URL('./panel.html',location.href);u.searchParams.set('module',id);window.open(u.href,'_blank','noopener,width=820,height=650');return u.href
+  const spec=moduleSpec(id);if(!spec||spec.layer){console.warn('Cryptic: invalid pop-out module',id);return null}
+  const u=new URL('./panel.html',location.href);u.searchParams.set('module',id);
+  const child=window.open(u.href,'_blank','popup,width=960,height=720');
+  if(child){try{child.opener=null}catch{}}
+  else{void spawn(id);window.dispatchEvent(new CustomEvent('cryptic:notice',{detail:{message:'Pop-up blocked; opened an in-page panel instead.'}}))}
+  return {url:u.href,opened:Boolean(child),fallback:!child}
 }
 function ghostAll(on=true){for(const el of mounted.values())el.classList.toggle('panel-ghost',on)}
 function restoreAll(){
@@ -113,5 +118,15 @@ async function boot(){
   await import('../cryptic-console.js?v='+manifest.version);
   window.dispatchEvent(new CustomEvent('cryptic:dashboard-ready',{detail:{version:manifest.version}}));
 }
-boot().catch(()=>{const el=document.createElement('pre');el.textContent='CRYPTIC DASHBOARD BOOT FAILURE';document.body.replaceChildren(el)});
+boot().catch(error=>{
+  console.error('[Cryptic] dashboard boot failed',error);
+  const wrap=document.createElement('main');wrap.className='noscript-notice';wrap.setAttribute('role','alert');
+  const heading=document.createElement('h1');heading.textContent='Cryptic dashboard could not initialize';
+  const detail=document.createElement('p');detail.textContent='A required application module or asset failed to load. Refresh once; if this persists, check the browser console and published asset paths.';
+  const code=document.createElement('code');code.textContent=String(error?.message||'Unknown initialization error').slice(0,240);
+  const retry=document.createElement('button');retry.className='action';retry.textContent='Retry initialization';retry.addEventListener('click',()=>location.reload());
+  const source=document.createElement('a');source.href='https://github.com/machackabook/Cryptic';source.target='_blank';source.rel='noopener noreferrer';source.textContent='Open public source repository';
+  wrap.append(heading,detail,code,retry,source);document.body.replaceChildren(wrap);
+  window.dispatchEvent(new CustomEvent('cryptic:boot-failure',{detail:{message:String(error?.message||'Unknown').slice(0,240)}}))
+});
 
