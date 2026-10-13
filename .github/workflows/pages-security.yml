@@ -1,0 +1,53 @@
+name: Cryptic Pages Sentinel Security
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: cryptic-pages-security-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify source syntax
+        run: |
+          set -eu
+          git diff --check
+          git ls-files -z '*.js' '*.mjs' '*.cjs' | xargs -0 -r -n1 node --check
+      - name: Run production-source security regression suite
+        run: |
+          npm run lint
+          npm run test:security
+      - name: Record revision and changed-file evidence
+        run: node scripts/security-diff.mjs
+      - name: Audit current Cryptic source
+        run: node scripts/pages-security-audit.mjs --local-only
+      - name: Audit public GitHub Pages across owners
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PAGES_AUDIT_OWNERS: machackabook,Azazeleous,crypticmetaverse,thearchitectofgaia-boop
+        run: node scripts/pages-security-audit.mjs --fleet
+      - name: Upload scanner and source-diff evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cryptic-pages-security-${{ github.run_id }}
+          path: reports/security/
+          if-no-files-found: warn
+          retention-days: 30
