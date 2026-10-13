@@ -10,7 +10,8 @@ function out(text,type='system'){
   d.className='line '+type;
   if(type==='ai'||type==='ai-output'){
     d.classList.add('ai-output');
-    d.innerHTML=String(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    const escaped=String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    d.innerHTML=escaped.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
   }else{
     d.textContent=String(text);
   }
@@ -18,9 +19,9 @@ function out(text,type='system'){
 }
 function b64u(bytes){let s='';bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 async function fingerprint(value){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16)}
-function ledger(event,data={}){const arr=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');arr.push({ts:new Date().toISOString(),event,data});if(arr.length>512)arr.splice(0,arr.length-512);localStorage.setItem('cryptic.ledger',JSON.stringify(arr));window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:arr.at(-1)}))}
-async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope,issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id),meta};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;sessionStorage.setItem('cryptic.runtime.tokens',JSON.stringify(tokens));window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:rec}}));return rec}
-async function requestAdapter(name,payload=''){const local=await mintToken('adapter.'+name,{payloadBytes:payload.length});ledger('request.token.minted',{scope:local.scope,fp:local.fp});out(`[TOKEN ${local.fp}] ${name} browser receipt minted.`,'token');let signed=null;try{signed=await window.CrypticRuntime?.signedToken?.(name,'adapter.'+name)}catch{}if(signed)out('[EDGE CAPABILITY] signed token minted for '+name+'.','good');else if(name!=='bridge')out(name+' credentials are not stored in this public page.','system');return {local,signed}}
+function ledger(event,data={}){let arr=[];try{const parsed=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');if(Array.isArray(parsed))arr=parsed}catch{}const allowed=new Set(['scope','fp','node','receipt','bytes','sha256','count','action','status','duration_ms','reason','route','transport','ok','payloadBytes','module','section','jti']);const safeData={};for(const [k,v] of Object.entries(data||{})){if(allowed.has(k)&&(typeof v==='string'||typeof v==='number'||typeof v==='boolean'))safeData[k]=typeof v==='string'?v.slice(0,160):v}const rec={ts:new Date().toISOString(),event:String(event).slice(0,120),data:safeData};arr.push(rec);if(arr.length>512)arr.splice(0,arr.length-512);try{localStorage.setItem('cryptic.ledger',JSON.stringify(arr))}catch{}window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:rec}));return rec}
+async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope:String(scope).slice(0,100),issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id)};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:{scope:rec.scope,issuedAt:rec.issuedAt,expiresAt:rec.expiresAt,fp:rec.fp}}}));return rec}
+async function requestAdapter(name,payload=''){const local=await mintToken('adapter.'+name,{payloadBytes:payload.length});ledger('request.prepared',{scope:local.scope,fp:local.fp,payloadBytes:payload.length});out(`[REQUEST PREPARED] ${name} · local receipt ${local.fp}. No provider API request was executed; connect an authenticated adapter to continue.`,'warn');return {ok:false,status:'adapter_not_configured',provider:name,receipt:local.fp};}
 function help(){out('Commands:\n help | about | status | clear\n panel spawn <module> | panel pop <module> | panel show <module> | glass clear|restore\n token <scope> | tokens | ledger\n telemetry start|snapshot|summary|send|export|clear\n bus routes | bus command <cmd> | bus aggregate <kind> <payload>\n request <provider> <payload> | /gemini | /github | /drive | /ollama | /openai | /q | /watson | /genie\n genie wish <intent> | genie world <seed> | genie token | genie open\n gaia verify [--everything] | gaia init | gaia login | gaia status | gaia evolve | matrix\n embed <query> | embed cosine | embed parts (gemini-embedding-2-preview)\n sentinel verify | sentinel quine | sentinel audit (TDOC Sentinel V11 Dual Authority)\n consensus vote | consensus perturb | consensus status (D3 Multi-AI Quorum)\n galaxies warp | galaxies status | voice | quine | aurora | irc <msg>\n docs [search] | pdf | corpus (Sovereign PDF Knowledge Core)\n nodes | open <node> | gateway <node> <scope>\n comms pair <node> <public-jwk> | comms seal <node> <message>\n change <node> <proposal>\n bridge connect <url> <secret> | bridge status | bridge action <action>\n 963 on|off | field on|off | guardian','good')}
 async function bridgeStatus(){const url=sessionStorage.getItem('cryptic.bridge.url'),secret=sessionStorage.getItem('cryptic.bridge.secret');if(!url||!secret){out('Bridge not connected.','warn');return {ok:false}}try{const r=await fetch(url.replace(/\/$/,'')+'/health',{headers:{Authorization:'Bearer '+secret}}),j=await r.json();out('Bridge '+(r.ok?'ONLINE ':'DENIED ')+JSON.stringify(j),r.ok?'good':'bad');return j}catch(e){out('Bridge unreachable: '+e.message,'bad');return {ok:false,error:e.message}}}
 async function bridgeCommand(args){if(args[0]==='connect'){if(!args[1]||!args[2])return out('usage: bridge connect <url> <secret>','warn');sessionStorage.setItem('cryptic.bridge.url',args[1]);sessionStorage.setItem('cryptic.bridge.secret',args[2]);const t=await mintToken('bridge.connect',{url:args[1]});out('Bridge profile stored in session only. fp='+t.fp,'token');return bridgeStatus()}if(args[0]==='action')return window.CrypticRuntime?.bridgeAction?.(args[1]);return bridgeStatus()}
@@ -32,104 +33,72 @@ async function gaiaCommand(args){
   const sub=(args[0]||'status').toLowerCase();
   const target=args.slice(1).join(' ').trim();
   if(sub==='verify'){
-    const everything=target.includes('--everything')||target.includes('-e')||!target;
-    const t=await mintToken('gaia.verify',{scope:everything?'all':target});
-    ledger('gaia.verified',{scope:t.scope,fp:t.fp});
-    out(`[GAIA VERIFY] Scanning sovereign matrix layers...
-  ✓ Node Mesh Topology     : OK (720 nodes, Sigma throughput 15,000 px/s)
-  ✓ Device Pairing         : OK (nexus:samsung-arm64, ED25519)
-  ✓ Cryptic Ledger Hash    : OK (hop 467, numeral 137451921129154222)
-  ✓ Model Context Gate     : OK (Gemini, Genie Djinn, Ollama, OpenAI)
-  ✓ Checksum Integrity     : OK (Golden Army & Master Alchemist 0x74446C2E)
-STATUS=PASS_NO_ACTIVE_REFERENCE · Verification receipt [${t.fp}]`,'good');
-    return {ok:true,status:'PASS_NO_ACTIVE_REFERENCE',fp:t.fp};
+    const checks=[];
+    checks.push({name:'WebCrypto SHA-256',ok:!!(globalThis.crypto&&crypto.subtle)});
+    try{const k='cryptic.verify.probe';localStorage.setItem(k,'ok');const ok=localStorage.getItem(k)==='ok';localStorage.removeItem(k);checks.push({name:'local storage read/write',ok})}catch{checks.push({name:'local storage read/write',ok:false})}
+    for(const path of ['./modules/manifest.json','./config/nodes.public.json']){
+      try{const r=await fetch(path,{cache:'no-store',signal:AbortSignal.timeout(4000)});checks.push({name:path,ok:r.ok,status:r.status})}catch{checks.push({name:path,ok:false,status:'unreachable'})}
+    }
+    try{const r=await fetch('https://api.crypticnews.org/v1/status',{cache:'no-store',signal:AbortSignal.timeout(5000),redirect:'error'});checks.push({name:'Cryptic capability gateway',ok:r.ok,status:r.status})}catch{checks.push({name:'Cryptic capability gateway',ok:false,status:'unreachable'})}
+    const passed=checks.every(x=>x.ok),t=await mintToken('gaia.verify',{scope:'browser-runtime'});
+    ledger('gaia.verify',{scope:'browser-runtime',fp:t.fp,status:passed?'PASS':'INCOMPLETE'});
+    out('[GAIA VERIFY] Live browser/runtime checks:\\n'+checks.map(x=>'  '+(x.ok?'PASS':'UNVERIFIED')+' · '+x.name+(x.status!==undefined?' ('+x.status+')':'')).join('\\n')+'\\nRESULT='+ (passed?'PASS_BROWSER_CHECKS':'INCOMPLETE')+' · receipt '+t.fp,passed?'good':'warn');
+    return {ok:passed,status:passed?'PASS_BROWSER_CHECKS':'INCOMPLETE',checks,fp:t.fp};
   }
   if(sub==='init'){
-    const t=await mintToken('gaia.init',{workspace:'GAIA_NEXUS_SIGMA'});
-    ledger('gaia.init',{fp:t.fp});
-    out(`[GAIA INIT] Initializing GAIA_NEXUS_SIGMA continuum.
-  • Created /outbox and /receipts pipelines
-  • Paired device: samsung-arm64 (ED25519)
-  • Stamped ledger receipt: ${t.fp}`,'good');
-    return t;
+    const t=await mintToken('gaia.init',{workspace:'browser-session'});
+    ledger('gaia.init',{fp:t.fp,status:'SESSION_INITIALIZED'});
+    out('[GAIA INIT] Browser session initialized with local runtime receipt '+t.fp+'. No device pairing, filesystem creation, or remote system changes were performed.','good');
+    return {ok:true,status:'SESSION_INITIALIZED',fp:t.fp};
   }
   if(sub==='login'){
-    out(`[GAIA IDENTITY] Node Key Established:
-  Node: samsung-arm64 (SAMSUNG)
-  Key:  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGteDQk53+YlXIALXcls03EZ3B7IXdgYr+knG5dYZuUt
-  FP:   256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg (ED25519)
-Authentication: SOVEREIGN CONTINUITY VERIFIED`,'good');
-    return {authenticated:true,node:'samsung-arm64'};
+    out('[GAIA IDENTITY] Not authenticated. This public static page has no login session or device-attestation proof. Use the backend OAuth flow before authorizing protected operations.','warn');
+    return {authenticated:false,status:'AUTH_REQUIRED'};
   }
   if(sub==='node'&&args[1]==='enroll'){
-    const nodeName=args.slice(2).join(' ')||'samsung-arm64';
-    const t=await mintToken('gaia.node.enroll',{node:nodeName});
-    ledger('gaia.node.enrolled',{node:nodeName,fp:t.fp});
-    out(`[GAIA NODE] Enrolled ${nodeName} into Sovereign Mesh. Receipt [${t.fp}].`,'good');
-    return t;
+    const nodeName=args.slice(2).join(' ').trim();
+    if(!nodeName){out('usage: gaia node enroll <node-name>','warn');return {ok:false,error:'node_name_required'}}
+    const t=await mintToken('gaia.node.enroll');
+    ledger('gaia.node.enrollment_requested',{node:nodeName,fp:t.fp,status:'PENDING'});
+    out('[GAIA NODE] Enrollment request prepared for '+nodeName+'. No device has been enrolled; authenticated backend approval is required. receipt='+t.fp,'warn');
+    return {ok:false,status:'PENDING_BACKEND_APPROVAL',node:nodeName,fp:t.fp};
   }
   if(sub==='mesh'){
-    const t=await mintToken('gaia.mesh.verify');
-    out(`[GAIA MESH] All transports verified:
-  • loopback       : ACTIVE
-  • broadcast      : READY (${'BroadcastChannel' in window ? 'Channel OK' : 'Unavailable'})
-  • edge relay     : https://bus.crypticnews.org (ONLINE)
-  • capability gw  : https://api.crypticnews.org (ONLINE)`,'good');
-    return t;
+    const broadcast='BroadcastChannel' in window;
+    let gateway='UNVERIFIED';
+    try{const r=await fetch('https://api.crypticnews.org/v1/status',{cache:'no-store',signal:AbortSignal.timeout(4000),redirect:'error'});gateway=r.ok?'ONLINE':'DEGRADED'}catch{gateway='UNREACHABLE'}
+    const routes=window.CrypticBus?.routes?.()||null;
+    out('[GAIA MESH] Observed local capabilities:\\n  BroadcastChannel: '+(broadcast?'AVAILABLE':'UNSUPPORTED')+'\\n  CrypticBus routes: '+(routes?'ENUMERATED':'UNAVAILABLE')+'\\n  Capability gateway: '+gateway+'\\n  Remote device pairing: NOT VERIFIED','system');
+    return {broadcast,routes:!!routes,gateway,remotePairing:'UNVERIFIED'};
   }
   if(sub==='storage'){
-    const len=(localStorage.getItem('cryptic.ledger')||'').length;
-    out(`[GAIA STORAGE] Local ledger storage: ${len} bytes utilized. Quota OK. Receipts intact.`,'good');
-    return {storage:'ok',bytes:len};
+    const raw=localStorage.getItem('cryptic.ledger')||'';
+    const quota=typeof navigator.storage?.estimate==='function'?await navigator.storage.estimate().catch(()=>null):null;
+    const result={ledgerBytes:new TextEncoder().encode(raw).length,quotaSupported:!!quota,quotaBytes:quota?.quota??null,usageBytes:quota?.usage??null};
+    out('[GAIA STORAGE] Measured browser-local storage: '+JSON.stringify(result),'system');return result;
   }
   if(sub==='models'){
-    out(`[GAIA MODELS] Model matrices verified:
-  • gemini-embedding-2-preview : ONLINE
-  • genie-djinn (world engine)  : ACTIVE
-  • openai / ollama / watson    : ADAPTERS READY`,'good');
-    return {models:'ok'};
+    const result={providerAdapters:'NOT_AUTHENTICATED',configuredInPublicBrowser:false,providers:providers.map(p=>({id:p[0],status:p[0]==='bridge'?'LOCAL_BRIDGE_OPTIONAL':'UNVERIFIED'}))};
+    out('[GAIA MODELS] Provider readiness is not inferred from labels. '+JSON.stringify(result,null,2),'warn');return result;
   }
   if(sub==='mcp'){
-    out(`[GAIA MCP] Model Context Protocol interfaces verified: gateway token broker reachable.`,'good');
-    return {mcp:'ok'};
+    try{const r=await fetch('https://api.crypticnews.org/v1/status',{cache:'no-store',signal:AbortSignal.timeout(4000),redirect:'error'});const result={gateway:r.ok?'ONLINE':'DEGRADED',httpStatus:r.status,mcpAdapter:'NOT_CONFIGURED'};out('[GAIA MCP] Observed status: '+JSON.stringify(result),'system');return result}catch(e){const result={gateway:'UNREACHABLE',mcpAdapter:'NOT_CONFIGURED'};out('[GAIA MCP] '+JSON.stringify(result),'warn');return result}
   }
-  if(sub==='image'&&args[1]==='create'){
-    out(`[GAIA IMAGE] Created evolutionary canvas snapshot. Checksum 0x74446C2E.`,'good');
-    return {ok:true};
-  }
+  if(sub==='image'&&args[1]==='create'){out('Image export is not implemented by this command. Use the viewport panel screenshot/export control if available. No snapshot or checksum was created.','warn');return {ok:false,status:'UNSUPPORTED'};}
   if(sub==='test'){
-    const full=target.includes('--full');
-    out(`[GAIA TEST] ${full?'Full suite':'Quick suite'} executed: 14/14 checks passed. Checksum: 0x74446C2E.`,'good');
-    return {passed:true};
+    return gaiaCommand(['verify',...(target.includes('--full')?['--everything']:[])]);
   }
   if(sub==='evolve'){
-    const t=await mintToken('gaia.evolve');
-    ledger('gaia.evolved',{fp:t.fp});
-    out(`[GAIA EVOLVE] Evolutionary matrix phase advanced. Toroidal harmonic shift applied. FP: ${t.fp}`,'good');
-    return t;
+    const t=await mintToken('gaia.evolve.proposal');ledger('gaia.evolution.proposed',{fp:t.fp,status:'PROPOSAL_ONLY'});
+    out('[GAIA EVOLVE] Evolution proposal recorded locally. No system, repository, or remote state was changed. receipt='+t.fp,'warn');return {ok:false,status:'PROPOSAL_ONLY',fp:t.fp};
   }
   if(sub==='promote'){
-    const t=await mintToken('gaia.promote');
-    ledger('gaia.promoted',{fp:t.fp});
-    out(`[GAIA PROMOTE] Promoted state to continuous evidence ledger. Receipt [${t.fp}].`,'good');
-    return t;
+    out('[GAIA PROMOTE] BLOCKED: this browser session has no authenticated ADAM evidence-gate service or independent production receipt. Run live checks and submit verified evidence through the protected release workflow.','warn');return {ok:false,status:'BLOCKED_MISSING_PRODUCTION_EVIDENCE'};
   }
-  if(sub==='rollback'){
-    out(`[GAIA ROLLBACK] Reverted to last verified checkpoint.`,'warn');
-    return {ok:true};
-  }
-  if(sub==='recover'){
-    out(`[GAIA RECOVER] Recovered continuity receipts from ledger stamp.`,'good');
-    return {ok:true};
-  }
-  const stat={
-    runtime:'GAIA_NEXUS_SIGMA',
-    throughputSigma:'15000 px/s',
-    activeNode:'samsung-arm64 (NODE_042/720)',
-    checksum:'0x74446C2E',
-    numeral:'137451921129154222'
-  };
-  out(`[GAIA STATUS]\n${JSON.stringify(stat,null,2)}`,'system');
+  if(sub==='rollback'){out('[GAIA ROLLBACK] No remote rollback was performed. Select a known-good revision and use the authenticated deployment provider.','warn');return {ok:false,status:'REQUIRES_AUTHENTICATED_DEPLOYMENT'};}
+  if(sub==='recover'){out('[GAIA RECOVER] No external data was recovered. This public browser can only inspect the local evidence currently available to it.','warn');return {ok:false,status:'NO_RECOVERY_ADAPTER'};}
+  const stat={runtime:'Cryptic browser terminal',version:VERSION,online:!!navigator.onLine,gateOpen,tokensInMemory:tokens.length,busRoutes:window.CrypticBus?.routes?.()||null,providerAdapters:'NOT_AUTHENTICATED'};
+  out('[GAIA STATUS] '+JSON.stringify(stat,null,2),'system');
   return stat;
 }
 
