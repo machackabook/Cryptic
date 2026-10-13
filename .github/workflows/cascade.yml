@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: runtime security regression tests
+        run: node --test tests/security.test.mjs
+      - name: secret-pattern and source verification
+        run: node scripts/verify.mjs
       - name: require README and SECURITY
         run: test -f README.md && test -f SECURITY.md
       - name: stamp present
