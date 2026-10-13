@@ -86,3 +86,9 @@ button{cursor:pointer}
 .magic-launch-copy{font-size:8px;line-height:1.6;color:var(--muted);max-width:88%}
 .magic-launch-arrow{position:absolute;right:12px;bottom:10px;font-size:20px;color:var(--gold)}
 .magic-launcher:hover{border-color:rgba(85,233,255,.55);background:radial-gradient(circle at 85% 30%,rgba(85,233,255,.18),transparent 48%),linear-gradient(135deg,rgba(85,233,255,.1),rgba(127,112,255,.07))}
+
+/* Accessible entry utilities: visible on keyboard focus, quiet otherwise. */
+.skip-link{position:fixed;top:8px;left:8px;z-index:1000;transform:translateY(-160%);padding:10px 14px;border:2px solid var(--cyan);border-radius:8px;background:#01040a;color:var(--ink);font-size:12px;text-decoration:none}
+.skip-link:focus{transform:translateY(0);outline:3px solid var(--gold);outline-offset:2px}
+.noscript-notice{position:relative;z-index:200;max-width:760px;margin:8vh auto;padding:24px;border:1px solid var(--cyan);border-radius:12px;background:#01040a;color:var(--ink);font:14px/1.6 ui-monospace,monospace}
+.noscript-notice a{color:var(--cyan)}
