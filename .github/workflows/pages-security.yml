@@ -35,6 +35,12 @@ jobs:
           npm run test:security
       - name: Record revision and changed-file evidence
         run: node scripts/security-diff.mjs
+      - name: Validate AI denial policy and publication boundaries
+        run: |
+          node -e "const p=require('./.well-known/ai-access-policy.json'); if(p.ai_access?.default!=='denied'||p.authorization?.status!=='backend-enforcement-required')process.exit(1)"
+          grep -q '^User-agent: \*' robots.txt
+          grep -q '^Disallow: /' robots.txt
+          grep -q 'robots.txt.*not.*origin' AI-ACCESS-POLICY.md || test -f docs/SECURITY-BACKLOG-10OF10.md
       - name: Audit current Cryptic source
         run: node scripts/pages-security-audit.mjs --local-only
       - name: Audit public GitHub Pages across owners
