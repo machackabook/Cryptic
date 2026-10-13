@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import http from 'node:http';
+import { timingSafeEqual, randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdir, appendFile } from 'node:fs/promises';
@@ -15,7 +16,7 @@ const DATA_DIR=path.join(ROOT,'.cryptic');
 const BUS_LOG=path.join(DATA_DIR,'bus.jsonl');
 const TELEMETRY_LOG=path.join(DATA_DIR,'telemetry.jsonl');
 
-if (!TOKEN) {
+if (!TOKEN || Buffer.byteLength(TOKEN)<32 || !['127.0.0.1','localhost','::1'].includes(HOST) || !Number.isInteger(PORT) || PORT<1 || PORT>65535 || new URL(GATEWAY).protocol!=='https:') {
   console.error('CRYPTIC_BRIDGE_TOKEN is required.');
   process.exit(2);
 }
@@ -31,7 +32,7 @@ const allowedOrigins=new Set([
 function headers(origin=''){
   return {
     'content-type':'application/json',
-    'access-control-allow-origin':allowedOrigins.has(origin)?origin:'https://machackabook.github.io',
+    'access-control-allow-origin':allowedOrigins.has(origin)?origin:'',
     'access-control-allow-headers':'authorization,content-type,x-cryptic-request-token',
     'access-control-allow-methods':'GET,POST,OPTIONS',
     'access-control-allow-private-network':'true',
@@ -43,12 +44,13 @@ function send(res,status,body,origin=''){
   res.writeHead(status,headers(origin));
   res.end(JSON.stringify(body));
 }
-function localAuth(req){ return req.headers.authorization === 'Bearer ' + TOKEN; }
+function localAuth(req){const a=Buffer.from(req.headers.authorization||''),b=Buffer.from('Bearer '+TOKEN);return a.length===b.length&&timingSafeEqual(a,b)}
+const usedCapabilities=new Map();
 async function readJson(req,limit=65536){
   let body='';
   for await(const chunk of req){
     body+=chunk;
-    if(body.length>limit) throw new Error('body_too_large');
+    if(Buffer.byteLength(body)>limit) throw new Error('body_too_large');
   }
   return JSON.parse(body||'{}');
 }
@@ -57,12 +59,17 @@ async function verifyCapability(req,requiredScope){
   if(!token) return null;
   const res=await fetch(GATEWAY+'/v1/verify',{
     method:'POST',
-    headers:{'x-cryptic-token':String(token)}
+    headers:{'x-cryptic-token':String(token)},
+    signal:AbortSignal.timeout(5000),redirect:'error'
   });
   if(!res.ok) return null;
   const data=await res.json();
   const claims=data?.claims;
-  if(!claims || claims.aud!=='cryptic-runtime' || claims.scope!==requiredScope) return null;
+  const now=Math.floor(Date.now()/1000);
+  if(!claims || claims.aud!=='cryptic-runtime' || claims.scope!==requiredScope || !Number.isFinite(claims.exp) || claims.exp<=now || claims.exp>now+600 || typeof claims.jti!=='string' || !claims.jti || usedCapabilities.has(claims.jti))return null;
+  for(const [id,exp] of usedCapabilities)if(exp<=now)usedCapabilities.delete(id);
+  if(usedCapabilities.size>=4096)return null;
+  usedCapabilities.set(claims.jti,claims.exp);
   return claims;
 }
 async function git(args){
@@ -85,8 +92,8 @@ async function appendFrame(frame){
     id:String(frame.id||'').slice(0,100),
     kind:String(frame.kind||'').slice(0,120),
     target:String(frame.target||'').slice(0,100),
-    source:frame.source||null,
-    payload:frame.payload||null
+    source:null,
+    payload:null
   };
   const line=JSON.stringify(record)+'\n';
   await appendFile(BUS_LOG,line,{encoding:'utf8',mode:0o600});
@@ -102,6 +109,7 @@ async function appendFrame(frame){
 
 const server=http.createServer(async(req,res)=>{
   const origin=req.headers.origin||'';
+  if(origin&&!allowedOrigins.has(origin))return send(res,403,{ok:false,error:'origin_not_allowed'});
   if(req.method==='OPTIONS') return send(res,204,{},origin);
   if(!localAuth(req)) return send(res,401,{ok:false,error:'local_bridge_unauthorized'},origin);
 
@@ -110,7 +118,7 @@ const server=http.createServer(async(req,res)=>{
       ok:true,
       runtime:'Cryptic Local Bridge',
       version:'0.7.0',
-      root:ROOT,
+
       actions:Object.keys(ACTIONS),
       bus:{endpoint:'/v1/bus',dataset:path.relative(ROOT,TELEMETRY_LOG)}
     },origin);
@@ -120,13 +128,14 @@ const server=http.createServer(async(req,res)=>{
     try{
       const body=await readJson(req,32768);
       const action=String(body.action||'');
-      if(!ACTIONS[action]) return send(res,400,{ok:false,error:'action_not_allowed',allowed:Object.keys(ACTIONS)},origin);
+      if(['git.fetch','git.pull-ff'].includes(action)&&process.env.CRYPTIC_BRIDGE_ENABLE_MUTATIONS!=='1')return send(res,403,{ok:false,error:'bridge_mutations_disabled'},origin);
+      if(!Object.hasOwn(ACTIONS,action)) return send(res,400,{ok:false,error:'action_not_allowed',allowed:Object.keys(ACTIONS)},origin);
       const claims=await verifyCapability(req,'bridge.action.'+action);
       if(!claims) return send(res,403,{ok:false,error:'signed_capability_required'},origin);
       const result=await ACTIONS[action]();
       return send(res,200,{ok:true,action,claims:{jti:claims.jti,node:claims.node,exp:claims.exp},result},origin);
     }catch(e){
-      return send(res,500,{ok:false,error:e.message},origin);
+      return send(res,500,{ok:false,error:'bridge_request_failed'},origin);
     }
   }
 
@@ -140,7 +149,7 @@ const server=http.createServer(async(req,res)=>{
       return send(res,202,{
         ok:true,
         receipt:{
-          id:crypto.randomUUID(),
+          id:randomUUID(),
           message_id:frame.id,
           kind:frame.kind,
           accepted_at:new Date().toISOString()
@@ -148,13 +157,16 @@ const server=http.createServer(async(req,res)=>{
         result
       },origin);
     }catch(e){
-      return send(res,500,{ok:false,error:e.message},origin);
+      return send(res,500,{ok:false,error:'bridge_request_failed'},origin);
     }
   }
 
   return send(res,404,{ok:false,error:'not_found'},origin);
 });
 
+server.requestTimeout=10000;
+server.headersTimeout=5000;
+server.maxHeadersCount=32;
 server.listen(PORT,HOST,()=>{
   console.log('Cryptic Local Bridge: http://'+HOST+':'+PORT);
   console.log('Workspace root: '+ROOT);
@@ -162,3 +174,4 @@ server.listen(PORT,HOST,()=>{
   console.log('Allowlisted actions: '+Object.keys(ACTIONS).join(', '));
   console.log('Every action requires BOTH the local bridge secret and a fresh gateway-signed capability token.');
 });
+

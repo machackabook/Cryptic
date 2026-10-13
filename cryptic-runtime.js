@@ -60,7 +60,7 @@
       overlay=document.createElement('div');
       overlay.id='cryptic-node-overlay';
       overlay.style.cssText='position:fixed;inset:3vh 3vw;z-index:80;background:#02050a;border:1px solid rgba(66,245,255,.4);border-radius:18px;box-shadow:0 20px 100px rgba(0,0,0,.8);display:grid;grid-template-rows:auto 1fr;overflow:hidden';
-      overlay.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(66,245,255,.2);background:rgba(5,12,22,.95)"><span id="cryptic-node-title" style="font:10px ui-monospace,monospace;letter-spacing:.15em;color:#dff">NODE</span><div style="display:flex;gap:8px"><a id="cryptic-node-external" target="_blank" rel="noopener noreferrer" style="font:9px ui-monospace,monospace;color:#ffd369;border:1px solid rgba(255,211,105,.3);padding:7px 9px;border-radius:8px;text-decoration:none">OPEN EXTERNAL</a><button id="cryptic-node-close" style="font:9px ui-monospace,monospace;color:#42f5ff;background:#041019;border:1px solid rgba(66,245,255,.3);padding:7px 9px;border-radius:8px">CLOSE</button></div></div><iframe id="cryptic-node-frame" style="width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"></iframe>';
+      overlay.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(66,245,255,.2);background:rgba(5,12,22,.95)"><span id="cryptic-node-title" style="font:10px ui-monospace,monospace;letter-spacing:.15em;color:#dff">NODE</span><div style="display:flex;gap:8px"><a id="cryptic-node-external" target="_blank" rel="noopener noreferrer" style="font:9px ui-monospace,monospace;color:#ffd369;border:1px solid rgba(255,211,105,.3);padding:7px 9px;border-radius:8px;text-decoration:none">OPEN EXTERNAL</a><button id="cryptic-node-close" style="font:9px ui-monospace,monospace;color:#42f5ff;background:#041019;border:1px solid rgba(66,245,255,.3);padding:7px 9px;border-radius:8px">CLOSE</button></div></div><iframe id="cryptic-node-frame" style="width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-forms" referrerpolicy="no-referrer"></iframe>';
       document.body.appendChild(overlay);
       $('#cryptic-node-close',overlay).onclick=()=>overlay.remove();
     }
@@ -116,7 +116,7 @@
     if(!encodedJwk) return window.out?.('usage: comms pair <node> <base64url-public-jwk>','warn');
     try{
       const jwk=JSON.parse(b64uToText(encodedJwk));
-      if(jwk.kty!=='EC' || jwk.crv!=='P-256' || !jwk.x || !jwk.y) throw new Error('expected P-256 ECDH public JWK');
+      if(jwk.kty!=='EC' || jwk.crv!=='P-256' || !jwk.x || !jwk.y || jwk.d) throw new Error('expected P-256 ECDH public JWK');
       await crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},false,[]);
       sessionStorage.setItem('cryptic.nodekey.'+nodeId,JSON.stringify(jwk));
       const fp=await window.fingerprint?.(JSON.stringify(jwk));
@@ -180,8 +180,8 @@
     if(!['runtime.info','git.status','git.fetch','git.pull-ff'].includes(action||'')){
       return window.out?.('bridge action: runtime.info | git.status | git.fetch | git.pull-ff','system');
     }
-    const url=sessionStorage.getItem('cryptic.bridge.url');
-    const secret=sessionStorage.getItem('cryptic.bridge.secret');
+    const url=window.CrypticBridgeProfile?.url;
+    const secret=window.CrypticBridgeProfile?.secret;
     if(!url || !secret) return window.out?.('Bridge not connected. Use bridge connect <url> <secret>.','warn');
     const signed=await gatewayToken('bridge','bridge.action.'+action);
     if(!signed) return;
@@ -229,3 +229,4 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
+

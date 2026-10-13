@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vkpHNmPgmAiopZlf5b/ImzcQA2FwFrQF0e2iBh4cXew='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020409">
@@ -614,7 +616,10 @@ h1{
     const div = document.createElement('div');
     div.className = 'log-entry';
     const now = new Date().toISOString().slice(11, 19);
-    div.innerHTML = `<span class="${type==='user'?'log-receipt':'log-djinn'}">[${now}] ${speaker}:</span> ${text}`;
+    const label=document.createElement('span');
+    label.className=type==='user'?'log-receipt':'log-djinn';
+    label.textContent=`[${now}] ${speaker}:`;
+    div.append(label,document.createTextNode(' '+String(text)));
     logEl.appendChild(div);
     logEl.scrollTop = logEl.scrollHeight;
   }
@@ -717,3 +722,4 @@ h1{
 </script>
 </body>
 </html>
+

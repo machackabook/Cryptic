@@ -84,7 +84,7 @@
   }
 
   async function aggregate(kind,payload={},opts={}){
-    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','edge']});
+    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback']});
   }
 
   async function bridge(action){
@@ -93,6 +93,7 @@
   }
 
   function commandUrl(command,opts={}){
+    if(/^bridge\s+connect\b/i.test(String(command||'')))throw new Error('credentials_not_allowed_in_urls');
     const u=new URL('./terminal/',location.href);
     u.searchParams.set('cmd',String(command||''));
     if(opts.autorun)u.searchParams.set('autorun','1');
@@ -102,7 +103,7 @@
   if(bc){
     bc.onmessage=e=>{
       const msg=e.data;
-      if(!msg?.id||seen.has(msg.id))return;
+      if(!msg?.id||msg.kind==='terminal.command'||msg.kind==='bridge.action'||seen.has(msg.id))return;
       seen.add(msg.id);
       if(msg.kind==='terminal.command')window.CrypticTerminal?.exec?.(String(msg.payload?.command||''));
       window.dispatchEvent(new CustomEvent('cryptic:bus',{detail:msg}));
@@ -120,7 +121,7 @@
     routes:()=>({
       loopback:true,
       broadcast:Boolean(bc),
-      localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url')),
+      localhost:Boolean(window.CrypticBridgeProfile?.url),
       edge:EDGE,
       deeplink:true
     }),
