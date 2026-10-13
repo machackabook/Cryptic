@@ -28,3 +28,19 @@
 .axs-output{height:clamp(220px,38vh,460px);overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#01040a;border:1px solid rgba(0,255,255,.2);border-radius:8px;padding:12px;color:#b7f7df;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;user-select:text}
 .axs-inputbar{display:flex;align-items:end;gap:8px}.axs-command-field{flex:1}.axs-notice{font-size:10px;line-height:1.5;color:#94a3b8;padding:2px 4px}.axs-notice a{color:#00e5ff;text-decoration:underline;text-underline-offset:2px}
 @media(max-width:620px){.axs-inputbar{align-items:stretch;flex-direction:column}.axs-inputbar .action{width:100%}.axs-toolbar,.axs-sessionbar{align-items:stretch}.axs-controls{flex-direction:column}.axs-controls .action{width:100%}.axs-output{height:35vh}}
+
+
+/* Cryptic SSH identity and HULE/LACE panels */
+.identity-module{display:flex;flex-direction:column;gap:12px;min-width:0;color:var(--ink,#e0e7ff)}
+.identity-card{padding:12px;border:1px solid rgba(0,229,255,.2);border-radius:10px;background:rgba(3,6,18,.82);min-width:0}
+.identity-card h3{margin:0 0 8px;color:#00e5ff;font-size:12px;letter-spacing:.04em}
+.identity-card p{font-size:11px;line-height:1.55;color:#a9b7ce;margin:6px 0}
+.identity-field{display:flex;flex-direction:column;gap:5px;margin:8px 0;font-size:10px;color:#94a3b8}
+.identity-field input,.identity-field textarea{width:100%;min-width:0;padding:9px;border-radius:6px;border:1px solid #27344d;background:#020611;color:#e0e7ff;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+.identity-field textarea{resize:vertical;user-select:text}
+.identity-command,.identity-result{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto;padding:10px;border:1px solid #243247;border-radius:7px;background:#01040a;color:#b7f7df;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;user-select:text}
+.identity-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px}
+.identity-actions a,.identity-note a{color:#00e5ff;text-decoration:underline;text-underline-offset:2px;font-size:10px}
+.identity-note{font-size:10px!important;color:#f4cf79!important}
+.identity-lace-view{padding:10px;border:1px dashed rgba(147,51,234,.5);border-radius:7px;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#e0e7ff}
+.identity-clip-svg{width:76px;height:76px;background:#020611;border:1px solid rgba(0,229,255,.25);border-radius:8px}
