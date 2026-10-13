@@ -1,4 +1,4 @@
-const VERSION='0.8.1';
+const VERSION='0.9.1-security';
 const providers=[['gemini','Gemini'],['github','GitHub'],['drive','Google Drive'],['ollama','Ollama'],['openai','OpenAI'],['amazon-q','Amazon Q'],['watson','IBM Watson'],['bridge','Local Bridge'],['genie','Genie Djinn']];
 const tokens=[];
 let gateOpen=false,oscillator=null,audioCtx=null,wakeLock=null;
@@ -112,7 +112,7 @@ async function gaiaCommand(args){
     const info={ok:false,production_verified:false,status:'ADAM_PROOF_PENDING',checks,
       reason:'Browser capability presence does not prove paired devices, models, network services, cryptographic attestation, or production gates.'};
     ledger('gaia.audit.local',{mode:sub,checks,status:info.status});
-    out('[GAIA '+sub.toUpperCase()+'] LOCAL OBSERVATION ONLY\\n'+JSON.stringify(info,null,2),'warn');
+    out('[GAIA '+sub.toUpperCase()+'] LOCAL OBSERVATION ONLY\n'+JSON.stringify(info,null,2),'warn');
     return info;
   }
   if(sub==='storage'){
@@ -133,7 +133,7 @@ async function gaiaCommand(args){
   out('GAIA commands: status | mesh | storage | verify | test | init | login | models | mcp | evolve | promote | rollback | recover','system');
   return {ok:false,error:'unknown_gaia_command'};
 }
-async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+(/^bridge\s+connect\s+/i.test(v)?'bridge connect [LOCAL URL] [REDACTED SECRET]':v),'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
+async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(/^bridge\s+connect\b/i.test(v) && window.location.search.includes('cmd=')){out('Bridge credentials are never accepted through URL commands.','warn');return {ok:false,error:'url_secret_blocked'}}if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+(/^bridge\s+connect\s+/i.test(v)?'bridge connect [LOCAL URL] [REDACTED SECRET]':v),'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
  if(lower==='help')return help();
  if(lower==='about')return out('Cryptic '+VERSION+' modular HyperTerminal command center.','good');
  if(lower==='status'){const x={gate:gateOpen,online:navigator.onLine,tokens:tokens.length,bus:window.CrypticBus?.routes?.()||null,panels:[...(window.CrypticDashboard?.mounted?.keys?.()||[])]};out(JSON.stringify(x,null,2),'system');return x}
