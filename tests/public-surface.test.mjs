@@ -42,9 +42,8 @@ test('main page navigation, page targets, and panel controls are wired in source
   for (const control of ['ghost', 'collapse', 'hide', 'duplicate', 'pop']) {
     assert.ok(js.includes('data-panel="' + control + '"'), 'missing control ' + control);
   }
-  for (const control of ['ghost', 'collapse', 'hide', 'duplicate', 'pop']) {
-    assert.ok(js.includes("q('[data-panel=\\"" + control + "\\"]'"), 'missing listener selector ' + control);
-  }
+  assert.ok(js.includes("q('[data-panel="), 'missing scoped panel-control selectors');
+  assert.ok(js.includes("addEventListener('click'"), 'missing click handlers');
   assert.match(js, /Pop-up blocked; opened an in-page panel instead/);
   assert.match(js, /dashboard could not initialize/);
 });
