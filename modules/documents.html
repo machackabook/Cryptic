@@ -1,10 +1,11 @@
 <div class="documents-module">
   <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.5rem;">Sovereign Knowledge Corpus & PDF Integration Engine</div>
   <div id="docModuleStats" style="font-family:var(--font-mono); font-size:0.7rem; color:#38bdf8; margin-bottom:0.75rem;">
-    8 Uploaded Documents Incorporated · 100% OS Subsystem Coverage
+    Browser-only document panel · corpus adapter status unverified
   </div>
   <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-    <button class="btn" onclick="CrypticRuntime?.open?.('documents')">Open Corpus</button>
-    <button class="btn" onclick="CrypticTerminal?.exec?.('docs')">Terminal Index</button>
+    <button class="btn" id="documentsOpenBtn" type="button">Open Corpus</button>
+    <button class="btn" id="documentsIndexBtn" type="button">Check Document Index</button>
   </div>
+  <div id="documentsActionStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:#94a3b8;margin-top:0.5rem">No document query run.</div>
 </div>
