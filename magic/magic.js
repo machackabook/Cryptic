@@ -37,7 +37,7 @@ function renderLedger(){
 
 async function renderRoutes(){
  const grid=$('#busState');
- const states={sameOrigin:true,edge:false,localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url'))};
+ const states={sameOrigin:true,edge:false,localhost:Boolean(window.CrypticBridgeSession?.active())};
  try{
    const r=await fetch('https://bus.crypticnews.org/v1/status',{cache:'no-store'});
    states.edge=r.ok;
@@ -60,7 +60,11 @@ async function renderSurfaces(){
      const href=a.getAttribute('href')||'';
      if(href.startsWith('./')){
        a.href='#';a.onclick=e=>{e.preventDefault();openSameOriginSurface(n)}
-     }else{a.target='_blank';a.rel='noopener noreferrer'}
+     }else{
+       try{const u=new URL(a.href,location.href);if(!['https:','http:'].includes(u.protocol))continue; a.href=u.href}
+       catch{continue}
+       a.target='_blank';a.rel='noopener noreferrer'
+     }
      box.appendChild(a);
    }
  }catch(e){box.textContent='Node registry unavailable: '+e.message}
@@ -69,7 +73,13 @@ async function renderSurfaces(){
 function openSameOriginSurface(node){
  const stage=$('#magicStage');stage.innerHTML='';
  const section=document.createElement('section');section.className='magic-surface';
- const frame=document.createElement('iframe');frame.src='../'+String(node.interface_url).replace(/^\.\//,'');frame.title=node.label||node.id;frame.sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-downloads';
+ const relative=String(node.interface_url||'');
+ if(!/^\.\/interfaces\/[a-z0-9-]+\.html$/i.test(relative))throw new Error('Unapproved embedded surface');
+ const frame=document.createElement('iframe');
+ frame.src=new URL('../'+relative.slice(2),location.href).href;
+ frame.title=String(node.label||node.id).slice(0,90);
+ frame.sandbox='allow-scripts allow-forms';
+ frame.referrerPolicy='no-referrer';
  section.appendChild(frame);stage.appendChild(section);$('#browserLocation').textContent='cryptic://surface/'+node.id;
  appendLedger('magic.surface.open',{node:node.id});
 }
