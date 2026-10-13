@@ -1,0 +1,51 @@
+{
+  "schema": "cryptic.ai-access-policy.v1",
+  "site": "https://machackabook.github.io/Cryptic/",
+  "repository": "machackabook/Cryptic",
+  "policy": "default-deny-ai-crawling-and-data-harvesting",
+  "notice": "This is a public machine-readable policy, not an authentication protocol or security boundary.",
+  "scopes": {
+    "public_html": "viewable by humans; no permission for automated bulk collection",
+    "private_source": "never exposed on GitHub Pages",
+    "private_telemetry": "never exposed on GitHub Pages"
+  },
+  "ai_access": {
+    "default": "denied",
+    "scraping": "denied",
+    "dataset_training": "denied",
+    "bulk_download": "denied",
+    "automated_indexing": "denied",
+    "machine_analysis": "prior written authorization required",
+    "user_initiated_public_browsing": "does not grant access to private resources"
+  },
+  "authorization": {
+    "status": "backend-enforcement-required",
+    "github_repository": "machackabook/Cryptic",
+    "github_account_claim": "server-verified OAuth login and repository collaborator permission, not a self-declared username",
+    "device_claim": "cryptographic device attestation or registered device identity validated by backend",
+    "machine_claim": "signed short-lived scoped capability bound to principal, repository, permitted operation and device; replay checked server-side",
+    "insufficient_evidence": [
+      "user-agent string",
+      "referer header",
+      "IP address",
+      "GitHub profile URL",
+      "GitHub username alone",
+      "device serial or fingerprint alone",
+      "locally minted browser token"
+    ],
+    "denied_response": {
+      "http_status": 403,
+      "message": "Thank you for your interest in Cryptic. Automated scraping, bulk collection, and AI data harvesting are not authorized for this identity or device. Please contact the repository owner to request access."
+    }
+  },
+  "limitations": [
+    "robots.txt and this file are advisory. They cannot verify identity or prevent non-compliant scrapers.",
+    "Github Pages exposes published static content publicly.",
+    "Project-path robots.txt is not the origin-root crawler policy; install controls at origin /robots.txt or use Cloudflare-managed robots on a separately controlled domain.",
+    "Cloudflare Access policy and GitHub OAuth identity provider not yet verified for this application."
+  ],
+  "contacts": {
+    "repository": "https://github.com/machackabook/Cryptic",
+    "security_policy": "https://github.com/machackabook/Cryptic/blob/main/SECURITY.md"
+  }
+}
