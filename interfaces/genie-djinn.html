@@ -614,7 +614,10 @@ h1{
     const div = document.createElement('div');
     div.className = 'log-entry';
     const now = new Date().toISOString().slice(11, 19);
-    div.innerHTML = `<span class="${type==='user'?'log-receipt':'log-djinn'}">[${now}] ${speaker}:</span> ${text}`;
+    const span=document.createElement('span');
+    span.className=type==='user'?'log-receipt':'log-djinn';
+    span.textContent='['+now+'] '+String(speaker).slice(0,80)+':';
+    div.append(span,document.createTextNode(' '+String(text)));
     logEl.appendChild(div);
     logEl.scrollTop = logEl.scrollHeight;
   }
