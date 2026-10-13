@@ -1,4 +1,4 @@
-import {sampleHamiltonianXZ,sampleTorusTube,sessionGeometryHolds} from '../modules/session-geometry.js';
+import {sampleHamiltonianXZ,sampleTorusTube,sampleInfinity,sessionGeometryHolds} from '../modules/session-geometry.js';
 
 const T=globalThis.THREE;
 if(!T)throw new Error('Three.js failed to load');
@@ -248,7 +248,10 @@ function initWebGL() {
     const majorRad = 2.4 + tier * 0.85 + (i % 9) * 0.05;
     const theta = (i / count) * Math.PI * 2 * 17;
     const phi = ((i % 120) / 120) * Math.PI * 2;
-    const a = i % 2 === 0 ? sampleHamiltonianXZ(theta, majorRad, 0) : sampleTorusTube(majorRad, 0.85, phi, theta, 0, i);
+    let a;
+    if (i % 4 === 0) a = sampleInfinity(theta, phi, majorRad, 0.85, 0, i);
+    else if (i % 2 === 0) a = sampleHamiltonianXZ(theta, majorRad, 0);
+    else a = sampleTorusTube(majorRad, 0.85, phi, theta, 0, i);
     pos[i * 3] = a.x;
     pos[i * 3 + 1] = a.y * 0.48;
     pos[i * 3 + 2] = a.z;
@@ -344,7 +347,7 @@ function initWebGL() {
     // 7 Galaxies Deep Celestial Rotation
     galaxyPoints.rotation.y = t * 0.008;
 
-    // 3,600 Orbital Particles Keplerian Motion
+    // 3,600 Orbital Particles Keplerian Motion (now includes infinity lemniscate subset)
     const pp = points.geometry.attributes.position.array;
     for (let i = 0; i < count; i++) {
       const tier = i % 7;
@@ -352,7 +355,10 @@ function initWebGL() {
       const speedMult = 0.015 + (7 - tier) * 0.006;
       const theta = (i / count) * Math.PI * 24 + t * speedMult;
       const phi = ((i % 120) / 120) * Math.PI * 2 + t * 0.014;
-      const a = i % 2 === 0 ? sampleHamiltonianXZ(theta, majorRad, t * 0.35) : sampleTorusTube(majorRad, 0.85, phi, theta, t * 0.35, i);
+      let a;
+      if (i % 4 === 0) a = sampleInfinity(theta, phi, majorRad, 0.85, t * 0.35, i);
+      else if (i % 2 === 0) a = sampleHamiltonianXZ(theta, majorRad, t * 0.35);
+      else a = sampleTorusTube(majorRad, 0.85, phi, theta, t * 0.35, i);
       const pull = engine.focus ? Math.max(0.25, 1 - m * 0.38) : 1;
       pp[i * 3] = a.x * pull;
       pp[i * 3 + 1] = a.y * 0.48 * pull;
@@ -398,6 +404,6 @@ document.body.addEventListener('htmx:afterSwap', e => {
 
 $('#systemStatus').innerHTML = 'SYS.OP.REAL<br>GEOMETRY.' + (sessionGeometryHolds().secrets ? 'BLOCKED' : 'VERIFIED');
 renderData(); renderRoutes(); renderSurfaces(); initWebGL();
-appendLedger('magic.window.online', { version: '0.9.5', source: 'Drive Magic Window neural-polymorph lineage' });
+appendLedger('magic.window.online', { version: '0.9.6', source: 'Drive Magic Window neural-polymorph lineage + stage 438 infinity' });
 window.CrypticMagic = { engine, renderData, renderRoutes, renderSurfaces, openSameOriginSurface };
 
