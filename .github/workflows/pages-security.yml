@@ -1,0 +1,46 @@
+name: Cryptic Pages Sentinel Security
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: cryptic-pages-security-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify JavaScript syntax
+        run: |
+          set -eu
+          git diff --check
+          git ls-files -z '*.js' '*.mjs' '*.cjs' | xargs -0 -r -n1 node --check
+      - name: Audit Cryptic source
+        run: node scripts/pages-security-audit.mjs --local-only
+      - name: Audit public Pages sites across connected owners
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_${{ github.token }}: TOKEN
+          PAGES_AUDIT_OWNERS: machackabook,Azazeleous,crypticmetaverse,thearchitectofgaia-boop
+        run: node scripts/pages-security-audit.mjs --fleet
+      - name: Preserve security findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cryptic-pages-security-${{ github.run_id }}
+          path: reports/security/
+          retention-days: 30
+          if-no-files-found: warn
