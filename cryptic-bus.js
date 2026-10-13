@@ -175,6 +175,7 @@
   async function command(command,opts={}){
     const text=String(command||'').trim();
     if(!text) throw new Error('command required');
+    if(/^bridge\s+connect\b/i.test(text))throw new Error('Bridge credentials must never be routed over bus or deep links');
     const route=opts.route || ['loopback'];
     return send('terminal.command',{command:text,autorun:Boolean(opts.autorun)},{...opts,route,target:opts.target||'cryptic'});
   }
