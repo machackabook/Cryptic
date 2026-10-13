@@ -1,0 +1,6 @@
+{
+  "schema": "otasonar.public.v2",
+  "telemetryEndpoint": "",
+  "controllerPublicKeySpkiBase64": "",
+  "note": "Do not publish local device topology. Configure only a privacy-reviewed, authenticated Cloudflare read-only HTTPS endpoint and pin its Ed25519 signer."
+}
