@@ -180,21 +180,12 @@
     if(!['runtime.info','git.status','git.fetch','git.pull-ff'].includes(action||'')){
       return window.out?.('bridge action: runtime.info | git.status | git.fetch | git.pull-ff','system');
     }
-    const url=sessionStorage.getItem('cryptic.bridge.url');
-    const secret=sessionStorage.getItem('cryptic.bridge.secret');
-    if(!url || !secret) return window.out?.('Bridge not connected. Use bridge connect <url> <secret>.','warn');
+    const bridge=window.CrypticBridgeSession;
+    if(!bridge?.active())return window.out?.('Bridge not connected. Use bridge connect with a local URL and secret.','warn');
     const signed=await gatewayToken('bridge','bridge.action.'+action);
     if(!signed) return;
     try{
-      const res=await fetch(url.replace(/\/$/,'')+'/v1/action',{
-        method:'POST',
-        headers:{
-          'content-type':'application/json',
-          'authorization':'Bearer '+secret,
-          'x-cryptic-request-token':signed
-        },
-        body:JSON.stringify({action})
-      });
+      const res=await bridge.request('/v1/action',{token:signed,body:{action}});
       const data=await res.json();
       if(!res.ok) throw new Error(data.error||'bridge_action_failed');
       window.ledger?.('bridge.action',{action,jti:data.claims?.jti});
