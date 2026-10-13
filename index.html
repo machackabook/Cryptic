@@ -1,8 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' ; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' ; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:7331 http://localhost:7331 http://[::1]:7331 http://127.0.0.1:8080 http://localhost:8080; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://machackabook.github.io/Cryptic/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cryptic // HyperTerminal Sovereign OS">
+<meta name="twitter:description" content="Cryptic modular browser command environment with local-first controls.">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
 <link rel="alternate" type="application/json" title="Cryptic AI access policy" href="./.well-known/ai-access-policy.json">
 <meta charset="utf-8">
@@ -17,6 +22,8 @@
 <meta property="og:description" content="Cryptic — modular HyperTerminal Sovereign OS command center.">
 </head>
 <body>
+<a class="skip-link" href="#snapGrid">Skip to command dashboard</a>
+<noscript><main class="noscript-notice"><h1>Cryptic // HyperTerminal Sovereign OS</h1><p>This interface requires JavaScript. The public source and security policy remain available from GitHub.</p><p><a href="https://github.com/machackabook/Cryptic">Source repository</a> · <a href="https://github.com/machackabook/Cryptic/blob/main/SECURITY.md">Security policy</a></p></main></noscript>
 <div id="visualizerLayer" aria-hidden="true"></div>
 <div id="dashboardFx" aria-hidden="true"></div>
 <main id="snapGrid" aria-label="Cryptic modular command dashboard"></main>
