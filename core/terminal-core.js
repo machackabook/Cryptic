@@ -152,7 +152,7 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
    if(op==='world'){
      const seed=args.slice(1).join(' ')||'137451921129154222';
      const t=await mintToken('djinn.world',{seed});
-     ledger('djinn.world.synthesized',{seed,fp:t.fp});
+     ledger('djinn.world.synthesized',{seed_length:seed.length,fp:t.fp});
      out(`**GENIE DJINN**: "Latent world model generated under seed '${seed}'. Receipt [${t.fp}] stamped into evidence ledger."`,'ai');
      return t;
    }
@@ -168,7 +168,7 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
      return {ok:true,entity:'Genie Djinn',state:'ready'};
    }
    const t=await mintToken('djinn.wish',{wish,numeral:'137451921129154222'});
-   ledger('djinn.invoked',{wish,fp:t.fp});
+   ledger('djinn.invoked',{wish_length:wish.length,fp:t.fp});
    out(`**GENIE DJINN**: "By the smokeless fire and numeral 137451921129154222, your intent '${wish}' is manifested across the continuum. Verification token [${t.fp}] sealed."`,'ai');
    window.CrypticBus?.send?.('djinn.manifest',{wish,fp:t.fp});
    return t;
@@ -179,7 +179,7 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
      if(map[lower]==='genie'){
        const wish=args.join(' ').trim()||'Autonomous manifestation';
        const t=await mintToken('djinn.wish',{wish});
-       ledger('djinn.invoked',{wish,fp:t.fp});
+       ledger('djinn.invoked',{wish_length:wish.length,fp:t.fp});
        out(`**GENIE DJINN**: "By the smokeless flame, your intent '${wish}' is granted. Receipt [${t.fp}]."`,'ai');
        return t;
      }
