@@ -1,20 +1,18 @@
 export function mount(root) {
-  const pingBtn = root.querySelector('#ircPingBtn');
-  const openBtn = root.querySelector('#ircOpenBtn');
-  const status = root.querySelector('#ircStatus');
-
-  if (pingBtn) {
-    pingBtn.onclick = () => {
-      window.CrypticBus?.send?.('irc.broadcast.ping', { timestamp: Date.now() });
-      if (status) {
-        status.innerHTML = `[BROADCAST PING EMITTED] Latency: ${(12 + Math.random() * 8).toFixed(1)}ms.<br>Acknowledged by TDOC_Sentinel &amp; Genie_Djinn across #cryptic.`;
-      }
-    };
-  }
-
-  if (openBtn) {
-    openBtn.onclick = () => {
-      window.CrypticRuntime?.open?.('irc');
-    };
-  }
+  const pingBtn=root.querySelector('#ircPingBtn');
+  const openBtn=root.querySelector('#ircOpenBtn');
+  const status=root.querySelector('#ircStatus');
+  if(pingBtn) pingBtn.addEventListener('click',async()=>{
+    if(status)status.textContent='Submitting a local bus ping…';
+    try{
+      const result=await window.CrypticBus?.send?.('irc.broadcast.ping',{timestamp:Date.now()});
+      const confirmed=Boolean(result&&result.ok===true);
+      if(status)status.textContent=confirmed
+        ? 'Bus frame accepted by the reported transport. This does not confirm remote IRC delivery.'
+        : 'No successful bus transport receipt returned; remote delivery is unconfirmed.';
+    }catch{
+      if(status)status.textContent='Bus ping failed. No latency or remote acknowledgement is claimed.';
+    }
+  });
+  if(openBtn) openBtn.addEventListener('click',()=>window.CrypticRuntime?.open?.('irc'));
 }
