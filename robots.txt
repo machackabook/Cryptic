@@ -1,0 +1,17 @@
+# Cryptic AI crawler exclusion policy
+# This file in a GitHub project repository is NOT the authoritative robots.txt
+# for https://machackabook.github.io. Standard crawlers check /robots.txt
+# at the ORIGIN ROOT. Configure it at the site origin to become effective.
+# The separately controlled crypticnews.org zone uses Cloudflare managed robots.
+#
+# Default: automated crawling, indexing, bulk harvesting and AI model training
+# are not authorized without written, scoped permission.
+User-agent: *
+Disallow: /
+
+# Policy and access requests:
+# https://github.com/machackabook/Cryptic
+# Denial notice:
+# "Thank you for your interest in Cryptic. Automated scraping, bulk
+# collection and AI data harvesting are not authorized for this identity
+# or device. Please contact the repository owner to request access."
