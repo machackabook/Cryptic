@@ -1,0 +1,28 @@
+<div class="module-content identity-module">
+  <section class="identity-card">
+    <h3>Cryptic SSH Identity · Local-first</h3>
+    <p>Create the identity on the device that will use it. The browser never generates, uploads, or stores a private SSH key.</p>
+    <label class="identity-field"><span>Node alias</span><input id="identityAliasInput" value="samsung-a15" maxlength="64" autocomplete="off" spellcheck="false"></label>
+    <pre class="identity-command" id="identityCreateCommand">ssh-keygen -t ed25519 -a 100 -f "$HOME/.ssh/cryptic_ed25519" -C "cryptic:samsung-a15"</pre>
+    <div class="identity-actions"><button class="action" id="identityCopyCommand" type="button">Copy local command</button><a href="./scripts/cryptic-identity.sh" target="_blank" rel="noopener noreferrer">Inspect helper script</a></div>
+    <p class="identity-note">Run this in Termux or your own terminal. If that path already exists, stop and inspect it—do not overwrite an existing identity. Use a passphrase.</p>
+  </section>
+  <section class="identity-card">
+    <h3>Public-key fragment normalizer</h3>
+    <p>Paste only OpenSSH public-key material, or wrapped fragments of a public key. You may select a known-good <code>.pub</code> / <code>authorized_keys</code> file as a recovery source. Private-key material is rejected.</p>
+    <label class="identity-field"><span>Public key or fragments</span><textarea id="identityPublicInput" rows="5" spellcheck="false" autocomplete="off" placeholder="ssh-ed25519 AAAA… comment"></textarea></label>
+    <label class="identity-field"><span>Required fingerprint (optional, recommended for recovery)</span><input id="identityExpectedFingerprint" placeholder="SHA256:…" autocomplete="off" spellcheck="false"></label>
+    <label class="identity-field"><span>Known-good public-key inventory (read locally in this tab only)</span><input id="identityInventoryFile" type="file" accept=".pub,.txt,text/plain"></label>
+    <div class="identity-actions"><button class="action" id="identityValidate" type="button">Validate / normalize public key</button><button class="action secondary" id="identityCopyPublic" type="button" disabled>Copy normalized public key</button></div>
+    <pre id="identityResult" class="identity-result" role="status" aria-live="polite">No key has been inspected. Nothing is transmitted to a service.</pre>
+  </section>
+  <section class="identity-card">
+    <h3>HULE / LACE · Hamiltonian Unicode Linguistic Encoding</h3>
+    <label class="identity-field"><span>Presentation label</span><input id="identityLaceLabel" value="ARCHITECT AXS" maxlength="120" autocomplete="off"></label>
+    <div class="identity-actions"><button class="action secondary" id="identityRenderLace" type="button">Render alias + clip-path fingerprint</button></div>
+    <p id="identityLaceView" class="identity-lace-view">A → ª → Å is a presentation alias only. Canonical Unicode code points and signed bytes remain unchanged.</p>
+    <svg id="identityClipSvg" class="identity-clip-svg" viewBox="0 0 72 72" role="img" aria-label="Local display-only path fingerprint" hidden></svg>
+    <p class="identity-note">ZWJ aliases and SVG clip paths are not encryption or proof of identity. A signature over canonical bytes, verified against an independent trust policy, authenticates a message.</p>
+    <p class="identity-note"><a href="./docs/CRYPTIC-SSH-IDENTITY-LACE.md" target="_blank" rel="noopener noreferrer">Read the full identity and fragment-recovery protocol</a></p>
+  </section>
+</div>
