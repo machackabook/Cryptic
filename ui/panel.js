@@ -2,7 +2,7 @@ const qs=new URLSearchParams(location.search),id=qs.get('module')||'terminal';
 const manifest=await fetch('./modules/manifest.json',{cache:'no-store'}).then(r=>r.json());
 const spec=manifest.modules.find(m=>m.id===id&&!m.layer);
 const root=document.getElementById('panelRoot');
-if(!spec){root.innerHTML='<pre>Unknown Cryptic module: '+id+'</pre>';throw new Error('unknown module '+id)}
+if(!spec){root.textContent='Unknown Cryptic module';throw new Error('unknown module '+id)}
 document.title='Cryptic // '+(spec.title||id);
 const section=document.createElement('section');section.className='snap-panel';section.dataset.module=id;
 section.innerHTML='<div class="panel-titlebar"><span class="panel-title"></span><div class="panel-tools"><button id="closePanel">×</button></div></div><div class="panel-body"></div>';
@@ -29,3 +29,4 @@ if(spec.controller){
  const mod=await import(new URL(spec.controller,location.href).href+'?v='+manifest.version);
  if(typeof mod.mount==='function')await mod.mount(section.querySelector('.panel-body'),{spec,instance:'popout',dashboard:api});
 }
+

@@ -37,7 +37,7 @@ function renderLedger(){
 
 async function renderRoutes(){
  const grid=$('#busState');
- const states={sameOrigin:true,edge:false,localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url'))};
+ const states={sameOrigin:true,edge:false,localhost:Boolean(window.CrypticBridgeProfile?.url)};
  try{
    const r=await fetch('https://bus.crypticnews.org/v1/status',{cache:'no-store'});
    states.edge=r.ok;
@@ -166,3 +166,4 @@ $('#systemStatus').innerHTML='SYS.OP.REAL<br>GEOMETRY.'+(sessionGeometryHolds().
 renderData();renderRoutes();renderSurfaces();initWebGL();
 appendLedger('magic.window.online',{version:'0.9.0',source:'Drive Magic Window neural-polymorph lineage'});
 window.CrypticMagic={engine,renderData,renderRoutes,renderSurfaces,openSameOriginSurface};
+

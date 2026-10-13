@@ -25,6 +25,7 @@
     return true;
   }
   function frame(kind,payload={},opts={}){
+    if(kind==='terminal.command'&&/^bridge\s+connect\b/i.test(String(payload.command||'')))throw new Error('bridge_credentials_require_local_terminal');
     return {
       v:1,
       id:crypto.randomUUID(),
@@ -54,7 +55,7 @@
     bc=new BroadcastChannel(CHANNEL);
     bc.onmessage=e=>{
       const msg=e.data;
-      if(!msg?.id || !msg?.kind || !markSeen(msg.id)) return;
+      if(!msg?.id || !msg?.kind || msg.kind==='terminal.command' || msg.kind==='bridge.action' || !markSeen(msg.id)) return;
       const fn=handlers.get(msg.kind) || handlers.get('*');
       if(fn) Promise.resolve(fn(msg)).catch(()=>{});
       window.dispatchEvent(new CustomEvent('cryptic:bus',{detail:msg}));
@@ -99,8 +100,8 @@
   }
   async function sendLocalhost(msg){
     if(!window.CrypticTerminal?.gateOpen) return receipt('localhost',msg,false,{reason:'guardian_closed'});
-    const url=sessionStorage.getItem('cryptic.bridge.url');
-    const secret=sessionStorage.getItem('cryptic.bridge.secret');
+    const url=window.CrypticBridgeProfile?.url;
+    const secret=window.CrypticBridgeProfile?.secret;
     if(!url || !secret) return receipt('localhost',msg,false,{reason:'bridge_not_connected'});
     const runtime=window.CrypticRuntime;
     if(!runtime?.signedToken) return receipt('localhost',msg,false,{reason:'runtime_unavailable'});
@@ -195,7 +196,7 @@
   }
 
   async function aggregate(kind,payload={},opts={}){
-    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback','broadcast','localhost','edge']});
+    return send(kind,payload,{...opts,strategy:'fanout',route:opts.route||['loopback']});
   }
 
   function on(kind,handler){
@@ -216,7 +217,7 @@
     navigator.serviceWorker.addEventListener('message',e=>{
       if(e.data?.type!=='CRYPTIC_BUS_FRAME') return;
       const msg=e.data.frame;
-      if(!msg?.id || !markSeen(msg.id)) return;
+      if(!msg?.id || msg.kind==='terminal.command' || msg.kind==='bridge.action' || !markSeen(msg.id)) return;
       const fn=handlers.get(msg.kind)||handlers.get('*');
       if(fn) Promise.resolve(fn(msg)).catch(()=>{});
     });
@@ -236,7 +237,7 @@
       loopback:true,
       broadcast:'BroadcastChannel' in window,
       serviceWorker:false,
-      localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url')),
+      localhost:Boolean(window.CrypticBridgeProfile?.url),
       edge:EDGE,
       deeplink:true
     }),
@@ -256,3 +257,4 @@
     '\nCrypticBus.routes()'
   );
 })();
+

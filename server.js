@@ -7,9 +7,19 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
-const HOST = '0.0.0.0';
+const HOST = '127.0.0.1';
 
-// Serve static assets from project root
+app.disable('x-powered-by');
+app.use((req,res,next)=>{
+  res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store'});
+  let pathname;try{pathname=decodeURIComponent(req.path)}catch{return res.sendStatus(400)}
+  const publicRoots=['ui','core','modules','interfaces','magic','terminal','living-ledger'];
+  const publicFiles=['index.html','panel.html','manifest.webmanifest','sw.js','cryptic-runtime.js','cryptic-bus.js','cryptic-console.js'];
+  const clean=pathname.replace(/^\//,'');
+  if(clean.split('/').some(s=>s.startsWith('.')||s==='..')||!(clean===''||publicFiles.includes(clean)||clean==='config/nodes.public.json'||publicRoots.includes(clean.split('/')[0])))return res.sendStatus(404);
+  next();
+});
+// Serve only approved public assets
 app.use(express.static(__dirname, {
   extensions: ['html'],
   index: ['index.html']
@@ -27,3 +37,4 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log(`Cryptic command center listening at http://${HOST}:${PORT}`);
 });
+

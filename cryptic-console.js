@@ -255,7 +255,7 @@
       { snapshot: row },
       {
         target: 'telemetry',
-        route: ['loopback','broadcast','localhost','edge']
+        route: ['loopback']
       }
     );
 
@@ -282,6 +282,7 @@
   }
 
   function commandUrl(command, opts={}) {
+    if(/^bridge\s+connect\b/i.test(String(command||'')))throw new Error('credentials_not_allowed_in_urls');
     const u = new URL('./terminal/', location.href);
     u.searchParams.set('cmd', String(command));
     if (opts.autorun) u.searchParams.set('autorun', '1');
@@ -304,6 +305,7 @@
       try { command = decodeURIComponent(command); } catch {}
     }
 
+    if(/^bridge\s+connect\b/i.test(command.trim())){history.replaceState(null,'',location.pathname);return}
     const autorun = p.get('autorun') === '1';
     const safe = /^(help|about|status|nodes|tokens|ledger|telemetry(?:\s+(?:snapshot|summary))?)$/i.test(command.trim());
 
@@ -356,3 +358,4 @@
     '\nCrypticConsole.url("nodes",{autorun:true})'
   );
 })();
+

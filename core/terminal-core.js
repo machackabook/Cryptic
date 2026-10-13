@@ -1,6 +1,10 @@
 const VERSION='0.8.1';
 const providers=[['gemini','Gemini'],['github','GitHub'],['drive','Google Drive'],['ollama','Ollama'],['openai','OpenAI'],['amazon-q','Amazon Q'],['watson','IBM Watson'],['bridge','Local Bridge'],['genie','Genie Djinn']];
 const tokens=[];
+let bridgeProfile=null;
+sessionStorage.removeItem('cryptic.bridge.secret');
+sessionStorage.removeItem('cryptic.bridge.url');
+Object.defineProperty(window,'CrypticBridgeProfile',{get:()=>bridgeProfile});
 let gateOpen=false,oscillator=null,audioCtx=null,wakeLock=null;
 
 const logEl=()=>document.getElementById('log');
@@ -10,7 +14,7 @@ function out(text,type='system'){
   d.className='line '+type;
   if(type==='ai'||type==='ai-output'){
     d.classList.add('ai-output');
-    d.innerHTML=String(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    d.innerHTML=String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   }else{
     d.textContent=String(text);
   }
@@ -18,12 +22,12 @@ function out(text,type='system'){
 }
 function b64u(bytes){let s='';bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 async function fingerprint(value){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16)}
-function ledger(event,data={}){const arr=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');arr.push({ts:new Date().toISOString(),event,data});if(arr.length>512)arr.splice(0,arr.length-512);localStorage.setItem('cryptic.ledger',JSON.stringify(arr));window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:arr.at(-1)}))}
-async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope,issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id),meta};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;sessionStorage.setItem('cryptic.runtime.tokens',JSON.stringify(tokens));window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:rec}}));return rec}
+function ledger(event,data={}){const arr=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');arr.push({ts:new Date().toISOString(),event,data:Object.fromEntries(Object.entries(data).filter(([k])=>!['wish','seed','message','payload','secret','token'].includes(k)))});if(arr.length>512)arr.splice(0,arr.length-512);localStorage.setItem('cryptic.ledger',JSON.stringify(arr));window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:arr.at(-1)}))}
+async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope,issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id),meta};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:rec}}));return rec}
 async function requestAdapter(name,payload=''){const local=await mintToken('adapter.'+name,{payloadBytes:payload.length});ledger('request.token.minted',{scope:local.scope,fp:local.fp});out(`[TOKEN ${local.fp}] ${name} browser receipt minted.`,'token');let signed=null;try{signed=await window.CrypticRuntime?.signedToken?.(name,'adapter.'+name)}catch{}if(signed)out('[EDGE CAPABILITY] signed token minted for '+name+'.','good');else if(name!=='bridge')out(name+' credentials are not stored in this public page.','system');return {local,signed}}
 function help(){out('Commands:\n help | about | status | clear\n panel spawn <module> | panel pop <module> | panel show <module> | glass clear|restore\n token <scope> | tokens | ledger\n telemetry start|snapshot|summary|send|export|clear\n bus routes | bus command <cmd> | bus aggregate <kind> <payload>\n request <provider> <payload> | /gemini | /github | /drive | /ollama | /openai | /q | /watson | /genie\n genie wish <intent> | genie world <seed> | genie token | genie open\n gaia verify [--everything] | gaia init | gaia login | gaia status | gaia evolve | matrix\n nodes | open <node> | gateway <node> <scope>\n comms pair <node> <public-jwk> | comms seal <node> <message>\n change <node> <proposal>\n bridge connect <url> <secret> | bridge status | bridge action <action>\n 963 on|off | field on|off | guardian','good')}
-async function bridgeStatus(){const url=sessionStorage.getItem('cryptic.bridge.url'),secret=sessionStorage.getItem('cryptic.bridge.secret');if(!url||!secret){out('Bridge not connected.','warn');return {ok:false}}try{const r=await fetch(url.replace(/\/$/,'')+'/health',{headers:{Authorization:'Bearer '+secret}}),j=await r.json();out('Bridge '+(r.ok?'ONLINE ':'DENIED ')+JSON.stringify(j),r.ok?'good':'bad');return j}catch(e){out('Bridge unreachable: '+e.message,'bad');return {ok:false,error:e.message}}}
-async function bridgeCommand(args){if(args[0]==='connect'){if(!args[1]||!args[2])return out('usage: bridge connect <url> <secret>','warn');sessionStorage.setItem('cryptic.bridge.url',args[1]);sessionStorage.setItem('cryptic.bridge.secret',args[2]);const t=await mintToken('bridge.connect',{url:args[1]});out('Bridge profile stored in session only. fp='+t.fp,'token');return bridgeStatus()}if(args[0]==='action')return window.CrypticRuntime?.bridgeAction?.(args[1]);return bridgeStatus()}
+async function bridgeStatus(){const url=window.CrypticBridgeProfile?.url,secret=window.CrypticBridgeProfile?.secret;if(!url||!secret){out('Bridge not connected.','warn');return {ok:false}}try{const r=await fetch(url.replace(/\/$/,'')+'/health',{headers:{Authorization:'Bearer '+secret}}),j=await r.json();out('Bridge '+(r.ok?'ONLINE ':'DENIED ')+JSON.stringify(j),r.ok?'good':'bad');return j}catch(e){out('Bridge unreachable: '+e.message,'bad');return {ok:false,error:e.message}}}
+async function bridgeCommand(args){if(args[0]==='connect'){if(!args[1]||!args[2])return out('usage: bridge connect <url> <secret>','warn');const u=new URL(args[1]);if(!['127.0.0.1','localhost','[::1]'].includes(u.hostname)||!['http:','https:'].includes(u.protocol)||u.username||u.password||u.search||u.hash||u.pathname!=='/')throw new Error('bridge_requires_loopback_origin');if(args[2].length<32)throw new Error('bridge_secret_too_short');bridgeProfile=Object.freeze({url:u.origin,secret:args[2]});const t=await mintToken('bridge.connect',{url:args[1]});out('Bridge profile held in this page memory only. fp='+t.fp,'token');return bridgeStatus()}if(args[0]==='action')return window.CrypticRuntime?.bridgeAction?.(args[1]);return bridgeStatus()}
 async function toggle963(on){if(on&&oscillator)return;if(!on&&oscillator){oscillator.stop();oscillator.disconnect();oscillator=null;out('963 Hz oscillator stopped.','system');return}if(on){audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const g=audioCtx.createGain();g.gain.value=.022;oscillator=audioCtx.createOscillator();oscillator.frequency.value=963;oscillator.type='sine';oscillator.connect(g).connect(audioCtx.destination);oscillator.start();const t=await mintToken('audio.963.start');out('963 Hz sonification active. fp='+t.fp,'good')}}
 function showGate(){const g=document.getElementById('guardianLayer');if(g){g.style.display='grid';g.style.opacity='1'}gateOpen=false;window.dispatchEvent(new CustomEvent('cryptic:gate',{detail:{open:false}}))}
 async function enterGate(){const t=await mintToken('guardian.entry');gateOpen=true;const g=document.getElementById('guardianLayer');if(g){g.style.opacity='0';setTimeout(()=>g.style.display='none',500)}ledger('guardian.entry',{fp:t.fp});out('CRYPTIC '+VERSION+' initialized. Guardian receipt '+t.fp+'.','good');out('Modular snap dashboard online. Type help.','system');window.dispatchEvent(new CustomEvent('cryptic:guardian-entered',{detail:{fingerprint:t.fp}}));window.dispatchEvent(new CustomEvent('cryptic:gate',{detail:{open:true}}));return t}
@@ -53,14 +57,7 @@ STATUS=PASS_NO_ACTIVE_REFERENCE · Verification receipt [${t.fp}]`,'good');
   • Stamped ledger receipt: ${t.fp}`,'good');
     return t;
   }
-  if(sub==='login'){
-    out(`[GAIA IDENTITY] Node Key Established:
-  Node: samsung-arm64 (SAMSUNG)
-  Key:  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGteDQk53+YlXIALXcls03EZ3B7IXdgYr+knG5dYZuUt
-  FP:   256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg (ED25519)
-Authentication: SOVEREIGN CONTINUITY VERIFIED`,'good');
-    return {authenticated:true,node:'samsung-arm64'};
-  }
+  if(sub==='login'){out('Public demo: no device identity or authentication is established.','warn');return {authenticated:false,demo:true}}
   if(sub==='node'&&args[1]==='enroll'){
     const nodeName=args.slice(2).join(' ')||'samsung-arm64';
     const t=await mintToken('gaia.node.enroll',{node:nodeName});
@@ -133,7 +130,7 @@ Authentication: SOVEREIGN CONTINUITY VERIFIED`,'good');
   return stat;
 }
 
-async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+v,'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
+async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}if(v.length>8192)throw new Error('command_too_long');out('cryptic> '+(/^bridge\s+connect\s/i.test(v)?'bridge connect [redacted]':v),'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
  if(lower==='help')return help();
  if(lower==='about')return out('Cryptic '+VERSION+' modular HyperTerminal command center.','good');
  if(lower==='status'){const x={gate:gateOpen,online:navigator.onLine,tokens:tokens.length,bus:window.CrypticBus?.routes?.()||null,panels:[...(window.CrypticDashboard?.mounted?.keys?.()||[])]};out(JSON.stringify(x,null,2),'system');return x}
@@ -199,7 +196,8 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
  if(lower==='guardian')return showGate();
  out('Unknown command: '+cmd+'. Type help.','warn')
 }
-try{const saved=JSON.parse(sessionStorage.getItem('cryptic.runtime.tokens')||'[]');tokens.push(...saved.filter(t=>t.expiresAt>Date.now()))}catch{}
+sessionStorage.removeItem('cryptic.runtime.tokens');
 Object.assign(window,{out,ledger,mintToken,fingerprint});
 window.CrypticTerminal={version:VERSION,exec:runCommand,out,ledger,mintToken,fingerprint,enterGate,showGate,toggleWake,toggle963,get gateOpen(){return gateOpen},get tokens(){return tokens.slice()}};
 window.dispatchEvent(new CustomEvent('cryptic:terminal-ready'));
+

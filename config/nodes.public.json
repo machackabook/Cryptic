@@ -138,7 +138,6 @@
       "label": "Nexus Core",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/Nexus_Core",
-      "reference_url": "https://gemini.google.com/share/374ba8685c13",
       "capabilities": [
         "source",
         "factory",
@@ -151,7 +150,7 @@
     },
     {
       "id": "gaia-generation",
-      "label": "Gaia — The Nexus Generation",
+      "label": "Gaia \u2014 The Nexus Generation",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/Gaia-The-Nexus-Generation",
       "capabilities": [
