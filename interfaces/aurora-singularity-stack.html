@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AURORA SINGULARITY STACK // QUANTUM FLUX MANIFOLD</title>
+<style>
+:root {
+  --void: #010307;
+  --cyan: #00ffcc;
+  --violet: #9d5bfe;
+  --gold: #f5ce70;
+  --emerald: #10b981;
+  --ink: #f0f6fc;
+  --muted: #8b9bb4;
+  --panel: rgba(3,8,18,0.85);
+  --line: rgba(85,244,255,0.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  background: var(--void);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--ink);
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+#auroraCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.hud {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: rgba(1,4,12,0.82);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
+.brand h1 {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--cyan);
+}
+.brand p {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+}
+.ctrls {
+  display: flex;
+  gap: 8px;
+}
+button {
+  background: rgba(0,255,204,0.08);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+}
+button:hover {
+  background: rgba(0,255,204,0.2);
+}
+button.gold {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(245,206,112,0.08);
+}
+footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  pointer-events: auto;
+}
+.card {
+  background: rgba(2,6,16,0.85);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  backdrop-filter: blur(12px);
+}
+.card h2 {
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.card b {
+  font-size: 13px;
+  color: var(--cyan);
+  display: block;
+}
+.card small {
+  font-size: 7px;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+<canvas id="auroraCanvas"></canvas>
+
+<div class="hud">
+  <header>
+    <div class="brand">
+      <h1>AURORA SINGULARITY STACK // CHROMATIC FLUX</h1>
+      <p>MULTI-LAYER AURORA RIBBONS · QUANTUM PROBABILITY DENSITY · RELATIVISTIC SHEAR</p>
+    </div>
+    <div class="ctrls">
+      <button class="gold" id="btnRibbons">ADD RIBBON LAYER</button>
+      <button id="btnShear">INVERT QUANTUM SHEAR</button>
+    </div>
+  </header>
+
+  <footer>
+    <div class="card">
+      <h2>Flux Density</h2>
+      <b id="fluxVal">4.218 &times; 10&sup1;&sup4; T</b>
+      <small>Relativistic electromagnetic vacuum flux</small>
+    </div>
+    <div class="card">
+      <h2>Ribbon Layers</h2>
+      <b id="layerVal" style="color:var(--gold)">9 Active Ribbons</b>
+      <small>Harmonic sinusoidal standing waves</small>
+    </div>
+    <div class="card">
+      <h2>Singularity Core</h2>
+      <b style="color:var(--emerald)">KERR-SCHILD ACTIVE</b>
+      <small>Spin parameter a* = 0.998</small>
+    </div>
+    <div class="card">
+      <h2>Spectral Output</h2>
+      <b>532 nm (O&sup2;&sdot;) / 630 nm (N&sup2;&sdot;)</b>
+      <small>Atmospheric ion emission excitation</small>
+    </div>
+  </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('auroraCanvas');
+const ctx = canvas.getContext('2d');
+
+let w = 0, h = 0;
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+let numRibbons = 9;
+let shearDirection = 1;
+
+document.getElementById('btnRibbons').onclick = () => {
+  numRibbons = numRibbons >= 16 ? 6 : numRibbons + 3;
+  document.getElementById('layerVal').textContent = `${numRibbons} Active Ribbons`;
+};
+document.getElementById('btnShear').onclick = () => {
+  shearDirection *= -1;
+};
+
+function render(t) {
+  requestAnimationFrame(render);
+  
+  ctx.fillStyle = '#010307';
+  ctx.fillRect(0, 0, w, h);
+
+  const cx = w * 0.5;
+  const cy = h * 0.45;
+
+  // Background Singularity Corona
+  const bgGrad = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.max(w, h) * 0.75);
+  bgGrad.addColorStop(0, 'rgba(0, 255, 204, 0.25)');
+  bgGrad.addColorStop(0.35, 'rgba(157, 91, 254, 0.14)');
+  bgGrad.addColorStop(0.75, 'rgba(4, 12, 28, 0.65)');
+  bgGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Aurora Ribbons
+  for (let r = 0; r < numRibbons; r++) {
+    const layerOffset = r * 35;
+    const speed = (0.0006 + r * 0.00018) * shearDirection;
+    const hue = (165 + r * 18 + Math.sin(t * 0.0002) * 20) % 360;
+    
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.5);
+
+    for (let x = 0; x <= w; x += 12) {
+      const freq1 = 0.0035;
+      const freq2 = 0.0085;
+      const wave1 = Math.sin(x * freq1 + t * speed + r * 0.8) * 85;
+      const wave2 = Math.cos(x * freq2 - t * speed * 1.5 + r * 0.5) * 45;
+      const y = h * 0.45 + wave1 + wave2 + (r - numRibbons / 2) * 28;
+      ctx.lineTo(x, y);
+    }
+
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+
+    const ribGrad = ctx.createLinearGradient(0, h * 0.2, 0, h * 0.8);
+    ribGrad.addColorStop(0, `hsla(${hue}, 95%, 65%, 0)`);
+    ribGrad.addColorStop(0.35, `hsla(${hue}, 95%, 65%, 0.18)`);
+    ribGrad.addColorStop(0.7, `hsla(${hue}, 90%, 50%, 0.08)`);
+    ribGrad.addColorStop(1, 'transparent');
+
+    ctx.fillStyle = ribGrad;
+    ctx.fill();
+
+    // Crest Highlight Line
+    ctx.strokeStyle = `hsla(${hue}, 100%, 75%, 0.45)`;
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Update Flux Indicator
+  document.getElementById('fluxVal').innerHTML = (4.218 + Math.sin(t * 0.001) * 0.35).toFixed(3) + ' &times; 10&sup1;&sup4; T';
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

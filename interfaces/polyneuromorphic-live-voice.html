@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>POLYNEUROMORPHIC LIVE VOICE // SYNAPSE OSCILLOSCOPE</title>
+<style>
+:root {
+  --void: #020409;
+  --cyan: #00ffcc;
+  --blue: #38bdf8;
+  --violet: #9d5bfe;
+  --gold: #f5ce70;
+  --green: #22c55e;
+  --ink: #f0f6fc;
+  --muted: #8b9bb4;
+  --panel: rgba(4,10,22,0.85);
+  --line: rgba(85,244,255,0.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  background: var(--void);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--ink);
+  display: grid;
+  grid-template-rows: 52px 1fr 200px;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 18px;
+  background: rgba(2,6,16,0.92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  z-index: 20;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand h1 {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--cyan);
+}
+.brand span {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+}
+button {
+  background: rgba(0,255,204,0.08);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+}
+button:hover {
+  background: rgba(0,255,204,0.2);
+}
+button.gold {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(245,206,112,0.08);
+}
+button.violet {
+  border-color: var(--violet);
+  color: var(--violet);
+  background: rgba(157,91,254,0.08);
+}
+
+.center-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  height: 100%;
+}
+#audioCanvas {
+  width: 100%; height: 100%;
+  display: block;
+}
+.synapse-sidebar {
+  border-left: 1px solid var(--line);
+  background: rgba(2,6,16,0.85);
+  backdrop-filter: blur(14px);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+.synapse-sidebar h2 {
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(245,206,112,0.2);
+  padding-bottom: 4px;
+}
+.neuron-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+.neuron-node {
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,255,204,0.25);
+  background: rgba(0,255,204,0.05);
+  display: grid;
+  place-items: center;
+  font-size: 7px;
+  color: var(--cyan);
+  transition: all 0.15s;
+}
+.neuron-node.active {
+  background: rgba(0,255,204,0.45);
+  box-shadow: 0 0 10px #00ffcc;
+  color: #fff;
+}
+
+.footer-panel {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(2,6,16,0.92);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  z-index: 20;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.card h3 {
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+.card .val {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.card .sub {
+  font-size: 7px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <button style="border-radius:50%;width:28px;height:28px;padding:0;display:grid;place-items:center;">🎙</button>
+    <div>
+      <h1>POLYNEUROMORPHIC LIVE VOICE &amp; SYNAPSE ENGINE</h1>
+      <span>NEUROMORPHIC SPIKE TRAIN OSCILLOSCOPE · 963 HZ SOLFEGGIO RESONATOR · MULTIMODAL ACOUSTICS</span>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="btnVoice" class="gold">START NEURAL VOICE</button>
+    <button id="btnSolfeggio" class="violet">963 HZ RESONANCE</button>
+    <button id="btnMic">ENABLE MIC STREAM</button>
+  </div>
+</header>
+
+<main class="center-stage">
+  <canvas id="audioCanvas"></canvas>
+  <aside class="synapse-sidebar">
+    <h2>Synaptic Spike Density (48 Channels)</h2>
+    <div class="neuron-grid" id="neuronGrid"></div>
+    <div style="font-size:8px;color:var(--muted);line-height:1.5;margin-top:6px;">
+      Synaptic firing rate: <b id="spikeRate" style="color:var(--cyan)">1,420 spikes/s</b><br>
+      Weight Adaptation: <b style="color:var(--gold)">STDP Active (&tau; = 20ms)</b><br>
+      Membrane Potential: <b style="color:var(--green)">-65.4 mV Resting</b>
+    </div>
+    <h2>Vocal Tract Articulators</h2>
+    <div style="font-size:8px;color:var(--muted);line-height:1.6">
+      Formant F1: <b style="color:var(--cyan)">720 Hz</b> (Pharyngeal)<br>
+      Formant F2: <b style="color:var(--gold)">1,840 Hz</b> (Oral Cavity)<br>
+      Formant F3: <b style="color:var(--violet)">2,950 Hz</b> (Nasal / Velar)<br>
+      Bandwidth: <b>24 kHz Lossless Float32</b>
+    </div>
+  </aside>
+</main>
+
+<footer class="footer-panel">
+  <div class="card">
+    <h3>Live Frequency Peak</h3>
+    <div class="val" id="peakFreq">963 Hz</div>
+    <div class="sub">Crown chakra harmonic solfeggio alignment. Continuous tone synthesizer.</div>
+  </div>
+  <div class="card">
+    <h3>Signal-to-Noise Ratio</h3>
+    <div class="val">+48.2 dB</div>
+    <div class="sub">Dynamic range expansion &amp; neural spectral subtraction noise gate.</div>
+  </div>
+  <div class="card">
+    <h3>Linguistic Latent Vector</h3>
+    <div class="val" style="color:var(--cyan)">768-D</div>
+    <div class="sub">Continuous embedding manifold aligned with gemini-embedding-2-preview.</div>
+  </div>
+  <div class="card">
+    <h3>Neuromorphic Core Status</h3>
+    <div class="val" style="color:var(--green)">ONLINE</div>
+    <div class="sub">Event-driven asynchronous spiking neural network emulator.</div>
+  </div>
+</footer>
+
+<script>
+const canvas = document.getElementById('audioCanvas');
+const ctx = canvas.getContext('2d');
+
+let w = 0, h = 0;
+function resize() {
+  w = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+  h = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Populate 48 Synaptic Nodes
+const grid = document.getElementById('neuronGrid');
+const neurons = [];
+for (let i = 0; i < 48; i++) {
+  const d = document.createElement('div');
+  d.className = 'neuron-node';
+  d.textContent = i + 1;
+  grid.appendChild(d);
+  neurons.push(d);
+}
+
+let audioCtx = null;
+let analyser = null;
+let osc = null;
+let isVoiceActive = false;
+let isSolfeggioActive = false;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+  }
+}
+
+document.getElementById('btnVoice').onclick = () => {
+  initAudio();
+  isVoiceActive = !isVoiceActive;
+  document.getElementById('btnVoice').textContent = isVoiceActive ? 'PAUSE NEURAL VOICE' : 'START NEURAL VOICE';
+  if (isVoiceActive) playNeuralVoicePhrase();
+};
+
+document.getElementById('btnSolfeggio').onclick = () => {
+  initAudio();
+  if (isSolfeggioActive) {
+    if (osc) { osc.stop(); osc.disconnect(); osc = null; }
+    isSolfeggioActive = false;
+    document.getElementById('btnSolfeggio').textContent = '963 HZ RESONANCE';
+  } else {
+    osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    g.gain.value = 0.035;
+    osc.frequency.value = 963;
+    osc.type = 'sine';
+    osc.connect(g);
+    g.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    osc.start();
+    isSolfeggioActive = true;
+    document.getElementById('btnSolfeggio').textContent = 'STOP 963 HZ';
+    document.getElementById('peakFreq').textContent = '963 Hz';
+  }
+};
+
+document.getElementById('btnMic').onclick = async () => {
+  initAudio();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const src = audioCtx.createMediaStreamSource(stream);
+    src.connect(analyser);
+    document.getElementById('btnMic').textContent = 'MIC STREAMING';
+    document.getElementById('btnMic').style.borderColor = '#22c55e';
+    document.getElementById('btnMic').style.color = '#22c55e';
+  } catch (e) {
+    alert('Microphone access unavailable or denied: ' + e.message);
+  }
+};
+
+function playNeuralVoicePhrase() {
+  if (!isVoiceActive) return;
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  
+  const baseFreq = 140 + Math.random() * 90;
+  osc1.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+  osc1.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.35);
+  osc2.frequency.setValueAtTime(baseFreq * 2.02, audioCtx.currentTime);
+  
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.045, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+  
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  
+  osc1.start();
+  osc2.start();
+  osc1.stop(audioCtx.currentTime + 0.45);
+  osc2.stop(audioCtx.currentTime + 0.45);
+  
+  setTimeout(playNeuralVoicePhrase, 300 + Math.random() * 500);
+}
+
+const timeData = new Uint8Array(256);
+const freqData = new Uint8Array(256);
+
+function renderLoop(t) {
+  requestAnimationFrame(renderLoop);
+  
+  ctx.fillStyle = '#020409';
+  ctx.fillRect(0, 0, w, h);
+
+  if (analyser) {
+    analyser.getByteTimeDomainData(timeData);
+    analyser.getByteFrequencyData(freqData);
+  } else {
+    for (let i = 0; i < 256; i++) {
+      timeData[i] = 128 + Math.sin(t * 0.005 + i * 0.08) * 22;
+      freqData[i] = Math.max(0, 70 + Math.sin(t * 0.003 + i * 0.12) * 50 - i * 0.2);
+    }
+  }
+
+  // 1. Frequency Spectrum Bars (Synaptic ribbons)
+  const barWidth = (w / 128);
+  for (let i = 0; i < 128; i++) {
+    const val = freqData[i] / 255;
+    const barHeight = val * h * 0.55;
+    const hue = 175 + (i / 128) * 110;
+    ctx.fillStyle = `hsla(${hue}, 95%, 65%, 0.45)`;
+    ctx.fillRect(i * barWidth, h - barHeight, barWidth - 1, barHeight);
+  }
+
+  // 2. Multi-Channel Neuromorphic Waveform Oscilloscope
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = '#00ffcc';
+  ctx.shadowColor = '#00ffcc';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+
+  const sliceWidth = w / 256;
+  let x = 0;
+  for (let i = 0; i < 256; i++) {
+    const v = timeData[i] / 128.0;
+    const y = v * (h * 0.38) + (h * 0.15);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+    x += sliceWidth;
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // 3. Firing Random Spikes in Neuron Sidebar
+  if (Math.random() > 0.3) {
+    const idx = Math.floor(Math.random() * neurons.length);
+    neurons[idx].classList.add('active');
+    setTimeout(() => neurons[idx].classList.remove('active'), 120);
+  }
+}
+requestAnimationFrame(renderLoop);
+</script>
+</body>
+</html>

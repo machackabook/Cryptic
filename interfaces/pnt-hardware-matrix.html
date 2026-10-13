@@ -1,0 +1,1795 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PNT AVIONICS // SECURE GPS &amp; ANTI-JAM HARDWARE MATRIX</title>
+<style>
+:root{
+  --void:#020409;
+  --panel:rgba(5,13,26,.82);
+  --panel-active:rgba(10,24,48,.92);
+  --cyan:#00ffcc;
+  --cyan-dim:rgba(0,255,204,.2);
+  --blue:#38bdf8;
+  --violet:#9d5bfe;
+  --gold:#f5ce70;
+  --red:#ff4d6d;
+  --green:#34d399;
+  --ink:#f0f6fc;
+  --muted:#8b9bb4;
+  --line:rgba(85,244,255,.2);
+  --line-hot:rgba(0,255,204,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;height:100%;
+  overflow:hidden;
+  background:var(--void);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:var(--ink);
+}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:#040914}
+::-webkit-scrollbar-thumb{background:#1f3354;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#305286}
+
+.pnt-layout{
+  display:grid;
+  grid-template-rows:52px 1fr 28px;
+  height:100vh;
+  width:100vw;
+  position:relative;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 18px;
+  background:rgba(2,6,15,.88);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  z-index:20;
+}
+.header-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.sigil{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid var(--cyan);
+  background:radial-gradient(circle,rgba(0,255,204,.22),transparent 75%);
+  color:var(--cyan);
+  font-size:16px;
+  box-shadow:0 0 16px rgba(0,255,204,.25);
+}
+.title-group b{font-size:12px;letter-spacing:.16em;color:#fff;display:block}
+.title-group small{font-size:8px;color:var(--muted);letter-spacing:.18em}
+
+.header-tools{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.chip{
+  border:1px solid var(--line);
+  background:rgba(0,255,204,.06);
+  color:var(--cyan);
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:8px;
+  letter-spacing:.14em;
+  text-decoration:none;
+  cursor:pointer;
+}
+.chip:hover,.chip.active{
+  border-color:var(--cyan);
+  background:rgba(0,255,204,.18);
+  box-shadow:0 0 12px rgba(0,255,204,.2);
+}
+
+.main-grid{
+  display:grid;
+  grid-template-columns:320px 1fr 360px;
+  overflow:hidden;
+  height:100%;
+}
+@media(max-width:1100px){
+  .main-grid{grid-template-columns:280px 1fr;grid-template-rows:1fr auto}
+  .radar-pane{grid-column:1 / -1;height:280px}
+}
+@media(max-width:768px){
+  .main-grid{grid-template-columns:1fr}
+  .catalog-pane{height:300px}
+  .detail-pane{height:auto}
+}
+
+/* 1. Catalog Sidebar */
+.catalog-pane{
+  border-right:1px solid var(--line);
+  background:rgba(3,8,19,.75);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.filter-bar{
+  padding:10px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.filter-tabs{
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap;
+}
+.filter-btn{
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font:inherit;
+  font-size:7px;
+  padding:4px 7px;
+  border-radius:4px;
+  cursor:pointer;
+  letter-spacing:.1em;
+}
+.filter-btn.active{
+  border-color:var(--cyan);
+  color:var(--cyan);
+  background:rgba(0,255,204,.1);
+}
+.search-input{
+  width:100%;
+  padding:6px 9px;
+  background:rgba(0,4,11,.8);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font:inherit;
+  font-size:9px;
+  border-radius:6px;
+  outline:none;
+}
+.search-input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,204,.2)}
+
+.device-list{
+  flex:1;
+  overflow-y:auto;
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.device-card{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,5,14,.45);
+  border-radius:8px;
+  padding:9px 10px;
+  cursor:pointer;
+  transition:all .18s;
+  text-align:left;
+}
+.device-card:hover{
+  border-color:var(--line-hot);
+  background:rgba(0,255,204,.06);
+}
+.device-card.active{
+  border-color:var(--cyan);
+  background:rgba(0,255,204,.12);
+  box-shadow:0 0 16px rgba(0,255,204,.14),inset 0 0 12px rgba(0,255,204,.04);
+}
+.dev-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:3px;
+}
+.dev-name{font-size:10px;font-weight:700;color:#fff}
+.dev-tag{
+  font-size:7px;
+  padding:2px 5px;
+  border-radius:3px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.tag-mcode{background:rgba(157,91,254,.2);color:#c58aff;border:1px solid rgba(157,91,254,.35)}
+.tag-saasm{background:rgba(245,206,112,.2);color:var(--gold);border:1px solid rgba(245,206,112,.35)}
+.tag-sps{background:rgba(56,189,248,.2);color:var(--blue);border:1px solid rgba(56,189,248,.35)}
+.tag-antijam{background:rgba(255,77,109,.2);color:var(--red);border:1px solid rgba(255,77,109,.35)}
+
+.dev-desc{font-size:8px;color:var(--muted);line-height:1.4;margin-bottom:4px}
+.dev-badges{display:flex;gap:4px;flex-wrap:wrap;font-size:7px;color:rgba(255,255,255,.6)}
+.dev-badge{background:rgba(255,255,255,.05);padding:2px 4px;border-radius:3px}
+
+/* 2. Main Detail Inspector */
+.detail-pane{
+  overflow-y:auto;
+  padding:18px 24px;
+  background:radial-gradient(circle at 75% 20%,rgba(0,255,204,.04),transparent 40%),#020409;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.inspector-hero{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
+}
+.hero-title h2{font-size:20px;letter-spacing:.08em;color:#fff;margin-bottom:4px}
+.hero-title p{font-size:10px;color:var(--cyan);letter-spacing:.14em;margin-bottom:8px}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap}
+
+.hero-actions{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:flex-end;
+}
+.action-btn{
+  background:rgba(0,255,204,.1);
+  border:1px solid var(--cyan);
+  color:var(--cyan);
+  font:inherit;
+  font-size:9px;
+  letter-spacing:.14em;
+  padding:7px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .18s;
+  white-space:nowrap;
+}
+.action-btn:hover{background:rgba(0,255,204,.25);box-shadow:0 0 14px rgba(0,255,204,.3)}
+.action-btn.gold{border-color:var(--gold);color:var(--gold);background:rgba(245,206,112,.1)}
+.action-btn.gold:hover{background:rgba(245,206,112,.25);box-shadow:0 0 14px rgba(245,206,112,.3)}
+
+.specs-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+@media(max-width:900px){.specs-grid{grid-template-columns:repeat(2,1fr)}}
+.spec-box{
+  background:rgba(5,13,26,.65);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:10px 12px;
+}
+.spec-box span{display:block;font-size:7px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
+.spec-box b{font-size:12px;color:var(--cyan);letter-spacing:.06em}
+.spec-box small{font-size:7px;color:var(--muted);display:block;margin-top:2px}
+
+.feature-cards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+@media(max-width:768px){.feature-cards{grid-template-columns:1fr}}
+.feature-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+}
+.feature-card h3{
+  font-size:10px;
+  letter-spacing:.14em;
+  color:var(--gold);
+  margin-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:5px;
+}
+.feature-card ul{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  font-size:9px;
+  color:#cbd5e1;
+  line-height:1.45;
+}
+.feature-card li::before{content:"▹ ";color:var(--cyan)}
+
+.protocol-box{
+  background:rgba(2,6,15,.9);
+  border:1px solid rgba(85,244,255,.2);
+  border-radius:10px;
+  padding:12px;
+}
+.protocol-box h3{
+  font-size:9px;
+  letter-spacing:.14em;
+  color:var(--cyan);
+  margin-bottom:6px;
+}
+.protocol-terminal{
+  background:#010206;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:6px;
+  padding:8px 10px;
+  font-size:8px;
+  line-height:1.6;
+  color:#a5f3fc;
+  max-height:110px;
+  overflow-y:auto;
+  white-space:pre-wrap;
+}
+
+/* 3. Anti-Jamming Beamforming Radar Pane */
+.radar-pane{
+  border-left:1px solid var(--line);
+  background:rgba(3,8,20,.85);
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+  gap:12px;
+  overflow-y:auto;
+}
+.radar-header{
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.radar-header h3{font-size:9px;letter-spacing:.16em;color:var(--cyan)}
+.radar-header b{font-size:8px;color:var(--gold)}
+
+.radar-canvas-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:1;
+  max-width:320px;
+  margin:0 auto;
+  border:1px solid var(--line);
+  border-radius:50%;
+  overflow:hidden;
+  background:radial-gradient(circle,rgba(0,255,204,.06),rgba(2,6,15,.95) 70%);
+  box-shadow:0 0 30px rgba(0,0,0,.7),inset 0 0 25px rgba(0,255,204,.08);
+}
+#crpaCanvas{width:100%;height:100%;display:block}
+
+.radar-controls{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:rgba(0,5,14,.6);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:8px;
+  padding:10px;
+}
+.radar-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:8px;
+}
+.radar-btn{
+  background:rgba(0,255,204,.08);
+  border:1px solid var(--line);
+  color:var(--cyan);
+  padding:4px 8px;
+  border-radius:4px;
+  font:inherit;
+  font-size:7px;
+  cursor:pointer;
+}
+.radar-btn.active{
+  background:rgba(0,255,204,.25);
+  border-color:var(--cyan);
+  box-shadow:0 0 10px rgba(0,255,204,.3);
+}
+
+.radar-readouts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  font-size:7px;
+}
+.readout{
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.05);
+  padding:6px;
+  border-radius:4px;
+}
+.readout span{color:var(--muted);display:block;margin-bottom:2px}
+.readout b{color:#34d399;font-size:9px}
+
+.footer{
+  background:#010307;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 18px;
+  font-size:7px;
+  letter-spacing:.14em;
+  color:var(--muted);
+  z-index:10;
+}
+</style>
+</head>
+<body>
+
+<div class="pnt-layout">
+  <!-- Top Navigation Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="sigil">◈</div>
+      <div class="title-group">
+        <b>BAE SYSTEMS PNT AVIONICS // SECURE GPS &amp; ANTI-JAM MATRIX</b>
+        <small>FULL CATALOG INTEGRATION · 21 ASSURED POSITIONING &amp; MUNITIONS HARDWARE ENGINES</small>
+      </div>
+    </div>
+    <div class="header-tools">
+      <a class="chip" href="../">CRYPTIC OS</a>
+      <a class="chip" href="../magic/">MAGIC WINDOW</a>
+      <a class="chip" href="../interfaces/matrix-engine.html">MATRIX ENGINE</a>
+      <button class="chip active" id="btnLiveTelemetry" type="button">LIVE 1PPS CLOCK</button>
+    </div>
+  </header>
+
+  <!-- 3-Pane Responsive Workplace Grid -->
+  <div class="main-grid">
+    
+    <!-- 1. Left Catalog Sidebar -->
+    <aside class="catalog-pane">
+      <div class="filter-bar">
+        <input type="text" id="catalogSearch" class="search-input" placeholder="Search devices, M-Code, SAASM, CRPA..." spellcheck="false">
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all">ALL (21)</button>
+          <button class="filter-btn" data-filter="mcode">M-CODE</button>
+          <button class="filter-btn" data-filter="saasm">SAASM</button>
+          <button class="filter-btn" data-filter="antijam">ANTI-JAM</button>
+          <button class="filter-btn" data-filter="weapons">MUNITIONS</button>
+        </div>
+      </div>
+      <div class="device-list" id="deviceList">
+        <!-- Rendered dynamically -->
+      </div>
+    </aside>
+
+    <!-- 2. Center Detail Inspector -->
+    <main class="detail-pane" id="detailPane">
+      <!-- Injected dynamically -->
+    </main>
+
+    <!-- 3. Right CRPA Anti-Jamming Beamforming Radar Simulator -->
+    <aside class="radar-pane">
+      <div class="radar-header">
+        <h3>CRPA BEAMFORMING RADAR</h3>
+        <b id="radarJammerStatus">JAMMING: >120 dB J/S IMMUNITY</b>
+      </div>
+
+      <div class="radar-canvas-wrap">
+        <canvas id="crpaCanvas" width="320" height="320"></canvas>
+      </div>
+
+      <div class="radar-controls">
+        <div class="radar-row">
+          <span>ANTENNA ARRAY</span>
+          <span style="color:var(--cyan)" id="radarAntennaName">7-Element CRPA</span>
+        </div>
+        <div class="radar-row">
+          <span>PROCESSING MODE</span>
+          <div style="display:flex;gap:4px">
+            <button class="radar-btn active" id="btnModeSTAP" type="button">STAP</button>
+            <button class="radar-btn" id="btnModeNull" type="button">NULLING</button>
+            <button class="radar-btn" id="btnModeBeam" type="button">BEAMSTEER</button>
+          </div>
+        </div>
+        <div class="radar-row">
+          <span>STEERED BEAMS</span>
+          <b style="color:var(--cyan)" id="radarBeamsCount">24 Simultaneous</b>
+        </div>
+        <div class="radar-row">
+          <span>SIMULATED THREATS</span>
+          <button class="radar-btn" id="btnInjectJammer" type="button">+ INJECT JAMMER</button>
+        </div>
+      </div>
+
+      <div class="radar-readouts">
+        <div class="readout">
+          <span>STATE 5 TRACKING</span>
+          <b id="readoutState5">>105 dB J/S</b>
+        </div>
+        <div class="readout">
+          <span>STATE 3 TRACKING</span>
+          <b id="readoutState3">>120 dB J/S</b>
+        </div>
+        <div class="readout">
+          <span>BFEA MITIGATION</span>
+          <b style="color:#38bdf8">ACTIVE (BLUE)</b>
+        </div>
+        <div class="readout">
+          <span>FDE INTEGRITY</span>
+          <b style="color:#f5ce70">DO-229 PASS</b>
+        </div>
+      </div>
+
+      <div class="protocol-box">
+        <h3>LIVE PROTOCOL DATA BUS OUTPUT (1PPS)</h3>
+        <div class="protocol-terminal" id="protocolTerminal">
+$GPGGA,213000.00,3245.1234,N,11709.5678,W,2,12,0.8,124.5,M,-32.1,M,,*42
+[ICD-GPS-153D] NAV_PACKET_PVT: X=1204892.4m Y=-4729103.8m Z=3891024.1m
+[HAVE QUICK] 1PPS_UTC_MARK: 2026-10-12T21:30:00.000000Z TIME_ACC=52ns
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Global Status Footer -->
+  <footer class="footer">
+    <span>BAE SYSTEMS PNT AVIONICS MATRIX · MIL-STD-810G/H · MIL-STD-461 · SS-US-800 APPROVED</span>
+    <span id="footerClock">UTC 00:00:00 · 111ns TIMING ACCURACY</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // COMPLETE BAE SYSTEMS PNT & ANTI-JAM DEVICE DATABASE (21 DEVICES)
+  const PNT_DEVICES = [
+    {
+      id: "polaris-link",
+      name: "Polaris™ Link",
+      category: "embedded",
+      classTag: "tag-sps",
+      tagLabel: "SPS COMM",
+      desc: "Ruggedized commercial GPS receiver engine card delivering reliable SPS real-time data.",
+      overview: "Provides designers with a Standard Positioning Service (SPS) version of equipment without redesign costs. Completely interchangeable with MPE-S (SAASM) and GB-GRAM except for PPS functions. Features 12-channel continuous tracking, rapid cold start under 100s, and 3 independent serial ports.",
+      performance: {
+        frequency: "L1 - C/A",
+        channels: "12-channel continuous All-In-View",
+        accuracy: "LADGPS: <3 m typ horiz | SPS: 7.8 m CEP",
+        timeAccuracy: "111 nanoseconds",
+        velocity: "0.4 m/s static (3D 95%)",
+        dynamics: "515 m/s velocity | 10,000m altitude",
+        antiJam: "Advanced correlator engine SPS"
+      },
+      swap: {
+        power: "+3.3 VDC, <0.7W typ (Keepalive: 3.0-6.0V, 2mW)",
+        weight: "2.5 oz (70 g) nominal",
+        size: "3.4” x 2.45” x 0.6” (8.6 x 6.2 x 1.6 cm)",
+        temp: "-40°C to +85°C operating (-55°C to +85°C storage)",
+        shock: "MIL-STD environmental qualified"
+      },
+      interfaces: [
+        "Samtec 80-pin I/O (SFM-140-L2-S-D-LC)",
+        "Huber Suhner MMCX RF (85MMCX-50-0-1/III)",
+        "3 independent full-duplex serial ports (2 CMOS, 1 RS-232)",
+        "ICD-GPS-153 compliant & NMEA-0183 (ver 3.01)",
+        "1 PPS input & 3 configurable PPS outputs (UTC, T-Mark, 10 PPS)",
+        "HAVE QUICK & RTCM 194-93/SC 104 DGPS correction input"
+      ],
+      features: [
+        "Form factor commonality with U.S. Army Standard SSI GB-GRAM",
+        "Field reprogrammable application software",
+        "Typical cold start in <100s without time, pos, or almanac",
+        "Stored waypoint sequence navigation (999 waypoints, 15 routes)",
+        "28 predefined coordinate systems, 233 predefined datums",
+        "Low-power time source runs continually when powered off"
+      ],
+      partNumber: "987-8760-00X"
+    },
+    {
+      id: "rsr",
+      name: "Remote Secure Receiver (RSR)",
+      category: "dismounted",
+      classTag: "tag-saasm",
+      tagLabel: "SAASM MIL",
+      desc: "World's smallest, most trusted and lowest power SAASM remote GPS for dismounted soldiers.",
+      overview: "Plug-and-play with commercial and military devices (Windows, Android, Linux, radios). Provides secure, high-assurance PNT in GPS-degraded combat environments. Eliminates 500m navigation errors in tactical missions (call for fire, targeting, border patrol).",
+      performance: {
+        frequency: "L1 / L2 dual-frequency tracking",
+        channels: "SAASM military GPS tracking",
+        accuracy: "PPS high-assurance combat accuracy",
+        timeAccuracy: "<100 nanoseconds",
+        velocity: "Tactical dismounted / airborne / vehicle rates",
+        dynamics: "MIL-STD-810F harsh operating environment",
+        antiJam: "Anti-jamming and anti-spoofing in degraded environments"
+      },
+      swap: {
+        power: "<500 mW continuous track (Input: 2.5V - 5.5V)",
+        weight: "< 3.5 oz (99 g)",
+        size: "2.6 x 1.8 x 1.0 in (6.6 x 4.6 x 2.5 cm)",
+        temp: "-20°C to +70°C operating (-40°C to +70°C storage)",
+        shock: "Waterproof / immersible to 1 meter (MIL-STD-810F)"
+      },
+      interfaces: [
+        "Nonproprietary main I/O connector",
+        "USB – NMEA or IS-GPS-153",
+        "RS-232 – NMEA or IS-GPS-153",
+        "1PPS timing output & External discrete on/off",
+        "Auxiliary connector for Crypto Key Fill (Waterproof with cover)",
+        "EMI MIL-STD-461 (RE-102 and RS-103)"
+      ],
+      features: [
+        "Over-The-Air-Rekeying (OTAR) support",
+        "Black and Red key operation (unclassified when keyed)",
+        "No internal batteries; no power required to maintain crypto",
+        "Integrated antenna with external RF option",
+        "Pseudolite capable with software upgrade",
+        "Plugs and plays with COTS and MOTS equipment seamlessly"
+      ],
+      partNumber: "BAE-RSR-SAASM"
+    },
+    {
+      id: "mpe-m",
+      name: "MPE™-M Receiver",
+      category: "embedded",
+      classTag: "tag-mcode",
+      tagLabel: "M-CODE TYPE II",
+      desc: "Most power-efficient M-Code Type II embedded receiver for space-constrained applications.",
+      overview: "Brings modern M-Code capabilities with backward compatibility for current MPE-S users. Delivers geolocation and precise positioning for contested battlespaces with Direct-M and Direct-Y code acquisitions, SGMP architecture, and BFEA electronic attack mitigation.",
+      performance: {
+        frequency: "L1 (C/A, Y, M-Code) & L2 (Y, M-Code)",
+        channels: "Dual-frequency M-Code all-in-view",
+        accuracy: "PPS: <5 meters CEP",
+        timeAccuracy: "100 nanoseconds",
+        velocity: "0.3 m/s man-portable | 4.0 m/s surface | 10.0 m/s aircraft",
+        dynamics: "250 m/s max velocity | 20 m/s² acceleration",
+        antiJam: "State 5: >41 dB J/S | State 3: >54 dB J/S"
+      },
+      swap: {
+        power: "+3.3 VDC, <1.0 W typ (Keepalive: 3.0-6.0V, <4 mW)",
+        weight: "1.4 oz (40 g) nominal",
+        size: "2.45 x 1.76 x 0.285 in (6.2 x 4.5 x 0.724 cm)",
+        temp: "-40°C to +85°C operating (-55°C to +85°C storage)",
+        shock: "Rugged military Type II form factor"
+      },
+      interfaces: [
+        "Samtec 80-pin I/O (SFM-140-L2-S-D-LC)",
+        "Huber Suhner MMCX RF (85MMCX-50-0-1/III)",
+        "4 low-power CMOS serial ports (1 selectable RS-232)",
+        "1 PPS input & 4 independent 1PPS/10PPS configurable outputs",
+        "L1/L2 active RF antenna port (3.0 VDC)",
+        "DS-101 key loading, zeroize discrete & HAVE QUICK"
+      ],
+      features: [
+        "Direct-M & Direct-Y code acquisitions (TTFF warm <70s, hot <15s)",
+        "Signed Group M-Code Package (SGMP) compatibility",
+        "Blue Force Electronic Attack (BFEA) mitigation",
+        "Compatible with FRPA and nulling/beamforming CRPA (DIGAR)",
+        "Cryptographic key retention without battery backup",
+        "Saves 4 antenna installation calibration profiles with time-offset"
+      ],
+      partNumber: "BAE-MPE-M-TYPE-II"
+    },
+    {
+      id: "mpe-s",
+      name: "Miniature PLGR Engine-SAASM (MPE™-S) Type II",
+      category: "embedded",
+      classTag: "tag-saasm",
+      tagLabel: "GB-GRAM TYPE II",
+      desc: "Full compliance with U.S. Army Standard Embedded GB-GRAM Type II specification.",
+      overview: "Smaller and lighter than its predecessor MPE-S while retaining all functionality. Incorporates tamper-proof SAASM module encapsulating all classified data and signal processing for military navigation, battlefield computing, and C4I equipment.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "12-channel continuous All-In-View (opt 24-ch)",
+        accuracy: "SDGPS <2m CEP | WAGE <4m CEP | PPS <12m CEP",
+        timeAccuracy: "100 nanoseconds",
+        velocity: "0.04 m/s steady rate (3D 95%)",
+        dynamics: "1,200 m/s velocity | 9g acceleration",
+        antiJam: "54 dB tracking | 41 dB Direct-Y acquisition"
+      },
+      swap: {
+        power: "+3.3 VDC, 0.7 W typ (Keepalive: 3.0-6.0V, 4 mW)",
+        weight: "1.4 oz (40 g) nominal",
+        size: "2.45 x 1.76 x 0.285 in (6.2 x 4.5 x 0.724 cm)",
+        temp: "-40°C to +85°C operating (-55°C to +85°C storage)",
+        shock: "Military ruggedized"
+      },
+      interfaces: [
+        "Samtec 80-pin I/O (SFM-140-L2-S-D-LC)",
+        "Huber Suhner MMCX RF (85MMCX-50-0-1/III)",
+        "3 independent serial ports (2 CMOS, 1 RS-232)",
+        "IS-GPS-153 & NMEA-0183 data output",
+        "1PPS input & 3 independent 1PPS/10PPS outputs",
+        "DS-101 and DC-102 key loading, zeroize discrete, HAVE QUICK"
+      ],
+      features: [
+        "Direct-Y warm start <70s | Hot start <10s",
+        "Cryptographic key retention when unpowered",
+        "Area navigation with 999 waypoints and 15 reversible routes",
+        "Simultaneous dual-frequency ionospheric corrections",
+        "Same signal pin-out as Type I for seamless upgrade",
+        "24-channel pseudorange, delta range, and carrier phase option"
+      ],
+      partNumber: "BAE-MPE-S-TYPE-II"
+    },
+    {
+      id: "microgram-m",
+      name: "MicroGRAM™-M GPS Receiver",
+      category: "embedded",
+      classTag: "tag-mcode",
+      tagLabel: "YMCA ASIC",
+      desc: "Size-competitive with commercial chipsets, packing full M-Code and SAASM into 10 grams.",
+      overview: "Built around the next-generation Military GPS User Equipment (MGUE) YMCA ASIC. Delivers precise geolocation for tactical communications, soldier systems, micro-UAVs, and unmanned aircraft. Matches the exact footprint of SAASM-based MicroGRAM.",
+      performance: {
+        frequency: "L1 (M, P/Y, C/A) & L2 (M, P/Y)",
+        channels: "All-in-view navigation of up to 12 GPS satellites",
+        accuracy: "PPS: <5 meters CEP",
+        timeAccuracy: "100 nanoseconds",
+        velocity: "0.04 m/sec steady rate (3D 95%)",
+        dynamics: "250 m/s aircraft | 25 m/s vehicle | 10 m/s man-pack",
+        antiJam: "Advanced correlator engine for Direct-M & Direct-Y"
+      },
+      swap: {
+        power: "3.3 VDC, <0.8 W typ (Keepalive: 3.3V, <0.3 mW)",
+        weight: "0.35 oz (10 g) nominal",
+        size: "1.0 x 1.25 x 0.275 in (25.4 x 31.75 x 7 mm)",
+        temp: "-40°C to +85°C operating (-55°C to +85°C storage)",
+        shock: "Ultra-rugged miniature design"
+      },
+      interfaces: [
+        "Amphenol AMC RF Jack #A1JB",
+        "Molex 53748-0308D connector",
+        "Full-duplex CMOS serial port (ICD-GPS-153C protocol)",
+        "1 pulse per second input & output (CMOS)",
+        "L1/L2 active RF antenna port (3.3 VDC)",
+        "DS-101 (CMOS) keying interface"
+      ],
+      features: [
+        "Next-generation security architecture with unclassified-when-keyed",
+        "Black key capable for Over-The-Air-Rekeying (OTAR)",
+        "Blue Force Electronic Attack (BFEA) mitigation",
+        "Operates in mixed Y-Code and M-Code constellation",
+        "Continuous precision time source runs when auxiliary power supplied",
+        "Plug-compatible with MPE-S serial interface messages"
+      ],
+      partNumber: "BAE-MICROGRAM-M"
+    },
+    {
+      id: "microgram",
+      name: "MicroGRAM™ GPS Receiver",
+      category: "embedded",
+      classTag: "tag-saasm",
+      tagLabel: "SAASM MINI",
+      desc: "Proven heritage of Miniature PLGR Engine packed into a 7-gram, 600g-shock module.",
+      overview: "Retains key SAASM functionality in a package competitive with commercial chipsets. Contains Jaguar 12-channel signal processor, Advanced Correlator Engine (ACE), and KDP 4 key processor for accelerated Direct-Y acquisitions.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "12-channel All-In-View Jaguar processor",
+        accuracy: "DGPS <2m CEP | WAGE <4m CEP | PPS <12m CEP",
+        timeAccuracy: "100 nanoseconds",
+        velocity: "0.04 m/sec steady rate (3D 95%)",
+        dynamics: "1,200 m/sec max velocity | 9g acceleration",
+        antiJam: "Extended performance in jamming environments"
+      },
+      swap: {
+        power: "3.3 VDC, <0.5 W typ (Keepalive: 3.3V, <0.3 mW)",
+        weight: "0.25 oz (7 g) nominal",
+        size: "1.0 x 1.25 x 0.275 in (25.4 x 31.75 x 7 mm)",
+        temp: "-40°C to +85°C operating (-55°C to +85°C storage)",
+        shock: "600g, 1/2 sine, 1 msec (all axes)"
+      },
+      interfaces: [
+        "Amphenol AMC RF Jack #A1JB",
+        "Mini solder ball pins (pick and place compatible)",
+        "Two independent serial ports (full duplex CMOS)",
+        "1 pulse per second input & output (CMOS)",
+        "L1/L2 active RF antenna port (3.3 VDC)",
+        "DS-101 and DS-102 key loading"
+      ],
+      features: [
+        "ACE correlator engine for accelerated Direct-Y acquisition",
+        "Key Data Processor (KDP 4) security architecture",
+        "Unclassified-when-keyed operation & OTAR black key capable",
+        "TTFF <10s hot start, 90s warm start",
+        "8 predefined coordinate systems, 260 datums",
+        "RTCM 194-93/SC 104 differential GPS correction input"
+      ],
+      partNumber: "BAE-MICROGRAM-SAASM"
+    },
+    {
+      id: "navguide",
+      name: "NavGuide™ Receiver",
+      category: "dismounted",
+      classTag: "tag-mcode",
+      tagLabel: "DAGR DROP-IN",
+      desc: "M-Code drop-in DAGR™ replacement with 30-second installation time and 24 GB moving map.",
+      overview: "Allows seamless upgrade to Increment 1 M-Code without changing existing DAGR mounts, cables, or mission accessories. Features high-resolution color GUI, laser range finder support, CAS 9-line support, and fire support integrations.",
+      performance: {
+        frequency: "L1 & L2 dual-frequency M-Code simultaneous track",
+        channels: "Increment 1 M-Code engine (growth to Inc 2)",
+        accuracy: "PPS: <5 meters CEP",
+        timeAccuracy: "100 nanoseconds",
+        velocity: "0.3 m/s man-portable | 4.0 m/s surface vehicle",
+        dynamics: "25 m/s surface | 10 m/s man-pack",
+        antiJam: "Enhanced M-Code jamming and spoofing protection, BFEA"
+      },
+      swap: {
+        power: "9 to 32 VDC external (Batteries: 4 AA + 1/2 AA memory)",
+        weight: "< 1.25 lbs (567 g) with batteries",
+        size: "6.4 x 3.45 x 1.85 in (16.25 x 8.76 x 4.7 cm)",
+        temp: "-32°C to +70°C operating (-55°C to +70°C storage)",
+        shock: "Water resistant to 1.0m (MIL-STD-810G), 0-100% humidity"
+      },
+      interfaces: [
+        "3 independent serial ports (2 RS-232, 1 TIA/EIA-422)",
+        "USB 2.0 (data only) for mission map transfers",
+        "1 PPS input & 1 PPS / 10 PPS outputs",
+        "HAVEQUICK output & SINCGARS 1 PPS",
+        "Internal M-Code L1/L2 antenna & 3.3V external antenna port",
+        "Compatible with IS-GPS-153D and existing DAGR messages"
+      ],
+      features: [
+        "30-second install time on existing vehicle & handheld mounts",
+        "Intuitive customizable color GUI with 24 GB map storage",
+        "Laser range finder and fire support integration",
+        "Area navigation with 999 waypoints and 15 routes",
+        "Over-The-Air-Rekeying (OTAR) and unclassified-when-keyed",
+        "Operates >8.5 hours continuously on AA batteries"
+      ],
+      partNumber: "BAE-NAVGUIDE-M"
+    },
+    {
+      id: "dagr",
+      name: "Defense Advanced GPS Receiver (DAGR)",
+      category: "dismounted",
+      classTag: "tag-saasm",
+      tagLabel: "450K FIELDED",
+      desc: "Combat-proven handheld & vehicular military SAASM GPS receiver with over 450,000 fielded units.",
+      overview: "Standard military handheld guiding warfighters across surface mobility, gun-laying, tactical surveillance, and call-for-fire missions. Enhanced jammer protection with SAASM security, moving maps up to 32 MB, and multi-interface platform integrations.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y) dual-frequency",
+        channels: "12-channel processor (expandable to 36-ch)",
+        accuracy: "DGPS <2.4 m 95% | PPS <6.7 m 95% horizontal",
+        timeAccuracy: "52 nanoseconds",
+        velocity: "0.4 m/s 3D 95%",
+        dynamics: "250 m/s velocity | 20 m/s² acceleration",
+        antiJam: "State 5: 41-44 dB J/S | State 3: 54-66 dB J/S | C/A: 24 dB"
+      },
+      swap: {
+        power: "9 to 32 VDC external (~1W typ) | 4 AA cells (>14 hrs)",
+        weight: "< 1 lb (454 g) with batteries",
+        size: "6.35 x 3.46 x 1.58 in (16.1 x 8.79 x 4.01 cm)",
+        temp: "-32°C to +70°C operating (-57°C to +70°C storage)",
+        shock: "Water resistant up to 1 meter | RAIM enabled"
+      },
+      interfaces: [
+        "3 independent serial ports (2 RS-232, 1 TIA/EIA-422)",
+        "NMEA-0183 & IS-GPS-153 data interface",
+        "1 PPS input & 1 PPS UTC / 10 PPS outputs",
+        "HAVEQUICK & SINCGARS time fill output",
+        "L1/L2 active RF antenna port (3.3 VDC)",
+        "KYK-13, KOI-18, AN/CYZ-10, DS-101, DS-102, SKL key loading"
+      ],
+      features: [
+        "Moving map display with satellite imagery and bitmap maps (32 MB)",
+        "Laser range finder, fire support, and CAS 9-line functions",
+        "Direct-Y warm start <70s | Hot start <10s",
+        "Cold start without almanac/position in <100s",
+        "999 waypoints & 5 moving waypoints",
+        "Transfer maps and waypoints between DAGR units or from PC"
+      ],
+      partNumber: "BAE-DAGR-SAASM"
+    },
+    {
+      id: "asr-m",
+      name: "Airborne Secure Receiver M-code (ASR™-M)",
+      category: "airborne",
+      classTag: "tag-mcode",
+      tagLabel: "1/2 SEM-E",
+      desc: "BAE Systems' most advanced airborne M-Code GPS receiver in a 1/2 SEM-E form factor.",
+      overview: "Designed for contested battlespaces and commercial aviation airspace compliance (DO-229 FDE). Implements 32 channels of L1/L2 tracking for All-In-View M-code and Y-code. Interfaces directly with DIGAR for >120+ dB J/S digital beamforming.",
+      performance: {
+        frequency: "L1 (C/A, Y, M-Code) & L2 (Y, M-Code)",
+        channels: "32 channels L1/L2 All-In-View",
+        accuracy: "PPS 5.6m RMS (Horizontal)",
+        timeAccuracy: "PPS <30 nanoseconds RMS",
+        velocity: "1,200 m/s velocity | 100 m/s² acceleration",
+        dynamics: "Altitude > 80,000 feet | Unaided 10 Hz / INS-aided 25 Hz",
+        antiJam: ">120+ dB J/S with DIGAR anti-jam CRPA beamforming"
+      },
+      swap: {
+        power: "<3.0 W",
+        weight: "<0.5 lb",
+        size: "4.9 W x 3.2 H x 0.8 D in",
+        temp: "-54°C to +85°C continuous (-62°C to +95°C storage)",
+        shock: "Airborne military qualified; MTBF >20,000 hrs @ 45°C"
+      },
+      interfaces: [
+        "1 PPS time input and output",
+        "HAVE QUICK output IAW ICD-GPS-060A",
+        "FRPA, amplified FRPA, GAS-1, ADAP, and CRPA antennas",
+        "Digital Antenna Electronics input for DIGAR beamforming",
+        "ICD-GPS-177A compatible high-speed serial",
+        "DS-101 key loading interface & ICD-GEM-DAE"
+      ],
+      features: [
+        "SS-US-800 compliant & Space Force security certified",
+        "Form and fit compatible with legacy ASR 3.7",
+        "Fault Detection and Exclusion (FDE) per DO-229",
+        "Security-certified Common GPS Module (CGM)",
+        "Ultra-low-power time maintenance for rapid re-acquisition",
+        "Supports direct-M / direct-Y fast acquisition in heavy jamming"
+      ],
+      partNumber: "BAE-ASR-M-AIRBORNE"
+    },
+    {
+      id: "asr",
+      name: "Airborne SAASM Receiver (ASR)",
+      category: "airborne",
+      classTag: "tag-saasm",
+      tagLabel: "GRAM-S",
+      desc: "12-channel dual-frequency airborne GPS providing GRAM-S performance in half the volume of SEM-E.",
+      overview: "Supports NAVWAR and Global Air Traffic Management (GATM). 3rd-generation SAASM module engineered to resist severe jamming via software filtering, dual frequency L1/L2, fast direct-Y acquisition, and inertial aiding.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "12-channel All-In-View dual-frequency",
+        accuracy: "PPS: <5.6 m RMS | SPS: <6 m RMS horizontal",
+        timeAccuracy: "PPS: <30 ns RMS | SPS: <45 ns RMS",
+        velocity: "PPS: <0.1 m/s RMS steady rate",
+        dynamics: "Velocity >1,200 m/s | 10g acceleration | >80,000 ft",
+        antiJam: "65 dB J/S receiver performance"
+      },
+      swap: {
+        power: "<2.0 W",
+        weight: "<0.6 lb",
+        size: "4.9 W x 3.2 H x 0.80 D in max",
+        temp: "-54°C to +85°C continuous (-62°C to +95°C storage)",
+        shock: "Operating 15g, Service crash 35g, Vibration 12.6 g/RMS"
+      },
+      interfaces: [
+        "1 PPS input and output & Enhanced accuracy HAVE QUICK",
+        "Active RF antenna support (AE1, GAS-1, FRPA) & Passive FRPA",
+        "ICD-GPS-155 compatible high-speed serial",
+        "ICD-GPS-150 instrumentation port",
+        "DS 101 / 102 crypto-variables",
+        "ICD-GPS-153 PLGR Hot Start (RS-232, 5-sec direct-Y)"
+      ],
+      features: [
+        "Switchable SPS/PPS function for civil airspace interoperability",
+        "Carrier phase measurement outputs enabling precision navigation",
+        "GPS Directorate-approved SAASM (KDP-II, OPSW 1.01)",
+        "Fault Detection Exclusion (FDE) per DO-229 (A, B, C)",
+        "Supports enroute, terminal and NPA per TSO-C129a",
+        "10 Hz pseudo range and carrier phase measurements"
+      ],
+      partNumber: "BAE-ASR-SAASM"
+    },
+    {
+      id: "digar",
+      name: "DIGAR™ Digital Antenna Electronics",
+      category: "antijam",
+      classTag: "tag-antijam",
+      tagLabel: "24-BEAM CRPA",
+      desc: "Industry-leading airborne & maritime GPS anti-jamming system with 24 steered beams.",
+      overview: "Provides unmatched jamming immunity in severe A2/AD threat environments. Uses digital beamforming and spatial filtering to protect aircraft (F-15, F-16, SOCOM, UAS) and precision weapons (JDAM, MOP, Excalibur). Tested head-to-head and outperformed all competitors.",
+      performance: {
+        frequency: "Simultaneous L1 / L2 protection",
+        channels: "Up to 24 simultaneous steered beams",
+        accuracy: "Assured PNT in severe GPS-denied battlespaces",
+        timeAccuracy: "Sub-nanosecond digital beam alignment",
+        velocity: "Supports supersonic aircraft and naval platforms",
+        dynamics: "Tested on fixed wing, rotorcraft, UAS, and warships",
+        antiJam: "State 5: >105 dB J/S | State 3: >120 dB J/S (>120+ dB overall)"
+      },
+      swap: {
+        power: "DIGAR-300: 28 VDC | DIGAR-400: 115V/400Hz (50W nom, 75W max)",
+        weight: "<5 lbs (2.27 kg)",
+        size: "7 D x 5.6 W x 1.9 H in (17.78 x 14.22 x 4.83 cm)",
+        temp: "-54°C to +71°C continuous",
+        shock: "Operating 20g, Crash 40g, Vibration 20-2000 Hz"
+      },
+      interfaces: [
+        "Protected RF output (L1/L2)",
+        "Digital multi-beam output",
+        "RS-422 control/status interface",
+        "RS-422 instrumentation interface",
+        "Compatible with 4- to 7-element CRPA antennas",
+        "Retrofit support for AE-1 / GAS-1 / ADAP platforms"
+      ],
+      features: [
+        "Superior Y-Code and M-Code beamforming with STAP / SFAP",
+        "Direction finding / jammer geo-location and characterization",
+        "Available with embedded M-Code (DIGAR-300M/400M)",
+        "Supports 24 simultaneous steered beams for jamming immunity",
+        "RelNav (JPALS, AAR) growth capabilities",
+        "GNSS multi-constellation compatibility path for MGUE Inc 2"
+      ],
+      partNumber: "DIGAR-300 / DIGAR-400"
+    },
+    {
+      id: "digar-guardian",
+      name: "DIGAR™ GUARDIAN™ Maritime Anti-Jam",
+      category: "antijam",
+      classTag: "tag-antijam",
+      tagLabel: "MARITIME CRPA",
+      desc: "All-weather enclosed maritime CRPA antenna + embedded DIGAR-300 electronics.",
+      overview: "Protects warships, naval vessels, and border security platforms navigating highly-contested, heavily jammed waters. Integrates Controlled Reception Pattern Antenna (CRPA) with DIGAR-300 inside a single ruggedized NATO-mount enclosure.",
+      performance: {
+        frequency: "Simultaneous L1 / L2 dual-frequency protection",
+        channels: "Up to 16 simultaneous steered beams",
+        accuracy: "Precise navigation through jammed straits and borders",
+        timeAccuracy: "Digital beamforming synchronization",
+        velocity: "Naval vessel speeds and wave dynamics",
+        dynamics: "All-weather maritime environment",
+        antiJam: "120+ dB J/S performance (Y-Code & M-Code nulling)"
+      },
+      swap: {
+        power: "115V / 400 Hz (50W nominal, 85W max)",
+        weight: "25 lbs (11.34 kg)",
+        size: "15 in (381 mm) dia x 5.62 in (142.75 mm) height",
+        temp: "-40°C to +71°C continuous",
+        shock: "Ballistic shock MIL-STD-810H/1 522.2 | Hail strike ASTM E1038"
+      },
+      interfaces: [
+        "NATO Mount compliant housing",
+        "Protected RF output (L1/L2)",
+        "Digital multi-beam output",
+        "RS-422 control/status interface",
+        "RS-422 instrumentation",
+        "Optional embedded GPS SAASM receiver version"
+      ],
+      features: [
+        "Integrated CRPA + DIGAR-300 in single sealed enclosure",
+        "500-hour salt fog resistance per MIL-STD-810H Method 509.8",
+        "Solar loading certified per MIL-STD-810H Method 505.7",
+        "STAP beamforming provides adaptability to evolving threats",
+        "Jammer direction estimation for maritime situational awareness",
+        "Software Defined Radio (SDR) architecture for future upgrades"
+      ],
+      partNumber: "DIGAR-GUARDIAN-NAVY"
+    },
+    {
+      id: "gem-vii-x",
+      name: "GEM™ VII-X Receiver",
+      category: "airborne",
+      classTag: "tag-saasm",
+      tagLabel: "36-CH SEM-E",
+      desc: "BAE Systems' most advanced airborne GPS receiver in a SEM-E form factor.",
+      overview: "36 hardware channels (24 dual-frequency all-in-view). Direct replacement and service-life extension for legacy GEM II, GEM IV, and GEM VI receivers. Integrates with DIGAR for >100 dB J/S anti-jamming.",
+      performance: {
+        frequency: "L1 (C/A, Y) & L2 (Y)",
+        channels: "36 hardware channels (24 simultaneous all-in-view)",
+        accuracy: "PPS: 5.6m RMS (Horizontal)",
+        timeAccuracy: "PPS <30 nanoseconds RMS",
+        velocity: "PPS: 6.9m RMS steady rate",
+        dynamics: "Velocity 1,200 m/s | 10g acceleration | >80,000 ft",
+        antiJam: "65 dB J/S receiver | >100 dB J/S with DIGAR"
+      },
+      swap: {
+        power: "<3.0 W",
+        weight: "<0.8 lb",
+        size: "5.9 x 5.7 x 0.6 in (Standard SEM-E)",
+        temp: "-54°C to +85°C continuous (-62°C to +95°C storage)",
+        shock: "Service crash 35g | Vibration 19Grms functional, 41Grms endurance"
+      },
+      interfaces: [
+        "1 PPS time in/out & Enhanced accuracy HAVE QUICK",
+        "Active RF antenna (AE1, GAS-1, FRPA, ADAP) & Passive FRPA",
+        "ICD-GPS-167 compatible high-speed serial",
+        "ICD-GPS-150 instrumentation ports (quantity 2)",
+        "DS 101 / 102 crypto-variables",
+        "ICD-GPS-153 PLGR Hot Start & ICD-GEM-DAE (DIGAR)"
+      ],
+      features: [
+        "Direct replacement: GEM VII-2 (8K DPRAM), VII-6 (16K/32K DPRAM)",
+        "Space Force-approved SAASM (KDP-IV, OPSW 1.01)",
+        "Fast direct-Y code acquisition in jamming/spoofing",
+        "Fault Detection and Exclusion (FDE) per DO-229",
+        "Ultra-low-power time maintenance for rapid re-acquisition",
+        "Planned support beyond 2030 across international aviation"
+      ],
+      partNumber: "GEM-VII-X-SERIES"
+    },
+    {
+      id: "sabr-m",
+      name: "SABR™-M Beamforming GPS",
+      category: "weapons",
+      classTag: "tag-mcode",
+      tagLabel: "32-CH CRPA",
+      desc: "Superior digital beamforming and anti-jamming M-Code GPS for precision weapons.",
+      overview: "Incorporates digital integrated beamforming with 7-element CRPA antenna compatibility. Developed for extreme threat environments and high-g weapons releases. Successor to the field-proven SABR-Y in the exact same form factor.",
+      performance: {
+        frequency: "L1 (M, P/Y, C/A) & L2 (M, P/Y)",
+        channels: "32 channel capacity for best and strongest signals",
+        accuracy: "<3 m circular error probability (CEP)",
+        timeAccuracy: "< ±100 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | Shock response spectrum 350+ g max",
+        antiJam: "> 110 dB J/S anti-jam performance (55 dB inherent + CRPA)"
+      },
+      swap: {
+        power: "5 VDC @ 4A max (<28 watts nominal) | 3 VDC backup",
+        weight: "1.5 lb nominal",
+        size: "4.6 W x 6.0 L x 0.97 D in",
+        temp: "-54°C to +80°C operating (-54°C to +90°C storage)",
+        shock: "350+ g shock spectrum | MIL-STD-810F & MIL-STD-464F"
+      },
+      interfaces: [
+        "7 MMBX RF connectors & 1 SSMB RF connector",
+        "Main I/O nonproprietary 80-pin dual row",
+        "Serial I/O – RS-422 / CMOS",
+        "RS-485 key load interface & DS-101 crypto key port",
+        "Timing interfaces & Power input",
+        "1 Element active antenna or 7 Element passive CRPA antenna"
+      ],
+      features: [
+        "Security-certified Common GPS Module (CGM)",
+        "Fast direct -M or -Y code acquisition",
+        "Field programmable software updates on the fly",
+        "Time to first fix <10 sec under operational conditions",
+        "Unclassified when keyed; Black key operation",
+        "Future growth capability for UTC / DI aiding"
+      ],
+      partNumber: "BAE-SABR-M-WEAPON"
+    },
+    {
+      id: "sabr-y",
+      name: "SABR™-Y Beamforming GPS",
+      category: "weapons",
+      classTag: "tag-saasm",
+      tagLabel: "24-CH CRPA",
+      desc: "Digitally integrated beamforming GPS anti-jamming receiver for weapons applications.",
+      overview: "Builds upon the Integrated GPS Anti-jam System (IGAS) and DIGAR-300 digital AJ antenna electronics. Hardened for weapons releases under heavy jamming with 7-element CRPA antenna compatibility and 22-channel UTC/DI aiding.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "24-channel SAASM architecture",
+        accuracy: "<3 m circular error probability (CEP)",
+        timeAccuracy: "< ±100 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | Shock up to 150 g",
+        antiJam: "100+ dB J/S beamsteering mode performance"
+      },
+      swap: {
+        power: "5 VDC @ 4A / 6A max (35 watts typical) | 3 VDC backup",
+        weight: "2.6 lb nominal (4 lb max)",
+        size: "4.6 W x 6.0 L x 0.95 D in",
+        temp: "-54°C to +80°C operating (-54°C to +90°C storage)",
+        shock: "Up to 150 g (1 msec half sine) | MIL-STD-810F & MIL-STD-461"
+      },
+      interfaces: [
+        "7 MMBX RF connectors & 1 SSMB RF connector",
+        "Main I/O nonproprietary 80-pin dual row (RS-422 / CMOS)",
+        "Timing interfaces & Key load interfaces",
+        "DS-101 and DS-102 key loading",
+        "1 Element non-AJ active or 7 Element AJ passive antenna",
+        "22-channel UTC/DI aiding interface"
+      ],
+      features: [
+        "Forward-fit compatible with M-Code SABR-M",
+        "Fast direct Y acquisition in threat environment",
+        "Supports all SAASM extended functions",
+        "High-g vibration design for missile pods & munitions",
+        "Time to first fix <10 sec (conditions apply)",
+        "MTBF >3,000 hours under operational stress"
+      ],
+      partNumber: "BAE-SABR-Y-WEAPON"
+    },
+    {
+      id: "igas",
+      name: "Integrated GPS Anti-jam System (IGAS)",
+      category: "weapons",
+      classTag: "tag-antijam",
+      tagLabel: "12-BEAM CRPA",
+      desc: "First integrated GPS and anti-jamming system for precision-guided missiles and munitions.",
+      overview: "Built on NavStrike™ and JDAM receivers. Integrates a 24-channel dual-frequency SAASM receiver with a 12-beam steering anti-jamming system in a single compact 2-pound unit. Provides full PPS accuracy in stand-alone or GPS/INS integrations.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "24-channel dual-frequency All-In-View (>9,000 correlators)",
+        accuracy: "<3 meters CEP (<2 m typical)",
+        timeAccuracy: "<100 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS (typical)",
+        dynamics: "Velocity >1,200 m/s | 10 g acceleration | >100,000 ft",
+        antiJam: ">85 dB J/S performance with 12-beam steering"
+      },
+      swap: {
+        power: "<12 watts continuous",
+        weight: "2 pounds maximum (0.9 kg)",
+        size: "4.35 W x 5.15 H x 0.9 D in max",
+        temp: "-54°C to +74°C continuous (-54°C to +90°C non-op)",
+        shock: "150 g operating"
+      },
+      interfaces: [
+        "Serial data: RS-422, up to 230 Kbaud",
+        "1 PPS / TimeMark / HAVE QUICK",
+        "Four L1/L2 RF antenna ports, keyed",
+        "DS-101 / DS-102 / high-speed serial keying",
+        "CRPA power and control",
+        "Ultra-tight coupling (UTC) interface option"
+      ],
+      features: [
+        "12-beam all-in-view steering covers all satellites in view",
+        "Enhanced Direct-Y code acquisition and cold start (<10s)",
+        "Real-time simultaneous L1/L2 ionospheric corrections",
+        "Antenna masking selection and precise time transfer",
+        "Modular design and field-programmable software",
+        "Over 100,000 SAASM-based receivers per year manufacturing heritage"
+      ],
+      partNumber: "BAE-IGAS-MUNITIONS"
+    },
+    {
+      id: "navfire",
+      name: "NavFire™ GPS Receiver",
+      category: "weapons",
+      classTag: "tag-saasm",
+      tagLabel: "25,000g GUN-HARD",
+      desc: "Smallest integrated military GPS and anti-jamming receiver, 25,000 g-shock hardened.",
+      overview: "World's premier 40 mm gun-hardened artillery receiver. Survives 25,000 g barrel launch shock and spinning munition dynamics. Includes single-die SAASM with KDP, two-element digital nulling (>86 dB J/S), and Ultra Tight Coupling (UTC).",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "24 channels (software upgradeable to 48 channels)",
+        accuracy: "<3 m CEP (<2 m typical with aiding)",
+        timeAccuracy: "< ±30 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | Spinning munition applications",
+        antiJam: ">86 dB J/S while tracking (two-element digital nulling)"
+      },
+      swap: {
+        power: "<2.8 W",
+        weight: "2.8 oz (80 g)",
+        size: "1.64 D x 0.95 in H (41.3 x 24.13 mm cylinder)",
+        temp: "-45°C to +85°C operating (-54°C to +85°C storage)",
+        shock: "Up to 25,000 g artillery shock"
+      },
+      interfaces: [
+        "One or two RF antenna inputs (L1/L2)",
+        "Primary power, auxiliary power",
+        "Serial host control – LVCMOS (RS-232) up to 230 Kbaud",
+        "Host controlled Ultra Tight Coupling (UTC)",
+        "DS-101 keying, KDP programming, zeroization",
+        "1/10 PPS CPS or UTC timing outputs"
+      ],
+      features: [
+        "25,000 g artillery gun-hardened microelectronics",
+        "Single-die SAASM with GPS Directorate-approved KDP",
+        "TTFF <6 seconds under operational launch conditions",
+        "Up to 25 Hz PVT solution update rate",
+        "Comprehensive built-in-test (BIT) & data hold up to 8 min",
+        "Storage life >20 years with field clock recalibration"
+      ],
+      partNumber: "BAE-NAVFIRE-40MM"
+    },
+    {
+      id: "navstorm-plus",
+      name: "NavStorm™+ GPS Receiver",
+      category: "weapons",
+      classTag: "tag-antijam",
+      tagLabel: "20,000g 5-RF",
+      desc: "Premier 2.8-inch gun-hard integrated GPS and anti-jamming system (20,000 g-shock).",
+      overview: "Engineered for tight SWaP-C requirements in weapons, artillery, and spinning munitions. Features 24-channel tracking, digital nulling with up to 5 RF inputs (>92 dB J/S), alternate frequency sensing while nulling, and fast direct-Y acquisition.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "24 channels (upgradeable to 48 channels)",
+        accuracy: "<3 m CEP (<2 m typical with aiding)",
+        timeAccuracy: "< ±30 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | Spinning munition applications",
+        antiJam: ">92 dB J/S with up to 5 RF inputs (digital nulling)"
+      },
+      swap: {
+        power: "<5.0 W (depending on RF configuration)",
+        weight: "8.8 oz (250 g)",
+        size: "2.8 D x 1.1 in H (71.12 x 27.94 mm cylinder)",
+        temp: "-45°C to +85°C operating (-62°C to +95°C storage)",
+        shock: "Up to 20,000 g gun shock"
+      },
+      interfaces: [
+        "One or two RF antenna inputs (L1/L2) up to 5 RF inputs",
+        "Primary & auxiliary power",
+        "Serial host control – LVCMOS (RS-232) up to 230 Kbaud",
+        "Host controlled Ultra Tight Coupling (UTC)",
+        "DS-101, SKL, CYZ-10 key loading",
+        "1/10 PPS CPS or UTC timing outputs"
+      ],
+      features: [
+        "Artillery / gun hardened up to 20,000 g-shock",
+        "Single die SAASM with KDP",
+        "Alternate frequency sensing while nulling",
+        "Fast direct-Y code acquisition (<8 sec nominal)",
+        "TTFF <8 seconds (conditions apply)",
+        "Storage life >20 years with field clock recalibration"
+      ],
+      partNumber: "BAE-NAVSTORM-PLUS"
+    },
+    {
+      id: "navstorm-m",
+      name: "NavStorm™-M GPS Receiver",
+      category: "weapons",
+      classTag: "tag-mcode",
+      tagLabel: "20,000g M-CODE",
+      desc: "Ruggedized 32-channel M-Code receiver with spatial beamforming for hypersonic & munitions.",
+      overview: "Next-generation M-Code Increment 1 receiver for UAS, loitering munitions, hypersonic platforms, and gun-hardened weapons. Features Common GPS Module (CGM), SGMP crypto, BFEA compatibility, and digital beamforming/nulling with up to 5 RF inputs.",
+      performance: {
+        frequency: "L1 (M, P/Y, C/A) & L2 (M, P/Y)",
+        channels: "32 channels All-In-View dual-frequency",
+        accuracy: "<3 m CEP (<2 m typical with aiding)",
+        timeAccuracy: "< ±100 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | Hypersonic & artillery dynamics",
+        antiJam: ">92 dB J/S while tracking (beamforming + nulling)"
+      },
+      swap: {
+        power: "<19.0 W (depending on RF configuration)",
+        weight: "9.7 oz (275 g)",
+        size: "2.8 D x 1.1 in H (71.12 x 27.94 mm cylinder)",
+        temp: "-45°C to +85°C operating (-54°C to +85°C storage)",
+        shock: "Up to 20,000 g shock"
+      },
+      interfaces: [
+        "2 up to 5 RF antenna inputs (L1/L2)",
+        "Primary power, auxiliary power",
+        "Serial host control – RS-422",
+        "Host controlled Ultra Tight Coupling (UTC reserved)",
+        "DS-101 – RS-485 crypto interface",
+        "1/10 PPS CPS or UTC timing outputs, cold/warm keying"
+      ],
+      features: [
+        "Security-certified Common GPS Module (CGM) with SGMP",
+        "Blue Force Electronic Attack (BFEA) compatibility",
+        "Fast direct-Y and direct-M code acquisition (<10s TTFM)",
+        "Layered protection: beamforming, anti-spoofing, resiliency",
+        "Up to 25 Hz PVT solution update rate",
+        "Designed for 20-year storage life with data hold up to 8 min"
+      ],
+      partNumber: "BAE-NAVSTORM-M"
+    },
+    {
+      id: "navstrike",
+      name: "NavStrike™ GPS Receiver",
+      category: "weapons",
+      classTag: "tag-saasm",
+      tagLabel: "MUNITIONS SAASM",
+      desc: "Precision strikes GPS receiver for tightly coupled GPS/INS missile & munition integrations.",
+      overview: "Derived from field-proven NavStrike and JDAM receivers. Features 24-channel all-in-view navigation, >6,000 correlators, carrier loop aiding, and enhanced Direct-Y acquisition without requiring active antenna electronics.",
+      performance: {
+        frequency: "L1 (C/A, P/Y) & L2 (P/Y)",
+        channels: "24-channel All-In-View SAASM",
+        accuracy: "<3 meters CEP (<2 m typical)",
+        timeAccuracy: "< ±30 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: ">10 g acceleration | 386 g operating shock",
+        antiJam: "High anti-jamming immunity with carrier loop aiding"
+      },
+      swap: {
+        power: "<4.0 W continuous (<3.0 W track)",
+        weight: "0.5 lbs maximum (227 g)",
+        size: "3.5 W x 3.0 H x 0.75 D in max",
+        temp: "-54°C to +85°C continuous (-62°C to +95°C storage)",
+        shock: "386 g operating shock"
+      },
+      interfaces: [
+        "Serial data: RS-422, up to 230 Kbaud",
+        "1 PPS / TimeMark / HAVE QUICK",
+        "Single L1/L2 RF antenna port",
+        "KYK-13, KOI-18, CYZ-10 crypto key inputs",
+        "Fault coverage >95%"
+      ],
+      features: [
+        "Fifth-generation SAASM-based design",
+        ">6,000 correlators for ultra-fast satellite acquisition",
+        "TTFF <8 sec (time uncert ≤10 μs), 77s cold start without init",
+        "Simultaneous ionospheric corrections & carrier phase output",
+        "No need for active antenna electronics",
+        "Field clock recalibration for extended storage"
+      ],
+      partNumber: "BAE-NAVSTRIKE-SAASM"
+    },
+    {
+      id: "navstrike-m",
+      name: "NavStrike™-M GPS Receiver",
+      category: "weapons",
+      classTag: "tag-mcode",
+      tagLabel: "YMCA STRIKE",
+      desc: "Next-gen YMCA ASIC M-Code munitions receiver with Store and Process (SnP) acquisition.",
+      overview: "Derived from NavStrike SAASM and BAE Systems YMCA (Y-Code/M-Code and Coarse Acquisition) ASIC. Delivers high accuracy for tightly coupled GPS/INS munitions in a small, low-power package (<1W nominal) with 921.6 Kbaud RS-422 serial.",
+      performance: {
+        frequency: "L1 (C/A, P/Y, M-Code) & L2 (P/Y, M-Code)",
+        channels: "24-channel All-In-View YMCA ASIC",
+        accuracy: "<3 m CEP (<2 m typical)",
+        timeAccuracy: "< ±35 nanoseconds RMS",
+        velocity: "<0.07 m/sec RMS typical",
+        dynamics: "10 g acceleration | 386 g operating shock",
+        antiJam: "Direct-Y and Direct-M high jamming immunity"
+      },
+      swap: {
+        power: "<1 W nominal",
+        weight: "0.5 lbs maximum (227 g)",
+        size: "3.5 in W x 3.0 in H x 0.75 in D max",
+        temp: "-54°C to +85°C continuous",
+        shock: "386 g operating shock"
+      },
+      interfaces: [
+        "Serial data: RS-422, up to 921.6 Kbaud",
+        "1 PPS / TimeMark",
+        "Single L1/L2 RF antenna port",
+        "STE, DS101 key input",
+        "Fault coverage >95%"
+      ],
+      features: [
+        "Store and Process (SnP) fast acquisition",
+        "TTFF ≤ 11 sec (time uncert ≤100 μs) | Cold start 78s without init",
+        "Enhanced Direct-Y/M code acquisition and cold start",
+        "Backwards-compatible design with legacy NavStrike receivers",
+        "Carrier phase measurements & simultaneous ionospheric corrections",
+        "No need for active antenna electronics"
+      ],
+      partNumber: "BAE-NAVSTRIKE-M"
+    }
+  ];
+
+  // DOM Elements
+  const deviceListEl = document.getElementById('deviceList');
+  const detailPaneEl = document.getElementById('detailPane');
+  const searchInput = document.getElementById('catalogSearch');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const crpaCanvas = document.getElementById('crpaCanvas');
+  const crpaCtx = crpaCanvas.getContext('2d');
+  const protocolTerminal = document.getElementById('protocolTerminal');
+  const footerClock = document.getElementById('footerClock');
+
+  let currentDeviceId = "polaris-link";
+  let activeFilter = "all";
+  let searchTerm = "";
+  let radarMode = "STAP"; // STAP, NULLING, BEAMSTEER
+  let jammers = [
+    { angle: 0.85, dist: 0.78, power: 120, label: "JAMMER_ALPHA" },
+    { angle: 3.42, dist: 0.85, power: 105, label: "JAMMER_BETA" }
+  ];
+
+  // Render Catalog Sidebar
+  function renderCatalog() {
+    deviceListEl.innerHTML = '';
+    const filtered = PNT_DEVICES.filter(dev => {
+      const matchSearch = dev.name.toLowerCase().includes(searchTerm) ||
+                          dev.desc.toLowerCase().includes(searchTerm) ||
+                          dev.overview.toLowerCase().includes(searchTerm) ||
+                          (dev.partNumber && dev.partNumber.toLowerCase().includes(searchTerm));
+      if (!matchSearch) return false;
+      if (activeFilter === "all") return true;
+      if (activeFilter === "mcode") return dev.classTag === "tag-mcode";
+      if (activeFilter === "saasm") return dev.classTag === "tag-saasm";
+      if (activeFilter === "antijam") return dev.classTag === "tag-antijam" || dev.category === "antijam";
+      if (activeFilter === "weapons") return dev.category === "weapons";
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      deviceListEl.innerHTML = '<div style="padding:15px;color:var(--muted);font-size:9px">No matching devices found.</div>';
+      return;
+    }
+
+    filtered.forEach(dev => {
+      const card = document.createElement('div');
+      card.className = `device-card ${dev.id === currentDeviceId ? 'active' : ''}`;
+      card.onclick = () => selectDevice(dev.id);
+      card.innerHTML = `
+        <div class="dev-top">
+          <span class="dev-name">${dev.name}</span>
+          <span class="dev-tag ${dev.classTag}">${dev.tagLabel}</span>
+        </div>
+        <div class="dev-desc">${dev.desc}</div>
+        <div class="dev-badges">
+          <span class="dev-badge">${dev.performance.channels.split(' ')[0]}</span>
+          <span class="dev-badge">${dev.swap.size.split('(')[0].trim()}</span>
+          <span class="dev-badge">${dev.swap.weight.split('(')[0].trim()}</span>
+        </div>
+      `;
+      deviceListEl.appendChild(card);
+    });
+  }
+
+  // Render Inspector Detail Pane
+  function renderDetail(dev) {
+    detailPaneEl.innerHTML = `
+      <div class="inspector-hero">
+        <div class="hero-title">
+          <h2>${dev.name}</h2>
+          <p>${dev.desc}</p>
+          <div class="hero-badges">
+            <span class="dev-tag ${dev.classTag}">${dev.tagLabel}</span>
+            <span class="dev-tag" style="background:rgba(255,255,255,.06);color:#fff">PART: ${dev.partNumber}</span>
+            <span class="dev-tag" style="background:rgba(0,255,204,.1);color:var(--cyan)">PNT LEVEL: ASSURED</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="action-btn gold" id="btnMintDeviceToken" type="button">MINT ATTESTATION</button>
+          <button class="action-btn" id="btnSimulateThreat" type="button">SIMULATE AJ THREAT</button>
+          <button class="action-btn" id="btnPropagateProtocol" type="button">STREAM 1PPS DATA</button>
+        </div>
+      </div>
+
+      <div class="specs-grid">
+        <div class="spec-box">
+          <span>FREQUENCIES &amp; SIGNALS</span>
+          <b>${dev.performance.frequency}</b>
+          <small>${dev.performance.channels}</small>
+        </div>
+        <div class="spec-box">
+          <span>TIME ACCURACY (RMS)</span>
+          <b>${dev.performance.timeAccuracy}</b>
+          <small>Precision Timing Source</small>
+        </div>
+        <div class="spec-box">
+          <span>POSITION ACCURACY</span>
+          <b>${dev.performance.accuracy.split('|')[0].trim()}</b>
+          <small>${dev.performance.velocity}</small>
+        </div>
+        <div class="spec-box">
+          <span>ANTI-JAM IMMUNITY</span>
+          <b>${dev.performance.antiJam.split('|')[0].trim()}</b>
+          <small>${dev.performance.dynamics.split('|')[0].trim()}</small>
+        </div>
+      </div>
+
+      <div class="feature-cards">
+        <div class="feature-card">
+          <h3>ARCHITECTURAL CAPABILITIES &amp; OVERVIEW</h3>
+          <p style="font-size:9px;line-height:1.6;color:#e2e8f0;margin-bottom:10px">${dev.overview}</p>
+          <h3>KEY FEATURES &amp; MISSION BENEFITS</h3>
+          <ul>
+            ${dev.features.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <h3>HARDWARE INTERFACES &amp; PROTOCOLS</h3>
+          <ul style="margin-bottom:12px">
+            ${dev.interfaces.map(i => `<li>${i}</li>`).join('')}
+          </ul>
+          <h3>SWaP-C &amp; ENVIRONMENTAL TOLERANCE</h3>
+          <div style="font-size:9px;line-height:1.7;color:#94a3b8">
+            <div>• <b>Power:</b> ${dev.swap.power}</div>
+            <div>• <b>Weight:</b> ${dev.swap.weight}</div>
+            <div>• <b>Dimensions:</b> ${dev.swap.size}</div>
+            <div>• <b>Thermal:</b> ${dev.swap.temp}</div>
+            <div>• <b>Shock &amp; Vibe:</b> ${dev.swap.shock}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Wire Hero Actions
+    document.getElementById('btnMintDeviceToken').onclick = async () => {
+      const devToken = 'crt.pnt.' + dev.id + '.' + Date.now().toString(36);
+      let fp = '0x' + Math.random().toString(16).slice(2, 10).toUpperCase();
+      if(window.parent?.CrypticTerminal?.mintToken){
+        const t = await window.parent.CrypticTerminal.mintToken('pnt.device.' + dev.id, {
+          device: dev.name,
+          partNumber: dev.partNumber,
+          antiJam: dev.performance.antiJam
+        });
+        fp = t.fp;
+        window.parent.CrypticTerminal.out?.(`[PNT AVIONICS] Hardware attestation minted for ${dev.name} · receipt=${fp}`, 'good');
+        window.parent.CrypticTerminal.ledger?.('pnt.device.attested', { device: dev.id, fp });
+      }
+      alert(`[ATTESTATION MINTED]\nDevice: ${dev.name}\nToken: ${devToken}\nReceipt FP: ${fp}\nStamped into sovereign ledger.`);
+    };
+
+    document.getElementById('btnSimulateThreat').onclick = () => {
+      jammers.push({
+        angle: Math.random() * Math.PI * 2,
+        dist: 0.75 + Math.random() * 0.15,
+        power: Math.floor(100 + Math.random() * 30),
+        label: `JAMMER_${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+      });
+      if(jammers.length > 5) jammers.shift();
+      updateRadarHUD();
+    };
+
+    document.getElementById('btnPropagateProtocol').onclick = () => {
+      generateProtocolPacket(dev);
+    };
+
+    // Update Radar matching device
+    if(dev.category === "antijam" || dev.id.includes('sabr') || dev.id.includes('navstorm')){
+      document.getElementById('radarAntennaName').textContent = "7-Element CRPA (Active Beamforming)";
+      document.getElementById('radarBeamsCount').textContent = "24 Simultaneous Steered";
+    } else {
+      document.getElementById('radarAntennaName').textContent = "FRPA / Multi-Element Sub-Array";
+      document.getElementById('radarBeamsCount').textContent = "12 Steered Tracking";
+    }
+  }
+
+  function selectDevice(id) {
+    currentDeviceId = id;
+    renderCatalog();
+    const dev = PNT_DEVICES.find(d => d.id === id);
+    if (dev) renderDetail(dev);
+  }
+
+  // 3. CRPA Radar Canvas Renderer
+  let radarAngle = 0;
+  function renderRadar() {
+    const rw = crpaCanvas.width;
+    const rh = crpaCanvas.height;
+    const cx = rw / 2;
+    const cy = rh / 2;
+    const r = cx - 12;
+
+    crpaCtx.clearRect(0, 0, rw, rh);
+
+    // Range rings
+    crpaCtx.strokeStyle = 'rgba(0, 255, 204, 0.18)';
+    crpaCtx.lineWidth = 1;
+    [0.25, 0.5, 0.75, 1.0].forEach(factor => {
+      crpaCtx.beginPath();
+      crpaCtx.arc(cx, cy, r * factor, 0, Math.PI * 2);
+      crpaCtx.stroke();
+    });
+
+    // Crosshairs
+    crpaCtx.strokeStyle = 'rgba(0, 255, 204, 0.12)';
+    crpaCtx.beginPath();
+    crpaCtx.moveTo(cx - r, cy); crpaCtx.lineTo(cx + r, cy);
+    crpaCtx.moveTo(cx, cy - r); crpaCtx.lineTo(cx, cy + r);
+    crpaCtx.stroke();
+
+    // 7-Element CRPA antenna layout representation at center
+    const elements = 7;
+    crpaCtx.fillStyle = 'rgba(245, 206, 112, 0.85)';
+    crpaCtx.beginPath(); crpaCtx.arc(cx, cy, 4, 0, Math.PI * 2); crpaCtx.fill(); // Center element
+    for(let i=0; i<6; i++){
+      const ea = (i / 6) * Math.PI * 2;
+      const ex = cx + Math.cos(ea) * 22;
+      const ey = cy + Math.sin(ea) * 22;
+      crpaCtx.beginPath(); crpaCtx.arc(ex, ey, 3.2, 0, Math.PI * 2); crpaCtx.fill();
+    }
+
+    // Rotating Sweep line
+    radarAngle += 0.022;
+    const sweepX = cx + Math.cos(radarAngle) * r;
+    const sweepY = cy + Math.sin(radarAngle) * r;
+    const sweepGrad = crpaCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    sweepGrad.addColorStop(0, 'rgba(0, 255, 204, 0.35)');
+    sweepGrad.addColorStop(1, 'transparent');
+
+    crpaCtx.strokeStyle = 'rgba(0, 255, 204, 0.5)';
+    crpaCtx.lineWidth = 1.5;
+    crpaCtx.beginPath();
+    crpaCtx.moveTo(cx, cy);
+    crpaCtx.lineTo(sweepX, sweepY);
+    crpaCtx.stroke();
+
+    // Render GPS Satellite Beams (Blue/Cyan steered lobes)
+    const satCount = 8;
+    for(let s=0; s<satCount; s++){
+      const sa = (s / satCount) * Math.PI * 2 + 0.35;
+      const sDist = r * (0.35 + (s % 3) * 0.18);
+      const sx = cx + Math.cos(sa) * sDist;
+      const sy = cy + Math.sin(sa) * sDist;
+
+      // Beam lobe polygon
+      crpaCtx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+      crpaCtx.beginPath();
+      crpaCtx.moveTo(cx, cy);
+      crpaCtx.lineTo(sx - 12, sy - 12);
+      crpaCtx.lineTo(sx + 12, sy - 12);
+      crpaCtx.closePath();
+      crpaCtx.fill();
+
+      // Satellite node
+      crpaCtx.fillStyle = '#38bdf8';
+      crpaCtx.beginPath();
+      crpaCtx.arc(sx, sy, 3, 0, Math.PI * 2);
+      crpaCtx.fill();
+
+      crpaCtx.font = '7px monospace';
+      crpaCtx.fillStyle = '#a5f3fc';
+      crpaCtx.fillText(`SV_${s+1}`, sx + 6, sy + 3);
+    }
+
+    // Render Jammer Threats and Nulling Lobes (Red threats with deep null wedges)
+    jammers.forEach(j => {
+      const jx = cx + Math.cos(j.angle) * (r * j.dist);
+      const jy = cy + Math.sin(j.angle) * (r * j.dist);
+
+      // Nulling wedge (protective black/violet shadow)
+      crpaCtx.fillStyle = 'rgba(157, 91, 254, 0.25)';
+      crpaCtx.beginPath();
+      crpaCtx.arc(cx, cy, r * 0.9, j.angle - 0.22, j.angle + 0.22);
+      crpaCtx.lineTo(cx, cy);
+      crpaCtx.closePath();
+      crpaCtx.fill();
+
+      // Threat marker
+      crpaCtx.fillStyle = '#ff4d6d';
+      crpaCtx.beginPath();
+      crpaCtx.arc(jx, jy, 4.5, 0, Math.PI * 2);
+      crpaCtx.fill();
+
+      crpaCtx.strokeStyle = '#ff4d6d';
+      crpaCtx.lineWidth = 1;
+      crpaCtx.beginPath();
+      crpaCtx.arc(jx, jy, 8 + Math.sin(radarAngle * 4) * 2, 0, Math.PI * 2);
+      crpaCtx.stroke();
+
+      crpaCtx.font = '7px monospace';
+      crpaCtx.fillStyle = '#ff859d';
+      crpaCtx.fillText(`${j.label} [${j.power}dB]`, jx + 8, jy + 3);
+    });
+
+    requestAnimationFrame(renderRadar);
+  }
+  requestAnimationFrame(renderRadar);
+
+  function updateRadarHUD(){
+    document.getElementById('radarJammerStatus').textContent = `ACTIVE THREATS: ${jammers.length} | IMMUNITY: >120 dB J/S`;
+  }
+
+  function generateProtocolPacket(dev){
+    const now = new Date();
+    const iso = now.toISOString();
+    const packet = `[1PPS_UTC_TIMESTAMP: ${iso}]
+[DEVICE_ID: ${dev.id.toUpperCase()} | PART: ${dev.partNumber}]
+[CHANNELS: ${dev.performance.channels} | ANTI-JAM: ${dev.performance.antiJam}]
+$GPGGA,${now.getUTCHours()}${now.getUTCMinutes()}${now.getUTCSeconds()}.00,3245.1234,N,11709.5678,W,2,12,0.8,124.5,M,-32.1,M,,*42
+[ICD-GPS-153D] PVT_DATA: POS_ACC=${dev.performance.accuracy} TIME_ACC=${dev.performance.timeAccuracy}
+[HAVE QUICK CLOCK PULSE] SYNC_LOCKED = TRUE (T_MARK_STAMPED)`;
+    protocolTerminal.textContent = packet;
+  }
+
+  // Event Listeners for Filters & Search
+  searchInput.addEventListener('input', e => {
+    searchTerm = e.target.value.toLowerCase().trim();
+    renderCatalog();
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderCatalog();
+    });
+  });
+
+  // Radar Mode Toggles
+  document.getElementById('btnModeSTAP').onclick = function(){
+    setRadarMode('STAP', this);
+  };
+  document.getElementById('btnModeNull').onclick = function(){
+    setRadarMode('NULLING', this);
+  };
+  document.getElementById('btnModeBeam').onclick = function(){
+    setRadarMode('BEAMSTEER', this);
+  };
+
+  function setRadarMode(mode, btnEl){
+    radarMode = mode;
+    document.querySelectorAll('.radar-btn').forEach(b => {
+      if(b.id.startsWith('btnMode')) b.classList.remove('active');
+    });
+    btnEl.classList.add('active');
+    document.getElementById('teleStatus')?.textContent = `CRPA_${mode}_ENGAGED`;
+  }
+
+  document.getElementById('btnInjectJammer').onclick = () => {
+    jammers.push({
+      angle: Math.random() * Math.PI * 2,
+      dist: 0.70 + Math.random() * 0.2,
+      power: Math.floor(105 + Math.random() * 25),
+      label: `JAMMER_THREAT_${jammers.length + 1}`
+    });
+    updateRadarHUD();
+  };
+
+  // Clock Ticker in Footer
+  setInterval(() => {
+    const d = new Date();
+    const utc = d.toUTCString().slice(17, 25);
+    footerClock.textContent = `UTC ${utc} · 111ns TIMING ACCURACY · 1PPS CONTINUITY SYNC`;
+  }, 1000);
+
+  // Initialize
+  selectDevice("polaris-link");
+
+})();
+</script>
+</body>
+</html>

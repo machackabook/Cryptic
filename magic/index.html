@@ -56,9 +56,12 @@
 <section id="dashBR" class="corner-module br">
   <span class="docked-label">SYS</span>
   <div class="dash-content">
-    <div class="dash-header">LIVE METRICS & CLOCK</div>
-    <div class="clock-widget" id="sysClockWidget">
-      <div class="clock-label">SYSTEM CLOCK // UTC</div>
+    <div class="dash-header">LIVE METRICS &amp; SYSTEM CLOCK</div>
+    <div class="clock-widget" id="sysClockWidget" title="Click to cycle time formats (UTC / LOCAL / UNIX EPOCH / SIDEREAL)">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="clock-label" id="clockModeLabel">SYSTEM CLOCK // UTC</div>
+        <button id="clockCopyBtn" type="button" style="background:rgba(0,255,204,0.12);border:1px solid rgba(0,255,204,0.4);color:var(--cyan);font-size:7px;padding:2px 5px;border-radius:4px;cursor:pointer;">COPY</button>
+      </div>
       <div class="clock-display" id="sysUtcClock">00:00:00 UTC</div>
       <div class="clock-sub" id="sysUtcDate">SYNCHRONIZING...</div>
     </div>
@@ -78,13 +81,21 @@
     <div class="browser-actions">
       <button hx-get="./surfaces/home.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="home">HOME</button>
       <button hx-get="./surfaces/terminal.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="terminal">TERMINAL</button>
+      <button hx-get="./surfaces/galaxies.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="galaxies" style="color:var(--gold);border-color:rgba(245,206,112,0.35)">7 GALAXIES</button>
+      <button hx-get="./surfaces/genie.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="genie" style="color:#d580ff;border-color:rgba(180,90,255,0.4)">GENIE DJINN</button>
+      <button hx-get="./surfaces/consensus.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="consensus">AI CONSENSUS</button>
+      <button hx-get="./surfaces/voice.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="voice">LIVE VOICE</button>
       <button hx-get="./surfaces/singularity.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="singularity">SINGULARITY</button>
+      <button hx-get="./surfaces/sentinel.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="sentinel">SENTINEL V11</button>
+      <button hx-get="./surfaces/quine.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="quine">QUINE SHELL</button>
+      <button hx-get="./surfaces/embedding.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="embedding">EMBEDDING 2</button>
+      <button hx-get="./surfaces/documents.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="documents" style="color:#38bdf8;border-color:rgba(56,189,248,0.4)">DOCUMENTS &amp; PDF</button>
+      <button hx-get="./surfaces/irc.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="irc">NEXUS IRC</button>
+      <button hx-get="./surfaces/matrix.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="matrix">MATRIX</button>
       <button hx-get="./surfaces/telemetry.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="telemetry">TELEMETRY</button>
       <button hx-get="./surfaces/bus.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="comms">COMMS</button>
       <button hx-get="./surfaces/nodes.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="nodes">NODES</button>
       <button hx-get="./surfaces/welcome.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="welcome">WELCOME</button>
-      <button hx-get="./surfaces/genie.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="genie">GENIE DJINN</button>
-      <button hx-get="./surfaces/matrix.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="matrix">MATRIX ENGINE</button>
     </div>
   </div>
   <div id="magicStage" class="magic-stage" hx-get="./surfaces/home.html" hx-trigger="load" hx-swap="innerHTML"></div>

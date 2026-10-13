@@ -106,6 +106,138 @@
       "auth": "public-read"
     },
     {
+      "id": "galaxies",
+      "label": "7 Galaxies Skybox & Relativistic Orbitals",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/enhanced-skybox-7-galaxies.html",
+      "embed": true,
+      "capabilities": [
+        "skybox-7-galaxies",
+        "keplerian-orbitals",
+        "kerr-lensing",
+        "particle-streams"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "consensus",
+      "label": "D3 Multi-AI Consensus Quorum Engine",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/d3-multi-ai-consensus.html",
+      "embed": true,
+      "capabilities": [
+        "byzantine-fault-tolerance",
+        "topological-quorum",
+        "tokenized-voting"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "voice",
+      "label": "Polyneuromorphic Live Voice Engine",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/polyneuromorphic-live-voice.html",
+      "embed": true,
+      "capabilities": [
+        "neuromorphic-oscilloscope",
+        "spike-trains",
+        "963-solfeggio",
+        "speech-synthesis"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "aurora",
+      "label": "Aurora Singularity Stack Quantum Manifold",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/aurora-singularity-stack.html",
+      "embed": true,
+      "capabilities": [
+        "aurora-ribbons",
+        "quantum-density-field",
+        "vacuum-flux"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "sentinel",
+      "label": "TDOC Sentinel Master V11 Dual Authority",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/tdoc-sentinel-v11.html",
+      "embed": true,
+      "capabilities": [
+        "dual-authority",
+        "ed25519-node-pair",
+        "quine-loop",
+        "evidence-ledger"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "quine",
+      "label": "Polyglot Quine Shell Living Artifact",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/polyglot-quine-shell.html",
+      "embed": true,
+      "capabilities": [
+        "self-replicating-quine",
+        "reactive-size-monitor",
+        "dynamic-chunks",
+        "token-parser"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "embedding",
+      "label": "Gemini Multimodal Embedding 2 Preview",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/gemini-multimodal-embedding.html",
+      "embed": true,
+      "capabilities": [
+        "gemini-embedding-2-preview",
+        "text-image-audio-coembedding",
+        "cosine-similarity",
+        "vector-sphere"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "irc",
+      "label": "Nexus Sovereign IRC Hub",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/nexus-irc-hub.html",
+      "embed": true,
+      "capabilities": [
+        "sovereign-irc",
+        "matrix-mesh",
+        "peer-channels"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
+      "id": "documents",
+      "label": "Document Corpus & PDF Knowledge Core",
+      "kind": "integrated-interface",
+      "interface_url": "./interfaces/pdf-document-corpus.html",
+      "embed": true,
+      "capabilities": [
+        "pdf-document-corpus",
+        "spec-architecture-mapping",
+        "semantic-cross-reference",
+        "continuity-receipts"
+      ],
+      "direct_write": false,
+      "auth": "public-read"
+    },
+    {
       "id": "samsung-arm64",
       "label": "Nexus Node // Samsung ARM64",
       "kind": "paired-device",

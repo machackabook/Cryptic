@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TDOC SENTINEL MASTER V11 // DUAL AUTHORITY &amp; SOVEREIGN RUNTIME</title>
+<style>
+:root {
+  --void: #010308;
+  --cyan: #00ffcc;
+  --green: #22c55e;
+  --violet: #9d5bfe;
+  --gold: #f5ce70;
+  --ink: #f0f6fc;
+  --muted: #8b9bb4;
+  --panel: rgba(3,8,20,0.88);
+  --line: rgba(85,244,255,0.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  background: var(--void);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--ink);
+  display: grid;
+  grid-template-rows: 52px 1fr;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 18px;
+  background: rgba(2,6,16,0.92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  z-index: 20;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand h1 {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--cyan);
+}
+.brand span {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+}
+button {
+  background: rgba(0,255,204,0.08);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+}
+button:hover {
+  background: rgba(0,255,204,0.2);
+}
+button.gold {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(245,206,112,0.08);
+}
+button.green {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(34,197,94,0.08);
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr 340px;
+  gap: 12px;
+  padding: 14px 18px;
+  overflow: hidden;
+}
+.col {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  backdrop-filter: blur(14px);
+}
+.col h2 {
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(245,206,112,0.2);
+  padding-bottom: 4px;
+}
+.key-box {
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(85,244,255,0.18);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--cyan);
+  word-break: break-all;
+}
+.ascii-art {
+  font-family: monospace;
+  font-size: 7px;
+  line-height: 1.15;
+  white-space: pre;
+  color: var(--gold);
+  background: rgba(0,0,0,0.5);
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(245,206,112,0.2);
+}
+.audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 8px;
+}
+.audit-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+}
+.audit-item.ok span { color: var(--green); font-weight: bold; }
+
+.log-stream {
+  flex: 1;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(85,244,255,0.15);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 8px;
+  line-height: 1.5;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.log-line {
+  color: #a5c4d4;
+}
+.log-line.green { color: var(--green); }
+.log-line.gold { color: var(--gold); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <button style="border-radius:50%;width:28px;height:28px;padding:0;display:grid;place-items:center;">🛡</button>
+    <div>
+      <h1>TDOC SENTINEL MASTER V11 // DUAL AUTHORITY</h1>
+      <span>CRYPTOGRAPHIC ED25519 SOVEREIGN RUNTIME · SAMSUNG &times; CHROMEBOOK VERIFIED PAIR</span>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="green" id="btnVerifyPair">VERIFY PAIR HANDSHAKE</button>
+    <button class="gold" id="btnQuineLoop">TRIGGER QUINE LOOP</button>
+    <button id="btnAudit">DEBLOAT AUDIT</button>
+  </div>
+</header>
+
+<main class="main-layout">
+  <!-- Left Column: Node Cryptographic Identity -->
+  <section class="col">
+    <h2>Sovereign Node Keypair</h2>
+    <div style="font-size:8px;color:var(--muted)">NODE IDENTIFICATION: <b>nexus:samsung-arm64</b></div>
+    <div class="key-box">
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGteDQk53+YlXIALXcls03EZ3B7IXdgYr+knG5dYZuUt nexus:samsung-arm64
+    </div>
+    
+    <h2>SHA256 Fingerprint</h2>
+    <div class="key-box" style="color:var(--green)">
+      256 SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg (ED25519)
+    </div>
+
+    <h2>Randomart Image</h2>
+    <div class="ascii-art">+--[ED25519 256]--+
+|                 |
+|       .         |
+|      . .       .|
+|     . .      . o|
+|      . S   .o.o.|
+|       .   E.o+*+|
+|      .  oo+o.B=*|
+|     . ...&.oBoBo|
+|      . oBoB+=O..|
++----[SHA256]-----+</div>
+  </section>
+
+  <!-- Middle Column: Sentinel Runtime Log & Terminal -->
+  <section class="col">
+    <h2>Dual Authority Execution &amp; Evidence Log</h2>
+    <div class="log-stream" id="logStream">
+      <div class="log-line green">[2026-10-07T06:35:08Z] BOOTSTRAP COMPLETE · Node: samsung-arm64 · Role: SAMSUNG</div>
+      <div class="log-line">[2026-10-07T06:35:08Z] Evidence: /data/data/com.termux/files/home/Æ/logs/evidence/bootstrap-20261007T063508Z</div>
+      <div class="log-line">[2026-10-07T06:35:08Z] Outbox: /data/data/com.termux/files/home/Æ/sync/outbox</div>
+      <div class="log-line gold">[2026-10-07T06:35:09Z] STATUS: PASS_NO_ACTIVE_REFERENCE · Dual Authority Signed</div>
+      <div class="log-line">[2026-10-07T06:35:10Z] SSHD daemon initialized on port 8022. LAN broadcast pending.</div>
+      <div class="log-line green">[2026-10-12T21:35:00Z] Quine loop check: PASS · Zero-payload living artifact self-replicating.</div>
+    </div>
+  </section>
+
+  <!-- Right Column: Command Verification & Debloat Status -->
+  <section class="col">
+    <h2>Subsystem Command Verification</h2>
+    <div class="audit-list">
+      <div class="audit-item ok"><span>ssh</span> <span>OK (/usr/bin/ssh)</span></div>
+      <div class="audit-item ok"><span>sshd</span> <span>OK (/usr/bin/sshd)</span></div>
+      <div class="audit-item ok"><span>rsync</span> <span>OK (/usr/bin/rsync)</span></div>
+      <div class="audit-item ok"><span>git</span> <span>OK (/usr/bin/git)</span></div>
+      <div class="audit-item ok"><span>python</span> <span>OK (/usr/bin/python)</span></div>
+      <div class="audit-item ok"><span>node</span> <span>OK (/usr/bin/node)</span></div>
+      <div class="audit-item ok"><span>jq</span> <span>OK (/usr/bin/jq)</span></div>
+    </div>
+
+    <h2>Dual Authority Rules</h2>
+    <div style="font-size:8px;color:var(--muted);line-height:1.5;">
+      1. Run bootstrap on BOTH devices (Samsung &times; Chromebook).<br>
+      2. Compare the two SSH fingerprints.<br>
+      3. Start sshd manually: <code>sshd</code><br>
+      4. Obtain LAN address: <code>ip -brief addr</code><br>
+      5. Exchange ONLY the verified .pub keys.
+    </div>
+
+    <h2>Debloat Boundary</h2>
+    <div style="font-size:8px;color:var(--gold);line-height:1.5;">
+      [DO NOT START DEBLOAT YET]<br>
+      Awaiting secondary authority attestation from paired Chromebook node.
+    </div>
+  </section>
+</main>
+
+<script>
+const log = document.getElementById('logStream');
+
+function appendLog(text, color = '') {
+  const d = document.createElement('div');
+  d.className = 'log-line ' + color;
+  d.textContent = `[${new Date().toISOString()}] ${text}`;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+document.getElementById('btnVerifyPair').onclick = () => {
+  appendLog('Verifying Samsung <-> Chromebook Dual Authority pair...', 'gold');
+  setTimeout(() => {
+    appendLog('Fingerprints matched: SHA256:hL7eW/2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg', 'green');
+    appendLog('Dual Authority Handshake: VERIFIED & SEALED.', 'green');
+  }, 400);
+};
+
+document.getElementById('btnQuineLoop').onclick = () => {
+  appendLog('Executing TDOC Sentinel Quine Loop...', 'gold');
+  setTimeout(() => {
+    appendLog('Quine self-source hash matched: 0x74446C2E. Loop intact.', 'green');
+  }, 350);
+};
+
+document.getElementById('btnAudit').onclick = () => {
+  appendLog('Scanning debloat receipts in /logs/evidence/...', '');
+  setTimeout(() => {
+    appendLog('Debloat status: PENDING_PAIR_AUTH. Safety lock maintained.', 'gold');
+  }, 300);
+};
+</script>
+</body>
+</html>

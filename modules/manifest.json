@@ -12,6 +12,14 @@
     {"id":"runtime","title":"RUNTIME // CAPABILITY STATE","file":"./modules/runtime.html","controller":"./modules/runtime.js"},
     {"id":"controls","title":"PANEL FABRIC // CONTROL PLANE","file":"./modules/controls.html","controller":"./modules/controls.js"},
     {"id":"genie","title":"GENIE DJINN // SMOKELESS FLAME ENGINE","file":"./modules/genie.html","controller":"./modules/genie.js"},
-    {"id":"matrix","title":"MATRIX // KERR & HOPF INTEGRATION","file":"./modules/matrix.html","controller":"./modules/matrix.js"}
+    {"id":"matrix","title":"MATRIX // KERR & HOPF INTEGRATION","file":"./modules/matrix.html","controller":"./modules/matrix.js"},
+    {"id":"galaxies","title":"7 GALAXIES // RELATIVISTIC ORBITALS","file":"./modules/galaxies.html","controller":"./modules/galaxies.js"},
+    {"id":"consensus","title":"AI CONSENSUS // TOPOLOGICAL QUORUM","file":"./modules/consensus.html","controller":"./modules/consensus.js"},
+    {"id":"voice","title":"POLYNEUROMORPHIC LIVE VOICE","file":"./modules/voice.html","controller":"./modules/voice.js"},
+    {"id":"sentinel","title":"TDOC SENTINEL // DUAL AUTHORITY V11","file":"./modules/sentinel.html","controller":"./modules/sentinel.js"},
+    {"id":"quine","title":"POLYGLOT QUINE // LIVING ARTIFACT CONTAINER","file":"./modules/quine.html","controller":"./modules/quine.js"},
+    {"id":"embedding","title":"GEMINI MULTIMODAL EMBEDDING 2","file":"./modules/embedding.html","controller":"./modules/embedding.js"},
+    {"id":"irc","title":"NEXUS SOVEREIGN IRC HUB","file":"./modules/irc.html","controller":"./modules/irc.js"},
+    {"id":"documents","title":"DOCUMENT CORPUS // SOVEREIGN PDF KNOWLEDGE CORE","file":"./modules/documents.html","controller":"./modules/documents.js"}
   ]
 }
