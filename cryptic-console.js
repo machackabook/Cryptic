@@ -282,6 +282,7 @@
   }
 
   function commandUrl(command, opts={}) {
+    if(/^bridge\s+connect\b/i.test(String(command).trim()))throw new Error('Bridge credentials cannot be included in deep links');
     const u = new URL('./terminal/', location.href);
     u.searchParams.set('cmd', String(command));
     if (opts.autorun) u.searchParams.set('autorun', '1');
