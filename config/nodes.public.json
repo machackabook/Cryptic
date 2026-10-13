@@ -106,17 +106,16 @@
       "auth": "public-read"
     },
     {
-      "id": "samsung-arm64",
-      "label": "Nexus Node // Samsung ARM64",
+      "id": "device-pairing",
+      "label": "Private Device Pairing (metadata redacted)",
       "kind": "paired-device",
       "capabilities": [
-        "ssh-ed25519",
-        "hL7eW_2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg",
-        "termux-runtime",
+        "paired-device",
+        "ed25519-public-key-verification",
         "evidence-sync"
       ],
       "direct_write": false,
-      "auth": "device-pair-key"
+      "auth": "private-device-pairing-gateway"
     },
     {
       "id": "geocore",
