@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>POLYGLOT QUINE SHELL // LIVING ARTIFACT CONTAINER</title>
@@ -209,13 +212,13 @@ button.violet {
   </div>
   <div class="footer-stat">
     <h3>Webpack Chunks</h3>
-    <b id="chunkCount">3 Dynamic Chunks</b>
+    <b id="chunkCount">Dynamic chunks: unverified</b>
     <small>Code splitting on demand</small>
   </div>
   <div class="footer-stat">
     <h3>Quine State</h3>
     <b style="color:var(--cyan)">ZERO-PAYLOAD V11</b>
-    <small>Self-assembling idempotent container</small>
+    <small>Quine source viewer · self-replication not verified</small>
   </div>
   <div class="footer-stat">
     <h3>Token Parser</h3>
@@ -224,33 +227,6 @@ button.violet {
   </div>
 </footer>
 
-<script>
-function updateHtmlSize() {
-  const bytes = new TextEncoder().encode(document.documentElement.outerHTML).length;
-  document.getElementById('htmlSize').textContent = `${(bytes / 1024).toFixed(2)} KB (${bytes} B)`;
-}
-updateHtmlSize();
-new MutationObserver(updateHtmlSize).observe(document.body, { subtree: true, childList: true, attributes: true });
-
-document.getElementById('btnQuine').onclick = () => {
-  const src = document.documentElement.outerHTML;
-  document.getElementById('quineOutput').textContent = src;
-  updateHtmlSize();
-};
-
-let chunks = 3;
-document.getElementById('btnChunk').onclick = () => {
-  chunks++;
-  document.getElementById('chunkCount').textContent = `${chunks} Dynamic Chunks`;
-  const el = document.getElementById('quineOutput');
-  el.textContent = `[DYNAMIC CHUNK IMPORTED] chunk.${chunks}.runtime.js loaded.\nSize: ${(Math.random() * 8 + 4).toFixed(2)} KB · Modules: 12 · Target: Web (Node.js 22)\n` + el.textContent;
-  updateHtmlSize();
-};
-
-document.getElementById('btnSynthesize').onclick = () => {
-  const el = document.getElementById('quineOutput');
-  el.textContent = `[STREAMING TOKEN PARSER]: Synthesizing multimodal polyglot quine stream...\nToken 1: <gemini-embedding-2-preview>\nToken 2: <gaia-mesh-verify>\nToken 3: <tdoc-sentinel-v11-pair>\nStream complete.`;
-};
-</script>
+<script src="./polyglot-quine-shell.js" defer></script>
 </body>
 </html>
