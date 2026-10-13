@@ -1,25 +1,20 @@
 export function mount(root) {
-  const toggleBtn = root.querySelector('#voiceToggleBtn');
-  const openBtn = root.querySelector('#voiceOpenBtn');
-  const status = root.querySelector('#voiceStatus');
-
-  let active = false;
-  if (toggleBtn) {
-    toggleBtn.onclick = () => {
-      active = !active;
-      window.CrypticTerminal?.toggle963?.(active);
-      toggleBtn.textContent = active ? 'STOP 963 HZ' : '963 HZ SOLFEGGIO';
-      if (status) {
-        status.innerHTML = active
-          ? '[963 HZ ACTIVE] Crown chakra sonification streaming.<br>Oscillator locked to solfeggio pure sine resonance.'
-          : '963 Hz sonification paused. Synaptic channels resting.';
-      }
-    };
-  }
-
-  if (openBtn) {
-    openBtn.onclick = () => {
-      window.CrypticRuntime?.open?.('voice');
-    };
-  }
+  const toggleBtn=root.querySelector('#voiceToggleBtn');
+  const openBtn=root.querySelector('#voiceOpenBtn');
+  const status=root.querySelector('#voiceStatus');
+  let requested=false;
+  if(toggleBtn) toggleBtn.addEventListener('click',async()=>{
+    requested=!requested;
+    try{
+      await window.CrypticTerminal?.exec?.('963 '+(requested?'on':'off'));
+      toggleBtn.textContent=requested?'STOP 963 HZ':'REQUEST 963 HZ';
+      if(status)status.textContent=requested
+        ? 'Oscillator request submitted. Check terminal output to confirm browser audio availability; speech recognition and neural-channel processing are not configured.'
+        : 'Oscillator stop request submitted.';
+    }catch(error){
+      requested=false;
+      if(status)status.textContent='Audio request failed: '+String(error?.message||'unknown').slice(0,160);
+    }
+  });
+  if(openBtn)openBtn.addEventListener('click',()=>window.CrypticRuntime?.open?.('voice'));
 }
