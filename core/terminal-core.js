@@ -156,7 +156,7 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
  }
  if(lower==='nodes')return window.CrypticRuntime?.list?.();
  if(lower==='gaia')return gaiaCommand(args);
- if(lower==='matrix')return window.CrypticRuntime?.open?.('matrix-engine');
+ if(lower==='matrix')return window.CrypticRuntime?.open?.('matrix');
  if(lower==='open')return window.CrypticRuntime?.open?.(args[0]);
  if(lower==='gateway')return window.CrypticRuntime?.signedToken?.(args[0]||'cryptic',args[1]||'runtime.request');
  if(lower==='comms')return window.CrypticRuntime?.comms?.([...args]);
@@ -228,7 +228,8 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
    return {bytes,status:'DOM_MEASURED_ONLY'};
  }
  if(lower==='aurora'){
-   return window.CrypticRuntime?.open?.('aurora');
+   out('Aurora is an alias for the Visualizer module in this build. Opening the visualizer; no external model is invoked.','system');
+   return window.CrypticRuntime?.open?.('visualizer');
  }
  if(lower==='irc'){
    if(!args.length)return window.CrypticRuntime?.open?.('irc');
@@ -248,7 +249,6 @@ async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const
  if(lower==='guardian')return showGate();
  out('Unknown command: '+cmd+'. Type help.','warn')
 }
-try{const saved=JSON.parse(sessionStorage.getItem('cryptic.runtime.tokens')||'[]');tokens.push(...saved.filter(t=>t.expiresAt>Date.now()))}catch{}
 Object.assign(window,{out,ledger,mintToken,fingerprint});
 window.CrypticTerminal={version:VERSION,exec:runCommand,out,ledger,mintToken,fingerprint,enterGate,showGate,toggleWake,toggle963,get gateOpen(){return gateOpen},get tokens(){return tokens.slice()}};
 window.dispatchEvent(new CustomEvent('cryptic:terminal-ready'));
