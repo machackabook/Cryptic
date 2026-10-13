@@ -6,7 +6,7 @@ export function mount(root) {
     if(status)status.textContent='Submitting a local bus ping…';
     try{
       const result=await window.CrypticBus?.send?.('irc.broadcast.ping',{timestamp:Date.now()});
-      const confirmed=Boolean(result&&result.ok===true);
+      const confirmed=Boolean(result&&Array.isArray(result.receipts)&&result.receipts.some(r=>r?.ok===true));
       if(status)status.textContent=confirmed
         ? 'Bus frame accepted by the reported transport. This does not confirm remote IRC delivery.'
         : 'No successful bus transport receipt returned; remote delivery is unconfirmed.';
