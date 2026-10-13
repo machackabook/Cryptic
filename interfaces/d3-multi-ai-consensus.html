@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>D3 MULTI-AI CONSENSUS // TOPOLOGICAL QUORUM & BYZANTINE MESH</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
 :root {
   --void: #02040a;
@@ -139,7 +141,7 @@ svg {
 .meter-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--cyan), var(--gold));
-  width: 85%;
+  width: 0%;
   transition: width 0.4s ease;
 }
 .vote-log {
@@ -208,191 +210,24 @@ svg {
     <div class="quorum-meter">
       <span>Consensus:</span>
       <div class="meter-bar"><div class="meter-fill" id="quorumFill"></div></div>
-      <b id="quorumPct" style="color:var(--cyan)">85.7%</b>
+      <b id="quorumPct" style="color:var(--cyan)">UNVERIFIED</b>
     </div>
     <div style="font-size:8px;color:var(--muted);margin-top:6px">
-      Active Quorum: <b>6 of 7 nodes agreeing</b><br>
-      Byzantine Threshold: <b>33.3%</b> (Tolerates &le; 2 faulty agents)<br>
-      Consensus Epoch: <b id="epochNum" style="color:var(--gold)">EPOCH-438</b>
+      Quorum status: <b>UNVERIFIED</b><br>Live model endpoints: <b>not configured</b><br>Consensus Epoch: <b id="epochNum" style="color:var(--gold)">NO VERIFIED EPOCH</b>
     </div>
   </div>
 
   <div class="deck-col">
     <h3>Consensus Ledger Receipts</h3>
     <div class="vote-log" id="voteLog">
-      <div class="vote-entry gold">[15:36:02] PROPOSAL #882: Sovereign Matrix Torus Harmonic state accepted by 7/7 agents.</div>
-      <div class="vote-entry">[15:35:45] GENIE DJINN attested wish envelope with token [crt.m29...]. Quorum sealed.</div>
-      <div class="vote-entry violet">[15:35:12] TDOC SENTINEL authenticated dual authority signature for nexus:samsung-arm64.</div>
+      <div class="vote-entry gold" id="consensusStatus">No live model endpoint is connected; no vote has been cast.</div>
     </div>
   </div>
 
   <div class="deck-col">
     <h3>Model Agent Weights</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:8px;">
-      <div>Gemini: <b style="color:var(--cyan)">96.4%</b></div>
-      <div>Genie Djinn: <b style="color:var(--gold)">98.2%</b></div>
-      <div>TDOC Sentinel: <b style="color:var(--green)">99.9%</b></div>
-      <div>Claude: <b style="color:#f59e0b">94.1%</b></div>
-      <div>GPT Engine: <b style="color:#10b981">93.8%</b></div>
-      <div>Ollama Local: <b style="color:#8b5cf6">91.5%</b></div>
-      <div>DeepSeek: <b style="color:#38bdf8">92.9%</b></div>
-    </div>
-  </div>
-</footer>
+    <div id="modelEndpointStatus" style="font-size:9px;color:var(--muted)">Model endpoints: UNVERIFIED / NOT CONNECTED. Percentages are intentionally not displayed.</div></div></footer>
 
-<script>
-const nodesData = [
-  { id: 'gemini', label: 'GEMINI 3.8', type: 'core', weight: 0.96, color: '#00ffcc', r: 24, vote: 'APPROVE' },
-  { id: 'djinn', label: 'GENIE DJINN', type: 'oracle', weight: 0.98, color: '#f5ce70', r: 26, vote: 'APPROVE' },
-  { id: 'sentinel', label: 'TDOC SENTINEL', type: 'guard', weight: 0.99, color: '#22c55e', r: 25, vote: 'APPROVE' },
-  { id: 'claude', label: 'CLAUDE 3.7', type: 'peer', weight: 0.94, color: '#f59e0b', r: 20, vote: 'APPROVE' },
-  { id: 'gpt', label: 'GPT-4O', type: 'peer', weight: 0.93, color: '#10b981', r: 20, vote: 'APPROVE' },
-  { id: 'ollama', label: 'OLLAMA LOCAL', type: 'edge', weight: 0.91, color: '#9d5bfe', r: 18, vote: 'APPROVE' },
-  { id: 'deepseek', label: 'DEEPSEEK R1', type: 'peer', weight: 0.92, color: '#38bdf8', r: 19, vote: 'APPROVE' }
-];
-
-const linksData = [
-  { source: 'gemini', target: 'djinn', weight: 0.95 },
-  { source: 'gemini', target: 'sentinel', weight: 0.98 },
-  { source: 'djinn', target: 'sentinel', weight: 0.99 },
-  { source: 'gemini', target: 'claude', weight: 0.88 },
-  { source: 'gemini', target: 'gpt', weight: 0.86 },
-  { source: 'sentinel', target: 'ollama', weight: 0.92 },
-  { source: 'djinn', target: 'deepseek', weight: 0.89 },
-  { source: 'claude', target: 'gpt', weight: 0.84 },
-  { source: 'deepseek', target: 'ollama', weight: 0.82 },
-  { source: 'sentinel', target: 'gpt', weight: 0.85 }
-];
-
-const svg = d3.select('#consensusSvg');
-const width = window.innerWidth;
-const height = window.innerHeight - 232;
-
-const g = svg.append('g');
-
-// Zoom & Pan
-svg.call(d3.zoom().scaleExtent([0.5, 3]).on('zoom', e => {
-  g.attr('transform', e.transform);
-}));
-
-const simulation = d3.forceSimulation(nodesData)
-  .force('link', d3.forceLink(linksData).id(d => d.id).distance(140))
-  .force('charge', d3.forceManyBody().strength(-450))
-  .force('center', d3.forceCenter(width / 2, height / 2))
-  .force('collision', d3.forceCollide().radius(d => d.r + 25));
-
-const link = g.append('g')
-  .attr('class', 'links')
-  .selectAll('line')
-  .data(linksData)
-  .enter().append('line')
-  .attr('class', 'link')
-  .attr('stroke', '#00ffcc')
-  .attr('stroke-width', d => d.weight * 2.5);
-
-const node = g.append('g')
-  .attr('class', 'nodes')
-  .selectAll('g')
-  .data(nodesData)
-  .enter().append('g')
-  .attr('class', 'node')
-  .call(d3.drag()
-    .on('start', dragstarted)
-    .on('drag', dragged)
-    .on('end', dragended));
-
-// Outer Ring Halo
-node.append('circle')
-  .attr('r', d => d.r + 6)
-  .attr('fill', 'none')
-  .attr('stroke', d => d.color)
-  .attr('stroke-opacity', 0.35)
-  .attr('stroke-dasharray', '3 3');
-
-// Core Circle
-node.append('circle')
-  .attr('r', d => d.r)
-  .attr('fill', d => d.color)
-  .attr('fill-opacity', 0.22)
-  .attr('stroke', d => d.color);
-
-node.append('text')
-  .attr('dy', 3)
-  .text(d => d.label);
-
-simulation.on('tick', () => {
-  link
-    .attr('x1', d => d.source.x)
-    .attr('y1', d => d.source.y)
-    .attr('x2', d => d.target.x)
-    .attr('y2', d => d.target.y);
-
-  node.attr('transform', d => `translate(${d.x},${d.y})`);
-});
-
-function dragstarted(event, d) {
-  if (!event.active) simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
-}
-function dragged(event, d) {
-  d.fx = event.x;
-  d.fy = event.y;
-}
-function dragended(event, d) {
-  if (!event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
-}
-
-let roundCount = 438;
-function castQuorumRound() {
-  roundCount++;
-  document.getElementById('epochNum').textContent = `EPOCH-${roundCount}`;
-  
-  let approved = 0;
-  nodesData.forEach(n => {
-    // 90% chance approve, 10% Byzantine drift
-    const agrees = Math.random() > 0.12;
-    n.vote = agrees ? 'APPROVE' : 'CONTEST';
-    if (agrees) approved++;
-  });
-
-  const pct = Math.round((approved / nodesData.length) * 100);
-  document.getElementById('quorumFill').style.width = pct + '%';
-  document.getElementById('quorumPct').textContent = pct + '%';
-
-  node.selectAll('circle:nth-child(2)')
-    .transition().duration(400)
-    .attr('stroke', d => d.vote === 'APPROVE' ? d.color : '#ef4444')
-    .attr('fill-opacity', d => d.vote === 'APPROVE' ? 0.22 : 0.45);
-
-  const log = document.getElementById('voteLog');
-  const d = document.createElement('div');
-  d.className = approved >= 5 ? 'vote-entry gold' : 'vote-entry violet';
-  d.textContent = `[${new Date().toLocaleTimeString()}] EPOCH-${roundCount}: ${approved}/${nodesData.length} approved. Quorum status: ${approved >= 5 ? 'SUPERMAJORITY RATIFIED' : 'BYZANTINE DEGRADATION'}.`;
-  log.prepend(d);
-}
-
-document.getElementById('btnVote').onclick = castQuorumRound;
-
-document.getElementById('btnPerturb').onclick = () => {
-  // Inject intentional Byzantine node
-  const target = nodesData[Math.floor(Math.random() * nodesData.length)];
-  target.vote = 'FAULTY_DRIFT';
-  const log = document.getElementById('voteLog');
-  const d = document.createElement('div');
-  d.className = 'vote-entry';
-  d.style.borderLeftColor = '#ef4444';
-  d.textContent = `[${new Date().toLocaleTimeString()}] INJECTED BYZANTINE FAULT into agent ${target.label}. Byzantine threshold active.`;
-  log.prepend(d);
-  castQuorumRound();
-};
-
-document.getElementById('btnReset').onclick = () => {
-  nodesData.forEach(n => n.vote = 'APPROVE');
-  simulation.alpha(0.6).restart();
-};
-</script>
+<script src="./d3-multi-ai-consensus.js" defer></script>
 </body>
 </html>
