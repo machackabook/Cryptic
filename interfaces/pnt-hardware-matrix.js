@@ -1228,7 +1228,7 @@ $GPGGA,${now.getUTCHours()}${now.getUTCMinutes()}${now.getUTCSeconds()}.00,3245.
       if(b.id.startsWith('btnMode')) b.classList.remove('active');
     });
     btnEl.classList.add('active');
-    document.getElementById('teleStatus')?.textContent = `CRPA_${mode}_ENGAGED`;
+    const status=document.getElementById('teleStatus'); if(status) status.textContent = `SIMULATED_${mode}_MODE`; 
   }
 
   document.getElementById('btnInjectJammer').onclick = () => {
