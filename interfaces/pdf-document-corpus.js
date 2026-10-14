@@ -191,8 +191,8 @@ function renderDocList(filter = '') {
   }
 }
 function makeRow(label,value){const row=document.createElement('div');row.className='mapping-row';const key=document.createElement('span');key.textContent=label;const val=document.createElement('span');val.textContent=String(value??'—');row.append(key,val);return row}
-function appUrl(path){const base=new URL('../',location.href);const target=new URL(String(path||'').replace(/^\\/+/,''),base);if(target.origin!==location.origin)throw new Error('Cross-origin destination rejected');return target.href}
-function sourceUrl(doc){const path=String(doc.osModule||'').replace(/^\\/+/, '');if(!/^[a-zA-Z0-9_./-]+$/.test(path)||path.split('/').includes('..'))return null;return 'https://github.com/machackabook/Cryptic/blob/main/'+path}
+function appUrl(path){const base=new URL('../',location.href);const clean=String(path||'').replace(/^\/+/, '');const target=new URL(clean,base);if(target.origin!==location.origin)throw new Error('Cross-origin destination rejected');return target.href}
+function sourceUrl(doc){const path=String(doc.osModule||'').replace(/^\/+/, '');if(!/^[a-zA-Z0-9_./-]+$/.test(path)||path.split('/').includes('..'))return null;return 'https://github.com/machackabook/Cryptic/blob/main/'+path}
 function selectDoc(idx) {
   activeDocIndex=idx;const doc=DOCUMENTS[idx];if(!doc)return;
   renderDocList(document.getElementById('searchInput').value);
