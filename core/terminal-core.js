@@ -10,7 +10,7 @@ function out(text,type='system'){
   d.className='line '+type;
   if(type==='ai'||type==='ai-output'){
     d.classList.add('ai-output');
-    d.innerHTML=String(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    d.innerHTML=String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   }else{
     d.textContent=String(text);
   }
@@ -18,12 +18,32 @@ function out(text,type='system'){
 }
 function b64u(bytes){let s='';bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 async function fingerprint(value){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16)}
-function ledger(event,data={}){const arr=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');arr.push({ts:new Date().toISOString(),event,data});if(arr.length>512)arr.splice(0,arr.length-512);localStorage.setItem('cryptic.ledger',JSON.stringify(arr));window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:arr.at(-1)}))}
-async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope,issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id),meta};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;sessionStorage.setItem('cryptic.runtime.tokens',JSON.stringify(tokens));window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:rec}}));return rec}
+function ledger(event,data={}){let arr=[];try{arr=JSON.parse(localStorage.getItem('cryptic.ledger')||'[]');if(!Array.isArray(arr))arr=[]}catch{}const clean={};for(const k of ['scope','fp','action','status','mode','node','version','kind'])if(typeof data?.[k]==='string')clean[k]=data[k].slice(0,100);arr.push({ts:new Date().toISOString(),event:String(event).slice(0,100),data:clean});if(arr.length>512)arr.splice(0,arr.length-512);localStorage.setItem('cryptic.ledger',JSON.stringify(arr));window.dispatchEvent(new CustomEvent('cryptic:ledger',{detail:arr.at(-1)}))}
+async function mintToken(scope='runtime.request',meta={}){const raw=new Uint8Array(24);crypto.getRandomValues(raw);const now=Date.now(),id=`crt.${now.toString(36)}.${b64u(raw)}`;const rec={id,scope,issuedAt:now,expiresAt:now+600000,fp:await fingerprint(id),meta};tokens.unshift(rec);if(tokens.length>48)tokens.length=48;window.dispatchEvent(new CustomEvent('cryptic:tokens',{detail:{count:tokens.length,latest:rec}}));return rec}
 async function requestAdapter(name,payload=''){const local=await mintToken('adapter.'+name,{payloadBytes:payload.length});ledger('request.token.minted',{scope:local.scope,fp:local.fp});out(`[TOKEN ${local.fp}] ${name} browser receipt minted.`,'token');let signed=null;try{signed=await window.CrypticRuntime?.signedToken?.(name,'adapter.'+name)}catch{}if(signed)out('[EDGE CAPABILITY] signed token minted for '+name+'.','good');else if(name!=='bridge')out(name+' credentials are not stored in this public page.','system');return {local,signed}}
 function help(){out('Commands:\n help | about | status | clear\n panel spawn <module> | panel pop <module> | panel show <module> | glass clear|restore\n token <scope> | tokens | ledger\n telemetry start|snapshot|summary|send|export|clear\n bus routes | bus command <cmd> | bus aggregate <kind> <payload>\n request <provider> <payload> | /gemini | /github | /drive | /ollama | /openai | /q | /watson | /genie\n genie wish <intent> | genie world <seed> | genie token | genie open\n gaia verify [--everything] | gaia init | gaia login | gaia status | gaia evolve | matrix\n embed <query> | embed cosine | embed parts (gemini-embedding-2-preview)\n sentinel verify | sentinel quine | sentinel audit (TDOC Sentinel V11 Dual Authority)\n consensus vote | consensus perturb | consensus status (D3 Multi-AI Quorum)\n galaxies warp | galaxies status | voice | quine | aurora | irc <msg>\n docs [search] | pdf | corpus (Sovereign PDF Knowledge Core)\n nodes | open <node> | gateway <node> <scope>\n comms pair <node> <public-jwk> | comms seal <node> <message>\n change <node> <proposal>\n bridge connect <url> <secret> | bridge status | bridge action <action>\n 963 on|off | field on|off | guardian','good')}
-async function bridgeStatus(){const url=sessionStorage.getItem('cryptic.bridge.url'),secret=sessionStorage.getItem('cryptic.bridge.secret');if(!url||!secret){out('Bridge not connected.','warn');return {ok:false}}try{const r=await fetch(url.replace(/\/$/,'')+'/health',{headers:{Authorization:'Bearer '+secret}}),j=await r.json();out('Bridge '+(r.ok?'ONLINE ':'DENIED ')+JSON.stringify(j),r.ok?'good':'bad');return j}catch(e){out('Bridge unreachable: '+e.message,'bad');return {ok:false,error:e.message}}}
-async function bridgeCommand(args){if(args[0]==='connect'){if(!args[1]||!args[2])return out('usage: bridge connect <url> <secret>','warn');sessionStorage.setItem('cryptic.bridge.url',args[1]);sessionStorage.setItem('cryptic.bridge.secret',args[2]);const t=await mintToken('bridge.connect',{url:args[1]});out('Bridge profile stored in session only. fp='+t.fp,'token');return bridgeStatus()}if(args[0]==='action')return window.CrypticRuntime?.bridgeAction?.(args[1]);return bridgeStatus()}
+function validatedLoopbackUrl(raw){
+ const u=new URL(raw);if(u.protocol!=='http:'||!['localhost','127.0.0.1','[::1]'].includes(u.hostname)||u.username||u.password||u.search||u.hash||u.pathname!=='/')throw Error('Bridge must be exact HTTP loopback root URL, without redirect parameters');
+ return u.origin;
+}
+async function bridgeStatus(){
+ const {url,secret}=window.CrypticBridgeProfile||{};
+ if(!url||!secret){out('Bridge not connected.','warn');return {ok:false}}
+ try{
+  const r=await fetch(url+'/health',{redirect:'error',cache:'no-store',headers:{Authorization:'Bearer '+secret}});
+  const j=await r.json();out('Bridge '+(r.ok?'ONLINE ':'DENIED ')+JSON.stringify(j),r.ok?'good':'bad');return j
+ }catch(e){out('Bridge unreachable: '+e.message,'bad');return {ok:false,error:e.message}}
+}
+async function bridgeCommand(args){
+ if(args[0]==='connect'){
+  if(!args[1]||!args[2])return out('usage: bridge connect <url> <secret>','warn');
+  let url;try{url=validatedLoopbackUrl(args[1])}catch(e){return out('GOD BRIDGE DENIED: '+e.message,'bad')}
+  window.CrypticBridgeProfile=Object.freeze({url,secret:String(args[2])});
+  const t=await mintToken('bridge.connect');out('Bridge profile held in memory only. fp='+t.fp,'token');return bridgeStatus()
+ }
+ if(args[0]==='action')return window.CrypticRuntime?.bridgeAction?.(args[1]);
+ return bridgeStatus()
+}
 async function toggle963(on){if(on&&oscillator)return;if(!on&&oscillator){oscillator.stop();oscillator.disconnect();oscillator=null;out('963 Hz oscillator stopped.','system');return}if(on){audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const g=audioCtx.createGain();g.gain.value=.022;oscillator=audioCtx.createOscillator();oscillator.frequency.value=963;oscillator.type='sine';oscillator.connect(g).connect(audioCtx.destination);oscillator.start();const t=await mintToken('audio.963.start');out('963 Hz sonification active. fp='+t.fp,'good')}}
 function showGate(){const g=document.getElementById('guardianLayer');if(g){g.style.display='grid';g.style.opacity='1'}gateOpen=false;window.dispatchEvent(new CustomEvent('cryptic:gate',{detail:{open:false}}))}
 async function enterGate(){const t=await mintToken('guardian.entry');gateOpen=true;const g=document.getElementById('guardianLayer');if(g){g.style.opacity='0';setTimeout(()=>g.style.display='none',500)}ledger('guardian.entry',{fp:t.fp});out('CRYPTIC '+VERSION+' initialized. Guardian receipt '+t.fp+'.','good');out('Modular snap dashboard online. Type help.','system');window.dispatchEvent(new CustomEvent('cryptic:guardian-entered',{detail:{fingerprint:t.fp}}));window.dispatchEvent(new CustomEvent('cryptic:gate',{detail:{open:true}}));return t}
@@ -312,7 +332,7 @@ Type 'open documents' to launch the interactive viewer. Stamped receipt [${t.fp}
  if(lower==='guardian')return showGate();
  out('Unknown command: '+cmd+'. Type help.','warn')
 }
-try{const saved=JSON.parse(sessionStorage.getItem('cryptic.runtime.tokens')||'[]');tokens.push(...saved.filter(t=>t.expiresAt>Date.now()))}catch{}
+
 Object.assign(window,{out,ledger,mintToken,fingerprint});
 window.CrypticTerminal={version:VERSION,exec:runCommand,out,ledger,mintToken,fingerprint,enterGate,showGate,toggleWake,toggle963,get gateOpen(){return gateOpen},get tokens(){return tokens.slice()}};
 window.dispatchEvent(new CustomEvent('cryptic:terminal-ready'));
