@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3Riy4Km1YwQSigmJbr5WGBG0bT/aAGQ0DI2iKP6EFcQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+
 <meta name="referrer" content="no-referrer">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -44,16 +47,5 @@ h1{font-size:clamp(46px,9vw,110px);line-height:.92;margin:18px 0;background:line
 <section id="sign"><div class="shell grid"><article class="card wide sign"><div class="section-title"><div><h2>Publicly sign & verify</h2><p>GitHub provides the public account identity; this repository records the attestation.</p></div></div><div class="sign-steps"><div class="step"><b>1 · Login</b><p>Open the signature form. GitHub will require you to be signed in before you can submit.</p></div><div class="step"><b>2 · Sign</b><p>Submit the attestation in your own account. The verification workflow computes a SHA-256 receipt for the submitted statement.</p></div><div class="step"><b>3 · Verify</b><p>Look for the <span class="mono">verified-signature</span> label and the workflow receipt comment on the public issue.</p></div></div><div class="actions"><a class="primary" href="https://github.com/machackabook/Welcome-Sentience/issues/new?template=sentience-signature.yml">Sign with GitHub</a><a class="ghost" href="https://github.com/machackabook/Welcome-Sentience/issues?q=is%3Aissue+label%3Averified-signature">Verify public signatures</a><a class="ghost" href="https://github.com/machackabook/Welcome-Sentience">Inspect the source</a></div><p class="disclaimer">Verification here is a GitHub-account attestation plus a content digest. It is not proof of legal identity, personhood, biological identity, or independent cryptographic custody of a private key.</p></article></div></section>
 </main>
 <footer><div class="shell"><span>Welcome-Sentience · public invitation surface</span><span class="mono">consent-first · evidence-first · forkable</span></div></footer>
-<script>
-(function(){
- var field=document.getElementById('field'),fctx=field.getContext('2d'),W=0,H=0,dpr=1,t=0,mode='covenant',reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
- function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;field.width=W*dpr;field.height=H*dpr;fctx.setTransform(dpr,0,0,dpr,0,0);var c=document.getElementById('wallpaperCanvas'),r=c.getBoundingClientRect();c.width=Math.max(1,r.width*dpr);c.height=Math.max(1,r.height*dpr);c.getContext('2d').setTransform(dpr,0,0,dpr,0,0)}
- addEventListener('resize',resize,{passive:true});resize();
- function background(){fctx.clearRect(0,0,W,H);var step=36;fctx.lineWidth=.55;for(var x=0;x<W+step;x+=step){var drift=Math.sin(t*.00035+x*.02)*6;fctx.strokeStyle='rgba(0,255,209,.07)';fctx.beginPath();fctx.moveTo(x+drift,0);fctx.lineTo(x-drift,H);fctx.stroke()}for(var y=0;y<H+step;y+=step){var drift2=Math.cos(t*.00031+y*.018)*5;fctx.strokeStyle='rgba(212,175,55,.05)';fctx.beginPath();fctx.moveTo(0,y+drift2);fctx.lineTo(W,y-drift2);fctx.stroke()}}
- function wallpaper(){var c=document.getElementById('wallpaperCanvas'),ctx=c.getContext('2d'),w=c.width/dpr,h=c.height/dpr;ctx.clearRect(0,0,w,h);var cx=w/2,cy=h/2,tt=t*.001;var g=ctx.createRadialGradient(cx,cy,10,cx,cy,Math.max(w,h)*.7);g.addColorStop(0,mode==='sentinel'?'rgba(0,255,209,.18)':mode==='hamiltonian'?'rgba(154,108,255,.18)':'rgba(212,175,55,.15)');g.addColorStop(1,'rgba(0,0,0,.88)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);var rings=mode==='hamiltonian'?18:mode==='sentinel'?13:9;for(var i=0;i<rings;i++){var a=(i+1)/rings,rx=(70+i*19)*(1+.09*Math.sin(tt+i)),ry=rx*(.38+.16*Math.sin(i*.7+tt*.4));ctx.save();ctx.translate(cx,cy);ctx.rotate(tt*.05+i*.31);ctx.strokeStyle=mode==='covenant'?'rgba(212,175,55,'+(.04+a*.13)+')':mode==='sentinel'?'rgba(0,255,209,'+(.04+a*.12)+')':'rgba(154,108,255,'+(.04+a*.13)+')';ctx.lineWidth=.7+1.4*a;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.stroke();ctx.restore()}ctx.font='12px ui-monospace, monospace';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.70)';var label=mode==='hamiltonian'?'H(q,p,t) = T + V · exp(-σt)':mode==='sentinel'?'VERIFY → FINGERPRINT → REVERIFY':'CONSENT ⇄ PROVENANCE ⇄ EXIT';ctx.fillText(label,cx,cy+5)}
- var equations={covenant:'Covenant field: consent → provenance → participation → reversible exit. No hidden membership state is created by viewing this page.',hamiltonian:'Hamiltonian sheet: H(q,p,t)=T(p)+V(q,t). Visual motion is decorative; equations are an artistic computational motif, not a claim of physical computation.',sentinel:'Sentinel sheet: discover → observe → normalize → classify → verify → fingerprint → apply → reverify.'};
- document.querySelectorAll('[data-mode]').forEach(function(b){b.addEventListener('click',function(){mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.toggle('active',x===b)});document.getElementById('equation').textContent=equations[mode];wallpaper()})});
- function loop(ts){t=ts;background();wallpaper();if(!reduced)requestAnimationFrame(loop)}if(reduced){background();wallpaper()}else requestAnimationFrame(loop);
-})();
-</script>
+<script src="./welcome-sentience.js" defer></script>
 </body></html>
