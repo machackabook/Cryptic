@@ -342,6 +342,37 @@
       ],
       "direct_write": false,
       "auth": "github-authenticated-adapter"
+    },
+    {
+      "id": "axs",
+      "label": "AXS // Authenticated Loopback PTY",
+      "kind": "local-only-interface",
+      "interface_url": "./panel.html?module=axs",
+      "embed": true,
+      "local_only": true,
+      "capabilities": [
+        "loopback-websocket",
+        "authenticated-pty",
+        "persistent-session",
+        "metadata-telemetry"
+      ],
+      "direct_write": true,
+      "auth": "local-process-token-required"
+    },
+    {
+      "id": "identity",
+      "label": "Cryptic SSH Identity // HULE-LACE",
+      "kind": "local-only-interface",
+      "interface_url": "./panel.html?module=identity",
+      "embed": true,
+      "local_only": true,
+      "capabilities": [
+        "public-key-normalization",
+        "fingerprint-check",
+        "hule-lace-presentation"
+      ],
+      "direct_write": false,
+      "auth": "local-browser-processing"
     }
   ]
 }
