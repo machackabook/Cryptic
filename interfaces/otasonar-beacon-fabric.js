@@ -8,12 +8,12 @@ const clean=s=>String(s??'—');
 function notice(msg){dom('status').textContent=msg;dom('summary').textContent=msg;dom('intro').style.display='block';dom('intro').textContent=msg;dom('count').textContent='0 verified';dom('events').textContent='No current verified beacon events.';dom('nodes').replaceChildren();dom('evidence').textContent='SOURCE UNAVAILABLE';state.report=null;state.peers=[]}
 async function telemetry(){
  try{
-  if(!cfg){const r=await fetch('../config/otasonar.public.json',{cache:'no-store'});if(!r.ok)throw Error('Public source configuration not found');cfg=await r.json()}
+  if(!cfg){const r=await fetch('../config/otasonar.public.json',{cache:'no-store',redirect:'error'});if(!r.ok)throw Error('Public source configuration not found');cfg=await r.json()}
   if(!cfg.telemetryEndpoint||!cfg.controllerPublicKeySpkiBase64)throw Error('No pinned HTTPS controller has been configured. Zero active nodes.');
   const u=new URL(cfg.telemetryEndpoint);
   if(u.protocol!=='https:'||u.username||u.password||u.hash||!(u.hostname==='crypticnews.org'||u.hostname.endsWith('.crypticnews.org')))throw Error('Only configured HTTPS Cryptic Cloudflare endpoints are permitted');
-  const r=await fetch(u.href,{cache:'no-store',credentials:'omit',headers:{accept:'application/json'}});
-  if(!r.ok)throw Error('Live telemetry HTTP '+r.status);
+  const r=await fetch(u.href,{cache:'no-store',redirect:'error',credentials:'omit',headers:{accept:'application/json'}});
+  if(!r.ok||r.redirected||r.url!==u.href)throw Error('GOD_REJECTED_REDIRECT_OR_HTTP_'+r.status);
   const env=await r.json();
   if(!env||typeof env.receipt!=='string'||typeof env.signature!=='string'||env.publicKeySpkiBase64!==cfg.controllerPublicKeySpkiBase64)throw Error('Signed envelope or pinned signer missing');
   const key=await crypto.subtle.importKey('spki',b64(cfg.controllerPublicKeySpkiBase64),{name:'Ed25519'},false,['verify']);
