@@ -1,6 +1,6 @@
 {
   "schema": "cryptic.nodes.public.v1",
-  "updated": "2026-10-05",
+  "updated": "2026-10-13",
   "gateway": "https://api.crypticnews.org",
   "nodes": [
     {
@@ -242,13 +242,13 @@
       "label": "Nexus Node // Samsung ARM64",
       "kind": "paired-device",
       "capabilities": [
-        "ssh-ed25519",
-        "hL7eW_2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg",
         "termux-runtime",
         "evidence-sync"
       ],
       "direct_write": false,
-      "auth": "device-pair-key"
+      "auth": "local-key-pairing-required",
+      "identity_status": "NOT_PAIRED",
+      "note": "No public key enrolled in this public registry. Pairing requires a fresh signed challenge verified by an independent local trust policy."
     },
     {
       "id": "geocore",
@@ -282,7 +282,7 @@
     },
     {
       "id": "gaia-generation",
-      "label": "Gaia \u2014 The Nexus Generation",
+      "label": "Gaia — The Nexus Generation",
       "kind": "source-node",
       "repo": "https://github.com/machackabook/Gaia-The-Nexus-Generation",
       "capabilities": [
