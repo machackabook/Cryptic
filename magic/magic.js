@@ -39,7 +39,7 @@ function renderLedger(){
 
 async function renderRoutes(){
  const grid=$('#busState');
- const states={sameOrigin:true,edge:false,localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url'))};
+ const states={sameOrigin:true,edge:false,localhost:Boolean(window.CrypticBridgeProfile?.url)};
  try{
    const r=await fetch('https://bus.crypticnews.org/v1/status',{cache:'no-store'});
    states.edge=r.ok;
