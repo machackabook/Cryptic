@@ -16,6 +16,22 @@
       "direct_write": false
     },
     {
+      "id": "otasonar",
+      "label": "OTASONAR · Pandora Authenticated Beacon Fabric",
+      "kind": "external-interface",
+      "repo": "https://github.com/machackabook/otasonar-beacon-fabric",
+      "interface_url": "https://machackabook.github.io/Cryptic/interfaces/otasonar-beacon-fabric.html",
+      "embed": false,
+      "capabilities": [
+        "signed-beacon-receipts",
+        "measured-rtt",
+        "cartographer-topology",
+        "adam-remedy-cards"
+      ],
+      "direct_write": false,
+      "auth": "public-readonly; private Cloudflare telemetry pending"
+    },
+    {
       "id": "cryptic",
       "label": "Cryptic HyperTerminal",
       "kind": "command-center",

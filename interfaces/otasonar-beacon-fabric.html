@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.crypticnews.org; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer"><title>OTASONAR // Pandora Live Beacon Matrix</title>
+<style>
+:root{--bg:#0A0A1F;--card:#14143D;--c:#00FFFF;--p:#9333EA;--t:#E0E7FF;--gold:#FFCC00;--red:#ff517b;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:ui-monospace,Consolas,monospace;overflow:hidden}
+#field{position:fixed;inset:0;width:100vw;height:100vh;touch-action:none}
+header{position:fixed;top:12px;left:12px;right:12px;padding:14px;background:#14143dee;border:1px solid #375077;display:flex;justify-content:space-between;gap:8px;z-index:2;border-radius:8px;flex-wrap:wrap}header b{color:var(--c)}header small{color:var(--muted);display:block}
+aside{position:fixed;top:100px;bottom:90px;width:min(320px,83vw);overflow:auto;background:#14143deb;border:1px solid #375077;border-radius:8px;z-index:2;padding:15px;transition:transform .25s}aside h3{font-size:13px;color:var(--c)}
+#left{left:12px}#right{right:12px}.closed#left{transform:translateX(calc(-100% - 20px))}.closed#right{transform:translateX(calc(100% + 20px))}
+.panelbtn{position:fixed;top:48%;z-index:3}#toggleL{left:12px}#toggleR{right:12px}button{background:#14143D;border:1px solid #375077;color:var(--t);padding:8px 10px;border-radius:5px;cursor:pointer}button:hover{border-color:var(--c)}
+a{color:var(--c)}.label{font-size:11px;color:var(--muted)}.node{display:block;text-align:left;width:100%;margin:6px 0}.stamp{font-size:12px;color:var(--gold)}.warn{color:var(--red)}footer{position:fixed;bottom:10px;left:10px;right:10px;height:68px;overflow:auto;padding:9px;background:#14143df5;border:1px solid #375077;border-radius:8px;z-index:2;font-size:11px;color:var(--muted)}
+#intro{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);background:#14143df5;border:1px solid #9333EA;border-radius:9px;max-width:400px;text-align:center;padding:16px;z-index:1;font-size:12px;line-height:1.5}
+@media(max-width:850px){aside{width:225px}header{font-size:12px}}
+</style><script src="./otasonar-beacon-fabric.js" defer></script></head>
+<body>
+<canvas id="field" aria-label="Observed OTASONAR beacon links"></canvas>
+<header><div><b>⚛ OTASONAR · PANDORA / LIVE BEACON FABRIC</b><small>ACTUAL REQUEST → SIGNED ACK → UNLOAD · NO SYNTHETIC NODE DATA</small></div><div><span class="stamp" id="status">NO DATA SOURCE</span> · <span id="count">0 verified</span> <button id="refresh">REFRESH</button> <a href="../magic/" rel="noopener">MAGIC BROWSER ↗</a></div></header>
+<button class="panelbtn" id="toggleL" aria-label="Toggle directory">☰</button>
+<aside id="left"><h3>CARTOGRAPHER · DIRECTORY</h3><p class="label">Signed evidence is required for every live route.</p><p id="summary">No connected controller.</p><div id="nodes"></div></aside>
+<button class="panelbtn" id="toggleR" aria-label="Toggle evidence">☷</button>
+<aside id="right"><h3>ADAM · REMEDY CARDS</h3><p id="evidence">No live signed receipt.</p><h3>REMEDY PLAN</h3><p id="remedy">DISCOVER → OBSERVE → VERIFY → FINGERPRINT → APPROVE → REVERIFY</p><p class="label">All privileged changes remain human-approved and gateway-gated. This public page is READ ONLY.</p><a href="https://github.com/machackabook/Cryptic/issues/5" rel="noopener noreferrer">Security gate backlog ↗</a></aside>
+<div id="intro">A LIVE SOURCE HAS NOT BEEN VERIFIED.<br>Configure a read-only Cloudflare endpoint and pin the controller's public Ed25519 key. There are <b>zero</b> claimed online nodes until a signed receipt arrives.</div>
+<footer id="events">No network beacon receipts received.</footer>
+</body></html>
