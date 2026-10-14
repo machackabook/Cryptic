@@ -24,6 +24,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
       - name: Verify source syntax
         run: |
           set -eu
@@ -34,6 +40,9 @@ jobs:
           npm run lint
           npm run test:security
           node --test tests/public-surface.test.mjs
+          python -m unittest discover -s tests -p 'test_*.py' -v
+          cargo fmt --manifest-path axs-backend/Cargo.toml -- --check
+          cargo check --manifest-path axs-backend/Cargo.toml
       - name: Record revision and changed-file evidence
         run: node scripts/security-diff.mjs
       - name: Validate AI denial policy and publication boundaries
