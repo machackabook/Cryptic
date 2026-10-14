@@ -36,6 +36,29 @@ Package version on this tree: `0.9.2` (`package.json`). This is a browser-first 
 
 The no-index choice deliberately favors the current publication/privacy policy over search-engine discoverability. Automated scores must be interpreted against that policy; no Lighthouse, SEO, accessibility, or penetration-test score is claimed until the deployed artifact is actually measured.
 
+## Local AXS terminal + SSH identity (0.9.2)
+
+The dashboard contains optional **AXS** and **Cryptic Identity / HULE-LACE** modules.
+
+- AXS connects only to a backend you start yourself at `ws://127.0.0.1:8767`. The backend requires a fresh 256-bit process token as its first WebSocket authentication frame; the UI keeps it in tab memory only. PTYs remain alive across browser detach/reattach while the Rust backend process is still running. Android may still stop background processes, so this is not a promise of OS-level immortality.
+- The AXS server binds to loopback only. Its optional VNC/websockify path is also loopback-only. Do not put port 8767, VNC or websockify behind a public tunnel.
+- The `#prompt` hook is deliberately `NOT_CONFIGURED` until a real authenticated model adapter exists. The backend does not echo a simulated model response as if it had been generated.
+- SSH keys are generated on the device with OpenSSH; the browser never generates or stores a private key. `scripts/cryptic-identity.sh` refuses to overwrite existing keys and supports fingerprints, detached signatures and verification under the `cryptic-axs` namespace.
+- `scripts/cryptic-key-fragments.py` only normalizes complete public-key data or recovers an exact public key from a supplied trusted inventory matching an expected fingerprint. It never reconstructs missing bytes or repairs a private key. Its check is structural; use `ssh-keygen -lf <key.pub> -E sha256` and a signed challenge before trusting a key.
+- `scripts/cryptic-lace.py` wraps canonical bytes in a zlib/base64url envelope with a SHA-256 check. The `A → ª → Å` ZWJ motif and clip-path fingerprint are a reversible/presentation layer only, not encryption or authentication. Canonical key bytes and signed payloads are never transliterated.
+
+Build the backend in Termux:
+
+```bash
+pkg update -y
+pkg install -y rust clang make pkg-config openssl-tool openssh python
+cd axs-backend
+cargo build --release
+./target/release/cryptic-axs-backend --port 8767
+```
+
+The process prints a local pairing token; paste it into the AXS panel and keep it private. Build and runtime behavior are **not considered production-verified until Cargo CI, authenticated/invalid-token integration tests, PTY detach/reattach checks, and deployed-browser QA pass**.
+
 ## Run locally
 
 ```bash
