@@ -83,3 +83,40 @@ test('runtime does not expose synthetic verification claims or persist token/raw
   assert.match(core, /const allowed=new Set/);
   assert.match(core, /BLOCKED_MISSING_PRODUCTION_EVIDENCE/);
 });
+
+
+test('standalone public interfaces use same-origin scripts and explicit no-index CSP', async () => {
+  const pages = [
+    'aurora-singularity-stack','d3-multi-ai-consensus','enhanced-skybox-7-galaxies',
+    'gemini-multimodal-embedding','genie-djinn','matrix-engine','nexus-irc-hub',
+    'pdf-document-corpus','pnt-hardware-matrix','polyglot-quine-shell',
+    'polyneuromorphic-live-voice','tdoc-sentinel-v11','welcome-sentience'
+  ];
+  for (const name of pages) {
+    const html=await read('interfaces/'+name+'.html');
+    assert.match(html,/Content-Security-Policy/i,'missing CSP: '+name);
+    assert.match(html,/name="robots" content="noindex/i,'missing no-index request: '+name);
+    assert.doesNotMatch(html,/<script\s*>[\s\S]*?<\/script>/i,'executable inline script remains: '+name);
+    assert.doesNotMatch(html,/\s(onclick|oninput|onsubmit|onchange|onerror|onload)\s*=/i,'inline event handler remains: '+name);
+    const scripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)/gi)].map(m=>m[1]);
+    assert.ok(scripts.length>0,'no externalized controller is referenced: '+name);
+    for(const src of scripts) {
+      assert.ok(!/^https?:/i.test(src),'external script source: '+name+' -> '+src);
+      await access(new URL('../interfaces/'+src.replace(/^\.\//,''),import.meta.url));
+    }
+  }
+});
+
+test('AXS and identity launch remain local-only and stale device fingerprint is absent', async () => {
+  const nodes=JSON.parse(await read('config/nodes.public.json'));
+  const axs=nodes.nodes.find(n=>n.id==='axs');
+  const identity=nodes.nodes.find(n=>n.id==='identity');
+  assert.equal(axs?.local_only,true);
+  assert.equal(identity?.local_only,true);
+  assert.equal(axs?.interface_url,'./panel.html?module=axs');
+  assert.equal(identity?.interface_url,'./panel.html?module=identity');
+  assert.ok(!JSON.stringify(nodes).includes('hL7eW_2OzY3RWLWerrIdfYJ38eKCNizHY2m7U+Ufhmg'));
+  const runtime=await read('cryptic-runtime.js');
+  assert.match(runtime,/node\.local_only===true/);
+  assert.match(runtime,/LOCAL_ORIGIN_REJECTED/);
+});
