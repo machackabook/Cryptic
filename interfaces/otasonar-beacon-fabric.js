@@ -5,7 +5,7 @@ const state={report:null,peers:[],selected:'',envelope:null,status:'UNCONFIGURED
 let cfg=null;
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const clean=s=>String(s??'—');
-function notice(msg){dom('status').textContent=msg;dom('summary').textContent=msg;dom('intro').style.display='block';dom('intro').textContent=msg;dom('count').textContent='0 verified';dom('events').textContent='No current verified beacon events.';dom('nodes').replaceChildren();dom('evidence').textContent='SOURCE UNAVAILABLE';state.report=null;state.peers=[]}
+function notice(msg){dom('processState').textContent='No current signed process report.';dom('processList').replaceChildren();dom('status').textContent=msg;dom('summary').textContent=msg;dom('intro').style.display='block';dom('intro').textContent=msg;dom('count').textContent='0 verified';dom('events').textContent='No current verified beacon events.';dom('nodes').replaceChildren();dom('evidence').textContent='SOURCE UNAVAILABLE';state.report=null;state.peers=[]}
 async function telemetry(){
  try{
   if(!cfg){const r=await fetch('../config/otasonar.public.json',{cache:'no-store',redirect:'error'});if(!r.ok)throw Error('Public source configuration not found');cfg=await r.json()}
@@ -24,11 +24,23 @@ async function telemetry(){
   state.report=data;state.envelope=env;state.peers=data.targets.filter(x=>typeof x.id==='string');
   dom('intro').style.display='none';dom('status').textContent='SIGNED SOURCE VERIFIED';dom('count').textContent=clean(data.counts.verifiedLive)+' VERIFIED / '+clean(data.counts.configured)+' CONFIGURED';
   dom('summary').textContent=clean(data.controller.agentId)+' · '+clean(data.asOf);
-  renderNodes();renderEvidence();renderEvents();
+  renderNodes();renderEvidence();renderEvents();renderProcesses();
  }catch(e){notice('SOURCE UNAVAILABLE · '+(e&&e.message?e.message:String(e)))}
 }
 function renderNodes(){const box=dom('nodes');box.replaceChildren();state.peers.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='node';b.textContent=(t.fresh?'● ':'○ ')+t.id+' · '+(t.fresh?clean(t.rttMs)+'ms':clean(t.state));b.addEventListener('click',()=>{state.selected=t.id;renderEvidence()});box.appendChild(b)});if(!state.peers.length)box.textContent='No allowlisted peers in signed roster.'}
 function renderEvidence(){const t=state.peers.find(p=>p.id===state.selected);if(!t){dom('evidence').textContent='Select a peer; the signed source is '+state.report?.controller?.agentId;return}dom('evidence').textContent='PEER: '+clean(t.id)+'\nSTATUS: '+(t.fresh?'ACK_VERIFIED':clean(t.state))+'\nRTT: '+(t.rttMs===undefined?'no verified reading':t.rttMs+' ms')+'\nRECORDED: '+clean(t.completedAt)+'\nSIGNED RECEIPT: '+clean(t.receiptSignature);dom('evidence').style.whiteSpace='pre-wrap';dom('remedy').textContent=t.fresh?'DISCOVER ✓ → VERIFY SIGNATURE ✓ → EVIDENCE RECORDED ✓ → REVERIFY':'DISCOVER → OBSERVE → VERIFY BLOCKED → CHECK PEER PIN/TLS → APPROVE REPROBE'}
+function renderProcesses(){
+ const g=state.report?.godAdam;
+ const headline=dom('processState'),box=dom('processList');box.replaceChildren();
+ if(!g||g.schema!=='god-adam.sentinel-report/v1'||g.slots!==6000){
+  headline.textContent='No authenticated GOD / ADAM process evidence';return;
+ }
+ headline.textContent=String(g.verifiedProcesses)+' verified / '+String(g.watchedProcesses)+' watched / '+String(g.unassignedSlots)+' free logical slots';
+ for(const row of (Array.isArray(g.states)?g.states:[]).slice(0,60)){
+  const entry=document.createElement('div');entry.textContent='Slot '+String(row.slot)+' · '+String(row.name)+' · '+String(row.state);
+  box.appendChild(entry);
+ }
+}
 function renderEvents(){dom('events').textContent=(state.report.events||[]).slice(-8).map(e=>'['+e.at+'] '+e.type+' '+(e.target||'')+(typeof e.rttMs==='number'?' '+e.rttMs+' ms':'')).join('  |  ')||'No beacon probes observed in the current signed event window.'}
 function size(){const d=Math.min(devicePixelRatio||1,2);cvs.width=Math.floor(innerWidth*d);cvs.height=Math.floor(innerHeight*d);ctx.setTransform(d,0,0,d,0,0)}window.addEventListener('resize',size);size();
 function draw(time){const w=innerWidth,h=innerHeight;ctx.clearRect(0,0,w,h);ctx.strokeStyle='#14274a';ctx.lineWidth=.65;ctx.beginPath();for(let x=0;x<w;x+=60){ctx.moveTo(x,0);ctx.lineTo(x,h)}for(let y=0;y<h;y+=60){ctx.moveTo(0,y);ctx.lineTo(w,y)}ctx.stroke();
