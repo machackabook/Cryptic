@@ -7,7 +7,7 @@ const T=globalThis.THREE;
 
 const $=s=>document.querySelector(s);
 const safeJSON=(key,fallback=[])=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v??fallback}catch{return fallback}};
-const engine={renderer:null,scene:null,camera:null,knot:null,material:null,points:null,clock:new T.Clock(),targetMutation:.08,currentMutation:.08,focus:false,realSignal:0,lastLedger:0,lastTelemetry:0};
+const engine={renderer:null,scene:null,camera:null,knot:null,material:null,points:null,clock:T?new T.Clock():{getElapsedTime:()=>0},targetMutation:.08,currentMutation:.08,focus:false,realSignal:0,lastLedger:0,lastTelemetry:0};
 
 function appendLedger(event,data={}){
  const arr=safeJSON('cryptic.ledger',[]);
