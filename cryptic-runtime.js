@@ -40,17 +40,34 @@
 
   async function openNode(id){
     const node=nodeById(id);
-    if(!node){ window.out?.('Unknown node: ' + id, 'warn'); return; }
-    await gatewayToken(node.id, 'node.open');
+    if(!node){ window.out?.('Unknown node: ' + id, 'warn'); return {ok:false,status:'UNKNOWN_NODE'}; }
     const url=node.interface_url || node.repo || node.reference_url;
-    if(!url){ window.out?.('Node has no public interface URL: ' + id, 'warn'); return; }
+    if(!url){ window.out?.('Node has no public interface URL: ' + id, 'warn'); return {ok:false,status:'NO_INTERFACE_URL'}; }
 
+    // Local interactive tools that use browser-origin-bound loopback transports must not
+    // be placed in the generic sandboxed iframe (which has an opaque Origin: null).
+    if(node.local_only===true){
+      let target;
+      try{target=new URL(url,location.href)}catch{window.out?.('Local interface URL is invalid.','warn');return {ok:false,status:'INVALID_LOCAL_URL'}}
+      if(target.origin!==location.origin || !target.pathname.endsWith('/panel.html')){
+        window.out?.('Blocked local-only interface outside the same-origin panel route.','warn');
+        return {ok:false,status:'LOCAL_ORIGIN_REJECTED'}
+      }
+      const child=window.open(target.href,'_blank');
+      if(child){try{child.opener=null}catch{}window.out?.('Opened local-only interface: '+node.label+'. Device access still requires the process token.','system');return {ok:true,status:'LOCAL_PANEL_OPENED'}}
+      window.out?.('Pop-up blocked. Use the dashboard AXS/Identity panel control to open the local module.','warn');
+      return {ok:false,status:'POPUP_BLOCKED'}
+    }
+
+    await gatewayToken(node.id, 'node.open');
     if(node.embed && url.startsWith('./')){
       openPanel(node.label, url);
       window.out?.('Mounted interface: ' + node.label, 'good');
+      return {ok:true,status:'PANEL_MOUNTED'};
     } else {
       window.open(url, '_blank', 'noopener,noreferrer');
       window.out?.('Opened public node externally: ' + node.label + ' → ' + url, 'good');
+      return {ok:true,status:'EXTERNAL_PAGE_OPENED'};
     }
   }
 
