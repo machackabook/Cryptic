@@ -1,0 +1,20 @@
+{
+  "config": {
+    "ingress": [
+      {
+        "hostname": "security.crypticnews.org",
+        "service": "http://127.0.0.1:7443",
+        "originRequest": {
+          "httpHostHeader": "localhost:7443",
+          "connectTimeout": 10,
+          "access": {
+            "required": true,
+            "teamName": "crypticnews",
+            "audTag": ["67f48be97e35b2db0994301f551625d3c6275aa036e1e09e3e966e5bef367560"]
+          }
+        }
+      },
+      {"service": "http_status:404"}
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "cryptic.auth.integrations.v1",
+  "integrations": [
+    {
+      "id": "google-manual",
+      "provider": "google",
+      "entryUrl": "https://ais-dev-7nne5e6hglrfzmh4uwqef4-697850819377.us-east1.run.app",
+      "flow": "manual-external-entry",
+      "observedRedirect": "Google sign-in via AI Studio applet auth bridge",
+      "collectorAuthorization": "not-established",
+      "qualification": "Public entry redirects to Google login. No authenticated session, issuer/audience contract, callback or collector authorization was verified."
+    },
+    {
+      "id": "github-cloudflare",
+      "provider": "github",
+      "repository": "machackabook/Cryptic",
+      "repositoryConnection": "authorized",
+      "browserIdentityProvider": "dedicated OAuth client required",
+      "collectorAuthorization": "default-denied"
+    }
+  ]
+}

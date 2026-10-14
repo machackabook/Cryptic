@@ -1,0 +1,33 @@
+{
+  "groups": {
+    "group:cryptic-operators": ["operator@example.invalid"]
+  },
+  "tagOwners": {
+    "tag:cryptic-bridge": ["group:cryptic-operators"],
+    "tag:cryptic-dns": ["group:cryptic-operators"]
+  },
+  "grants": [
+    {
+      "src": ["group:cryptic-operators"],
+      "dst": ["tag:cryptic-bridge"],
+      "ip": ["tcp:443"]
+    },
+    {
+      "src": ["tag:cryptic-bridge"],
+      "dst": ["tag:cryptic-dns"],
+      "ip": ["tcp:53", "udp:53"]
+    }
+  ],
+  "ssh": [],
+  "tests": [
+    {
+      "src": "operator@example.invalid",
+      "accept": ["tag:cryptic-bridge:443"],
+      "deny": ["tag:cryptic-bridge:22", "tag:cryptic-bridge:7331"]
+    },
+    {
+      "src": "untrusted@example.invalid",
+      "deny": ["tag:cryptic-bridge:443", "tag:cryptic-dns:53"]
+    }
+  ]
+}

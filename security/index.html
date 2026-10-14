@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' ; style-src 'self'; img-src 'self'; connect-src 'self' https: http://127.0.0.1:* http://localhost:* http://[::1]:*; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#01040a">
+  <meta name="description" content="Authenticated Cryptic device registry, telemetry, bounded automation and security evidence console.">
+  <title>Cryptic // Security Operations</title>
+  <link rel="stylesheet" href="../ui/tokens.css">
+  <link rel="stylesheet" href="./console.css">
+  <script type="module" src="./console.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#operations">Skip to operations</a>
+  <header class="console-header">
+    <div><span class="eyebrow">CRYPTIC // PRIVATE CONTROL PLANE</span><h1>Security operations</h1></div>
+    <nav aria-label="Site"><a href="https://machackabook.github.io/Cryptic/" rel="noopener noreferrer">Command center</a><a href="#sources">Document evidence</a><a href="../docs/SECURITY-OPERATIONS.md">Operator guide</a></nav>
+  </header>
+  <main id="securityConsole">
+    <section class="panel connect-panel" aria-labelledby="connectionTitle">
+      <div class="section-title"><div><span class="eyebrow">01 / AUTHENTICATED SERVICE</span><h2 id="connectionTitle">Connect your operator session</h2></div><span class="badge" data-view="connection">Disconnected</span></div>
+      <p>Use the local service, or an HTTPS origin protected by your configured VPN and access policy. Tokens stay in this page's memory and are cleared on disconnect. Serve this console from the service origin for the simplest connection.</p>
+      <form data-form="connect" class="connection-fields">
+        <label>Service origin<input name="endpoint" type="url" value="http://127.0.0.1:7443" required autocomplete="off" spellcheck="false" aria-describedby="endpointHelp"></label>
+        <label>Operator token<input name="adminToken" type="password" required autocomplete="off" spellcheck="false"></label>
+        <button type="submit" data-action="connect">Connect</button>
+        <button type="button" data-action="disconnect" disabled>Disconnect</button>
+      </form>
+      <label class="check"><input type="checkbox" data-view="endpointTrust"> I trust this HTTPS service origin to receive my operator credential.</label>
+      <p><a href="https://ais-dev-7nne5e6hglrfzmh4uwqef4-697850819377.us-east1.run.app" target="_blank" rel="noopener noreferrer">Open manual Google sign-in integration</a></p>
+      <p class="hint">Google sign-in opens the supplied external app. Collector authorization remains separate until its callback and server-side identity validation are configured.</p>
+      <p id="endpointHelp" class="hint">Enter an origin only, such as https://security.example.com. Remote HTTP, URL credentials, paths, queries and fragments are rejected. The service must explicitly allow this page's origin.</p>
+      <div class="message" role="status" aria-live="polite" data-view="message">Public document profiles are available without a connection. Registry and automation require an authenticated service.</div>
+    </section>
+    <section id="operations" class="status-grid" aria-label="Measured service status">
+      <article class="metric-card"><span>Service</span><strong data-view="serviceStatus">Disconnected</strong><small data-view="lastRefresh">No measurement</small></article>
+      <article class="metric-card"><span>Device registry</span><strong data-view="deviceCount">—</strong><small>Registration is not a hardware connection.</small></article>
+      <article class="metric-card"><span>Automation</span><strong data-view="automationStatus">Unverified</strong><small data-view="automationDetail">No measurement</small></article>
+      <article class="metric-card"><span>VPN / access</span><strong data-view="vpnStatus">Unverified</strong><small>Browser connectivity alone does not prove VPN enforcement.</small></article>
+    </section>
+    <div class="operations-grid">
+      <section class="panel" aria-labelledby="registryTitle">
+        <div class="section-title"><div><span class="eyebrow">02 / DEVICE-BOUND ACCESS</span><h2 id="registryTitle">Device registry</h2></div><button type="button" data-action="refresh" data-requires="connection" disabled>Refresh evidence</button></div>
+        <form data-form="register" class="stacked-form">
+          <div class="field-pair"><label>Device ID<input name="deviceId" required pattern="[a-z0-9][a-z0-9-]{0,63}" maxlength="64" autocomplete="off" placeholder="sensor-01"></label><label>Display name<input name="deviceName" required maxlength="80" autocomplete="off" placeholder="Local monitoring agent"></label></div>
+          <label>Document profile<select name="profileId" data-view="profileSelect" required><option value="">Loading reviewed profiles…</option></select></label>
+          <label class="check"><input name="reviewed" type="checkbox" required> I reviewed this profile's limits and control boundary.</label>
+          <button type="submit" data-action="register" data-requires="connection" disabled>Register device and issue credential</button>
+        </form>
+        <div class="handoff" data-view="handoff" hidden>
+          <h3>One-time device credential</h3><p>This credential authorizes telemetry for one registered device. Store it in your device's secret manager. It cannot be fetched again.</p>
+          <label>Credential<textarea data-view="deviceToken" readonly rows="3" autocomplete="off" spellcheck="false"></textarea></label>
+          <label class="check"><input type="checkbox" data-view="copyConsent"> I consent to putting this credential on my clipboard.</label>
+          <div class="toolbar"><button type="button" data-action="copyCredential" disabled>Copy credential</button><button type="button" data-action="dismissCredential">Clear credential</button></div>
+        </div>
+        <div class="table-wrap"><table><caption>Authenticated registry records</caption><thead><tr><th scope="col">Device</th><th scope="col">Profile</th><th scope="col">Evidence</th><th scope="col">Control</th></tr></thead><tbody data-view="devices"><tr><td colspan="4">Connect to view registered devices.</td></tr></tbody></table></div>
+      </section>
+      <section class="panel" aria-labelledby="telemetryTitle">
+        <span class="eyebrow">03 / MINIMAL HOST METRICS</span><h2 id="telemetryTitle">Authenticated telemetry</h2>
+        <p>Submit an observed host sample using the device's scoped credential. Samples use timestamp and request-ID replay controls. Precise position and GNSS commands are excluded.</p>
+        <form data-form="telemetry" class="stacked-form">
+          <label>Registered device<select name="telemetryDeviceId" data-view="deviceSelect" required><option value="">Connect to select a device</option></select></label>
+          <label>Device credential<input name="deviceCredential" type="password" required autocomplete="off" spellcheck="false"></label>
+          <label>Observed metric values (JSON object)<textarea name="metrics" rows="4" required spellcheck="false" placeholder='{"connected": true}' aria-describedby="metricHelp"></textarea></label>
+          <p id="metricHelp" data-view="metricHelp" class="hint">Select a device to view its profile's allowed metric names.</p>
+          <label>Observation time (UTC)<input name="observedAt" type="text" placeholder="Leave blank to use submission time" autocomplete="off" aria-describedby="sampleHelp"></label>
+          <p id="sampleHelp" class="hint">Enter values measured by your agent. A manual sample is labelled by its submission; it does not demonstrate attached hardware.</p>
+          <button type="submit" data-action="telemetry" data-requires="connection" disabled>Submit observed sample</button>
+        </form>
+        <div data-view="telemetry" class="evidence-box">No telemetry evidence loaded.</div>
+      </section>
+      <section class="panel" aria-labelledby="automationTitle">
+        <span class="eyebrow">04 / OWNED SERVICE AUTOMATION</span><h2 id="automationTitle">Bounded automation</h2>
+        <p>The service collects its own minimal host metrics and local evidence. Start and stop control this service's monitoring loop. Documented receiver interfaces remain reference profiles until an authenticated adapter is implemented.</p>
+        <form data-form="automation" class="inline-form"><label>Interval (seconds)<input name="intervalSeconds" type="number" min="5" max="3600" step="1" value="30" required></label><button type="submit" data-action="configureAutomation" data-requires="connection" disabled>Save interval</button></form>
+        <div class="toolbar"><button type="button" data-action="startAutomation" data-requires="connection" disabled>Start monitoring</button><button type="button" data-action="stopAutomation" data-requires="connection" disabled>Stop monitoring</button></div>
+        <h3>VPN and access evidence</h3><div data-view="vpn" class="evidence-box">Tailscale and Cloudflare WARP status are unverified until independently observed. Consult the operator guide to configure access.</div>
+        <form data-form="vpn" class="stacked-form">
+          <label>VPN provider<select name="vpnProvider"><option value="cloudflare">Cloudflare</option><option value="tailscale">Tailscale</option></select></label>
+          <label>Private application hostname or CIDR<input name="vpnTarget" required autocomplete="off" spellcheck="false" placeholder="security.example.com or 10.0.1.0/24"></label>
+          <label>Allowed operator emails (comma separated)<input name="vpnOperators" required autocomplete="off" spellcheck="false" placeholder="operator@example.com"></label>
+          <button type="submit" data-action="vpnPlan" data-requires="connection" disabled>Build VPN configuration plan</button>
+          <p class="hint">Creates a validated plan for review. Installing clients, applying access rules and deploying a tunnel require operator setup and measured verification.</p>
+        </form>
+        <div data-view="vpnPlan" class="evidence-box" hidden></div>
+      </section>
+      <section class="panel" aria-labelledby="auditTitle">
+        <span class="eyebrow">05 / PROVENANCE &amp; NETWORK POLICY</span><h2 id="auditTitle">Audit and receipts</h2>
+        <p>Offline checks validate local policy and source fingerprints. Public DNS observation requires consent and an operator-configured zone. Results report evidence and unresolved findings.</p>
+        <button type="button" data-action="offlineAudit" data-requires="connection" disabled>Run offline evidence audit</button>
+        <label class="check"><input type="checkbox" data-view="dnsConsent"> I allow the service to query its configured public DNS names using the approved resolvers.</label>
+        <div class="toolbar"><button type="button" data-action="dnsAudit" data-requires="connection" disabled>Observe public DNS</button><button type="button" data-action="export" data-requires="connection" disabled>Export sanitized evidence</button></div>
+        <div data-view="audit" class="evidence-box">No audit results loaded.</div>
+        <div data-view="receipts" class="evidence-box">No receipt anchor loaded. A hash chain needs a separately retained trusted anchor.</div>
+      </section>
+    </div>
+    <section id="sources" class="panel" aria-labelledby="sourceTitle">
+      <div class="section-title"><div><span class="eyebrow">06 / REVIEWED DERIVATIVE DATASET</span><h2 id="sourceTitle">Document profiles and source catalog</h2></div><button type="button" data-action="reloadCatalog">Reload catalog</button></div>
+      <p>These records turn the supplied documents into bounded registration profiles, metric allowlists and review gates. Checksums identify supplied bytes. They do not establish installed hardware, vendor authenticity or certified integration.</p>
+      <div data-view="profiles" class="catalog-grid">Loading profiles…</div>
+      <div data-view="sources" class="source-grid">Loading source fingerprints…</div>
+    </section>
+    <footer>Credentials and private observations are never stored in browser persistence. Disconnect stops browser polling; service monitoring stops only with the authenticated Stop monitoring control.</footer>
+  </main>
+</body>
+</html>

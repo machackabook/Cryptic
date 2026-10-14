@@ -1,0 +1,18 @@
+{
+  "schema": "cryptic.network.policy.v1",
+  "configured": false,
+  "dns": {
+    "zone": "crypticnews.org",
+    "hosts": ["api.crypticnews.org", "bus.crypticnews.org"],
+    "resolvers": ["cloudflare", "google"],
+    "requireDnssec": true,
+    "expectedCaaIssuers": [],
+    "minimumTtl": 60,
+    "maximumTtl": 86400
+  },
+  "tailnet": {
+    "policyTemplate": "security/tailscale-policy.example.json",
+    "privateConfigurationRequired": true,
+    "publicFunnelAllowed": false
+  }
+}
