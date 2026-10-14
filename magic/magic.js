@@ -1,7 +1,9 @@
+import {safeReference,protectedFrame} from './security-guard.mjs';
+import {installSecureRouter} from './surface-router.mjs';
 import {sampleHamiltonianXZ,sampleTorusTube,sessionGeometryHolds} from '../modules/session-geometry.js';
 
 const T=globalThis.THREE;
-if(!T)throw new Error('Three.js failed to load');
+// Controls remain functional if the integrity-pinned optional WebGL dependency is unavailable.
 
 const $=s=>document.querySelector(s);
 const safeJSON=(key,fallback=[])=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v??fallback}catch{return fallback}};
@@ -52,26 +54,34 @@ async function renderRoutes(){
 }
 
 async function renderSurfaces(){
- const box=$('#surfaceList');box.innerHTML='';
+ const box=$('#surfaceList');box.replaceChildren();
+ const root=new URL('../',location.href).href;
  try{
-   const r=await fetch('../config/nodes.public.json',{cache:'no-store'}),j=await r.json();
-   for(const n of (j.nodes||[]).slice(0,14)){
-     const a=document.createElement('a');a.className='surface-link';a.href=n.interface_url||n.repo||'#';a.textContent=n.label||n.id;
-     const href=a.getAttribute('href')||'';
-     if(href.startsWith('./')){
-       a.href='#';a.onclick=e=>{e.preventDefault();openSameOriginSurface(n)}
-     }else{a.target='_blank';a.rel='noopener noreferrer'}
-     box.appendChild(a);
-   }
- }catch(e){box.textContent='Node registry unavailable: '+e.message}
+  const r=await fetch('../config/nodes.public.json',{redirect:'error',cache:'no-store',headers:{accept:'application/json'}});
+  if(!r.ok||r.redirected)throw Error('GOD_REGISTRY_SOURCE_DENIED');
+  const j=await r.json();
+  for(const n of (j.nodes||[]).slice(0,50)){
+   const url=safeReference(n.interface_url||n.repo,root,location.origin);
+   if(!url)continue;
+   const a=document.createElement('a');a.className='surface-link';a.href=url;a.textContent=String(n.label||n.id).slice(0,90);
+   const embedded=protectedFrame(n,root,location.origin);
+   if(embedded){a.addEventListener('click',e=>{e.preventDefault();openSameOriginSurface(n)})}
+   else{a.target='_blank';a.rel='noopener noreferrer';a.referrerPolicy='no-referrer'}
+   box.appendChild(a);
+  }
+  if(!box.childElementCount)box.textContent='No approved repository links available.';
+ }catch(e){box.textContent='GOD REGISTRY BLOCKED: '+e.message}
 }
-
 function openSameOriginSurface(node){
- const stage=$('#magicStage');stage.innerHTML='';
+ const root=new URL('../',location.href).href,src=protectedFrame(node,root,location.origin);
+ if(!src)throw Error('GOD_EMBED_DENIED');
+ const stage=$('#magicStage');stage.replaceChildren();
  const section=document.createElement('section');section.className='magic-surface';
- const frame=document.createElement('iframe');frame.src='../'+String(node.interface_url).replace(/^\.\//,'');frame.title=node.label||node.id;frame.sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-downloads';
- section.appendChild(frame);stage.appendChild(section);$('#browserLocation').textContent='cryptic://surface/'+node.id;
- appendLedger('magic.surface.open',{node:node.id});
+ const frame=document.createElement('iframe');frame.src=src;frame.title=String(node.label||node.id).slice(0,90);
+ frame.setAttribute('sandbox','allow-scripts');frame.referrerPolicy='no-referrer';
+ section.appendChild(frame);stage.appendChild(section);
+ $('#browserLocation').textContent='cryptic://surface/'+String(node.id).replace(/[^-\\w]/g,'').slice(0,70);
+ appendLedger('magic.surface.open',{node:String(node.id).slice(0,60)});
 }
 
 function updateSignal(){
@@ -397,7 +407,7 @@ document.body.addEventListener('htmx:afterSwap', e => {
 });
 
 $('#systemStatus').innerHTML = 'SYS.OP.REAL<br>GEOMETRY.' + (sessionGeometryHolds().secrets ? 'BLOCKED' : 'VERIFIED');
-renderData(); renderRoutes(); renderSurfaces(); initWebGL();
+installSecureRouter(); renderData(); renderRoutes(); renderSurfaces(); if(T)initWebGL(); else $('#systemStatus').textContent='GOD // WEBGL UNAVAILABLE · CONTROLS ACTIVE';
 appendLedger('magic.window.online', { version: '0.9.5', source: 'Drive Magic Window neural-polymorph lineage' });
 window.CrypticMagic = { engine, renderData, renderRoutes, renderSurfaces, openSameOriginSurface };
 
