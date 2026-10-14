@@ -1,0 +1,25 @@
+name: GOD ADAM Magic Security Gates
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - 'feat/otasonar-signed-beacon-pages-v2'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Magic route and transport policy
+        run: node --test tests/god-adam-magic.test.mjs
+      - name: Verify existing security harness
+        run: node --test tests/security.test.mjs
+      - name: Secret-pattern and release marker audit
+        run: node scripts/verify.mjs
