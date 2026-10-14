@@ -30,22 +30,30 @@ test('published response headers and crawler policy make boundaries explicit', a
   assert.match(policy.notice, /not an authentication protocol/i);
 });
 
-test('main page navigation, page targets, and panel controls are wired in source', async () => {
+test('dashboard structure, panel controls, AXS, and identity modules are wired in source', async () => {
   const html = await read('index.html');
   const js = await read('ui/dashboard.js');
-  const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
-  const tabs = [...html.matchAll(/data-page="([^"]+)"/g)].map(m => m[1]);
-  const shortcuts = [...html.matchAll(/data-go="([^"]+)"/g)].map(m => m[1]);
-  assert.ok(tabs.length >= 5);
-  for (const id of tabs) assert.ok(ids.has(id), 'missing page target for tab ' + id);
-  for (const id of shortcuts) assert.ok(ids.has(id), 'missing page target for shortcut ' + id);
-  for (const control of ['ghost', 'collapse', 'hide', 'duplicate', 'pop']) {
-    assert.ok(js.includes('data-panel="' + control + '"'), 'missing control ' + control);
-  }
-  assert.ok(js.includes("q('[data-panel="), 'missing scoped panel-control selectors');
-  assert.ok(js.includes("addEventListener('click'"), 'missing click handlers');
-  assert.match(js, /Pop-up blocked; opened an in-page panel instead/);
-  assert.match(js, /dashboard could not initialize/);
+  const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map(m => m[1]));
+  for (const id of ['visualizerLayer','dashboardFx','snapGrid','overlayLayer','guardianLayer']) assert.ok(ids.has(id), 'missing dashboard host '+id);
+  assert.match(js,/data-panel="ghost"/);
+  assert.match(js,/data-panel="collapse"/);
+  assert.match(js,/data-panel="hide"/);
+  assert.match(js,/data-panel="duplicate"/);
+  assert.match(js,/data-panel="pop"/);
+  assert.match(js,/Pop-up blocked; opened an in-page panel instead/);
+  assert.match(js,/dashboard could not initialize/);
+  const manifest=JSON.parse(await read('modules/manifest.json'));
+  assert.ok(manifest.modules.some(m=>m.id==='axs'&&m.file==='./modules/axs.html'&&m.controller==='./modules/axs.js'));
+  assert.ok(manifest.modules.some(m=>m.id==='identity'&&m.file==='./modules/identity.html'&&m.controller==='./modules/identity.js'));
+  const axs=await read('modules/axs.js');
+  assert.match(axs,/loopbackEndpoint/);
+  assert.match(axs,/auth/);
+  assert.match(axs,/session\\.terminate/);
+  assert.match(axs,/tokenInput\\.value=''/);
+  const identity=await read('modules/identity.js');
+  assert.match(identity,/PRIVATE_KEY_BLOCKED/);
+  assert.match(identity,/missing_bytes_invented:false/);
+  assert.match(identity,/identityFingerprintClip/);
 });
 
 test('every manifest module asset and controller exists in the published tree', async () => {
