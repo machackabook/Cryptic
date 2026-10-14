@@ -437,7 +437,7 @@ html,body{
       <a class="chip" href="../">CRYPTIC OS</a>
       <a class="chip" href="../magic/">MAGIC WINDOW</a>
       <a class="chip" href="../interfaces/matrix-engine.html">MATRIX ENGINE</a>
-      <button class="chip active" id="btnLiveTelemetry" type="button">LOCAL CLOCK SIMULATION</button>
+      <button class="chip active" id="btnLiveTelemetry" type="button" aria-pressed="false">LOCAL CLOCK SIMULATION</button>
     </div>
   </header>
 
@@ -470,7 +470,7 @@ html,body{
     <aside class="radar-pane">
       <div class="radar-header">
         <h3>CRPA BEAMFORMING RADAR</h3>
-        <b id="radarJammerStatus">JAMMING: >120 dB J/S IMMUNITY</b>
+        <b id="radarJammerStatus">SIMULATED INTERFERENCE · NO RF HARDWARE</b>
       </div>
 
       <div class="radar-canvas-wrap">
@@ -502,19 +502,19 @@ html,body{
 
       <div class="radar-readouts">
         <div class="readout">
-          <span>STATE 5 TRACKING</span>
+          <span>STATE 5 · SIMULATION</span>
           <b id="readoutState5">>SIMULATED</b>
         </div>
         <div class="readout">
-          <span>STATE 3 TRACKING</span>
+          <span>STATE 3 · SIMULATION</span>
           <b id="readoutState3">>SIMULATED</b>
         </div>
         <div class="readout">
-          <span>BFEA MITIGATION</span>
+          <span>SIMULATED BFEA</span>
           <b style="color:#38bdf8">SIMULATION ONLY</b>
         </div>
         <div class="readout">
-          <span>FDE INTEGRITY</span>
+          <span>FDE CERTIFICATION STATUS</span>
           <b style="color:#f5ce70">NOT TESTED</b>
         </div>
       </div>
@@ -534,7 +534,7 @@ Position, timing accuracy, anti-jam response and certification status are not me
   <!-- Bottom Global Status Footer -->
   <footer class="footer">
     <span>PNT CATALOGUE / INTERACTIVE VISUALIZATION · SPECS NOT INDEPENDENTLY REVERIFIED · NO CERTIFICATION CLAIM</span>
-    <span id="footerClock">UTC 00:00:00 · 111ns TIMING ACCURACY</span>
+    <span id="footerClock">SIMULATION CLOCK · TIMING ACCURACY UNVERIFIED</span>
   </footer>
 </div>
 
