@@ -1,5 +1,8 @@
 # Cryptic
 
+**Public Cryptic landing page:** [Open Cryptic landing page](https://machackabook.github.io/Cryptic/)
+
+
 **The HyperTerminal Sovereign Operating System** — first public promoted surface for the Cryptic / Nexus / GAIA lineage.
 
 Numeral remembered: `137451921129154222`. Continuity receipt: `docs/LEDGER-STAMP.md` (hop 520). This public tree is source-only. It does not store bridge tokens, provider keys, or device pair codes.
