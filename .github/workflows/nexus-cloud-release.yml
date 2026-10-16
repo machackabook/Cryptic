@@ -1,0 +1,65 @@
+name: NEXUS v10 ADAM Cloud Release Gates
+on:
+  pull_request:
+    paths: ['cloudflare/crypticnews/**','GEMINI.md','AGENTS.md','.github/copilot-instructions.md','docs/ADAM_RELEASE_GATES.md','.github/workflows/nexus-cloud-release.yml']
+  workflow_dispatch:
+    inputs:
+      deploy_preview:
+        description: 'Deploy a noncanonical preview to workers.dev after review'
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: nexus-cloud-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify diff and release source (fail closed)
+        run: |
+          git diff --check
+          node --check cloudflare/crypticnews/src/worker.mjs
+          node --test cloudflare/crypticnews/tests/*.test.mjs
+          if grep -RIlE '(AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|sk-proj-[A-Za-z0-9_-]{20,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----)' cloudflare/crypticnews GEMINI.md AGENTS.md docs/ADAM_RELEASE_GATES.md; then echo 'Potential secret found'; exit 1; fi
+      - name: Build existing HyperTerminal SPA
+        run: |
+          npm install --no-fund --no-audit
+          npm run lint
+          npm run build
+          test -s dist/index.html
+      - name: Package sanitized build verification receipt
+        if: always()
+        run: |
+          mkdir -p nexus-evidence
+          printf '%s\n' "repo=${GITHUB_REPOSITORY}" "sha=${GITHUB_SHA}" "run=${GITHUB_RUN_ID}" "test_state=${{ job.status }}" > nexus-evidence/build-receipt.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: nexus-v10-adam-build, path: nexus-evidence/build-receipt.txt, retention-days: 14}
+  preview:
+    needs: check
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_preview == true
+    runs-on: ubuntu-latest
+    environment: nexus-preview
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: npm install --no-fund --no-audit && npm run lint && npm run build
+      - name: Deploy Cloudflare Workers preview
+        working-directory: cloudflare/crypticnews
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 deploy
