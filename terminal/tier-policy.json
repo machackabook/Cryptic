@@ -1,0 +1,50 @@
+{
+  "schema": "nexus.tiers.v13",
+  "release": "unverified",
+  "default": "public",
+  "modes": {
+    "public": {
+      "public_site": true,
+      "server_authorization_required": false,
+      "permissions": [
+        "read_public",
+        "run_local_public_commands"
+      ]
+    },
+    "member": {
+      "public_site": false,
+      "server_authorization_required": true,
+      "requirements": [
+        "signed_session",
+        "user_consent",
+        "scoped_permission"
+      ]
+    },
+    "developer": {
+      "public_site": false,
+      "server_authorization_required": true,
+      "requirements": [
+        "signed_session",
+        "repository_collaborator_permission",
+        "ADAM_receipt"
+      ]
+    },
+    "architect": {
+      "public_site": false,
+      "server_authorization_required": true,
+      "requirements": [
+        "signed_session",
+        "MFA",
+        "device_attestation",
+        "independent_approval",
+        "ADAM_receipt"
+      ]
+    }
+  },
+  "security": {
+    "static_tier_selection_is_not_auth": true,
+    "backend_isolates_privileged_services": true,
+    "secrets_in_public_artifacts": false,
+    "private_gateway_deployed": false
+  }
+}
