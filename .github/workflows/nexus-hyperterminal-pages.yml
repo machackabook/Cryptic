@@ -26,7 +26,7 @@ jobs:
           set -euo pipefail
           node --check terminal/lite-core.mjs
           node --check terminal/lite.mjs
-          node --test terminal/tests/*.test.mjs
+          node --test terminal/tests/*.test.mjs runtime/tests/nexus-tier-gate.test.mjs
           git diff --check
       - uses: actions/checkout@v4
         with:
