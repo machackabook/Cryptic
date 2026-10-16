@@ -1,0 +1,34 @@
+name: NEXUS Signed Session Provenance
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  statuses: read
+jobs:
+  nexus-session-attested:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify external NEXUS session-gateway attestation
+        uses: actions/github-script@v7
+        env:
+          EXPECTED_ATTESTOR_LOGIN: ${{ vars.NEXUS_ATTESTOR_LOGIN }}
+        with:
+          script: |
+            const trusted = process.env.EXPECTED_ATTESTOR_LOGIN || '';
+            const pr = context.payload.pull_request;
+            if (!pr || !trusted.endsWith('[bot]')) {
+              core.setFailed('No verified session attestor configured. Fail-closed.'); return;
+            }
+            const head = pr.head.sha;
+            const response = await github.rest.repos.listCommitStatusesForRef({
+              ...context.repo, ref: head, per_page: 100
+            });
+            const latest = response.data.find(s => s.context === 'nexus/session-authorized');
+            if (!latest || latest.state !== 'success' || latest.creator?.login !== trusted) {
+              core.setFailed('The exact PR head SHA lacks an approved NEXUS session receipt from the designated GitHub App.');
+              return;
+            }
+            core.info('External attestation accepted for SHA ' + head);
