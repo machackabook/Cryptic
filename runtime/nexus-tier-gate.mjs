@@ -10,7 +10,7 @@ export function createTierAuthorizer({publicKeyPem,issuer='nexus-synapse',audien
  if(!keyId||typeof keyId!=='string')throw Error('Expected signing key ID required.');
  if(!key&&publicKeyPem)throw Error('Invalid public key.');
  return function authorize({authorization='',requiredTier='public',scope='public:read'}={}){
-  if(!(requiredTier in RANK))return fail('unknown_tier');
+  if(!Object.hasOwn(RANK,requiredTier))return fail('unknown_tier');
   if(requiredTier==='public'&&scope==='public:read'&&!authorization)return {allowed:true,status:200,tier:'public',identity:'guest'};
   if(!key)return fail('signed_session_gateway_unconfigured');
   if(typeof authorization!=='string'||authorization.length>8192||!authorization.startsWith('Bearer '))return fail('signed_session_required');
@@ -26,7 +26,7 @@ export function createTierAuthorizer({publicKeyPem,issuer='nexus-synapse',audien
    if(!Number.isSafeInteger(claims.iat)||!Number.isSafeInteger(claims.exp)||!Number.isSafeInteger(claims.nbf))return fail('timestamps_required');
    if(claims.iat>now+10||claims.nbf>now+10||claims.exp<=now||claims.exp-claims.iat>maxLifetime||claims.exp<=claims.iat)return fail('expired_or_invalid_lifetime');
    if(typeof claims.sub!=='string'||claims.sub.length<3||typeof claims.session_id!=='string'||claims.session_id.length<12||typeof claims.jti!=='string'||claims.jti.length<12)return fail('identity_provenance_missing');
-   if(!(claims.tier in RANK)||RANK[claims.tier]<RANK[requiredTier]||!Array.isArray(claims.scopes)||!claims.scopes.includes(scope))return fail('insufficient_tier_or_scope');
+   if(!Object.hasOwn(RANK,claims.tier)||RANK[claims.tier]<RANK[requiredTier]||!Array.isArray(claims.scopes)||!claims.scopes.includes(scope))return fail('insufficient_tier_or_scope');
    if(!Array.isArray(claims.amr)||!claims.amr.some(x=>x==='passkey'||x==='oauth'))return fail('authenticated_session_required');
    if(RANK[requiredTier]>=2&&(!claims.provenance||claims.provenance.status!=='signed'||claims.provenance.commit_sha?.length!==40||claims.repo_permission!=='write'))return fail('developer_provenance_required');
    if(RANK[requiredTier]>=3){
