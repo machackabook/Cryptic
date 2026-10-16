@@ -34,7 +34,7 @@ test('tampering, expiration, wrong audience and invalid algorithms denied',()=>{
  p.exp=now+120;p.aud='evil-service';
  assert.equal(gate({authorization:token(p),requiredTier:'architect',scope:'release:promote'}).allowed,false);
  const orig=token(claims('member','ai:request'));
- assert.equal(gate({authorization:orig.replace('user','fake'),requiredTier:'member',scope:'ai:request'}).allowed,false);
+ assert.equal(gate({authorization:orig.slice(0,-9)+'AAAAAAAA'+orig.slice(-1),requiredTier:'member',scope:'ai:request'}).allowed,false);
  const chunks=orig.split('.');chunks[1]=chunks[1].slice(0,-2)+'ab';
  assert.equal(gate({authorization:chunks.join('.'),requiredTier:'member',scope:'ai:request'}).allowed,false);
 });
