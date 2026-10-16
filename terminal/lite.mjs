@@ -25,3 +25,10 @@ $('#help-btn').addEventListener('click',()=>run('help'));
 $('#status-btn').addEventListener('click',()=>run('status'));
 $('#clear-btn').addEventListener('click',()=>run('clear'));
 setTier('public');
+
+/* A compiled advanced viewer is optional; keep navigation functional until deployed. */
+const advancedSource='https://github.com/machackabook/Cryptics-Hyper-Terminal-OS';
+const advancedLinks=[...document.querySelectorAll('a[href="./full/"]')];
+fetch(new URL('./full/index.html',location.href),{method:'HEAD',redirect:'error',cache:'no-store'})
+ .then(response=>{if(!response.ok)throw Error('Advanced bundle unavailable');})
+ .catch(()=>{for(const link of advancedLinks){link.href=advancedSource;link.textContent='VIEW ADVANCED SOURCE ↗';link.title='Compiled HyperTerminal deployment has not been verified';}});
