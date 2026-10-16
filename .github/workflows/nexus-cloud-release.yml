@@ -29,12 +29,19 @@ jobs:
           node --check cloudflare/crypticnews/src/worker.mjs
           node --test cloudflare/crypticnews/tests/*.test.mjs
           if grep -RIlE '(AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|sk-proj-[A-Za-z0-9_-]{20,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----)' cloudflare/crypticnews GEMINI.md AGENTS.md docs/ADAM_RELEASE_GATES.md; then echo 'Potential secret found'; exit 1; fi
-      - name: Build existing HyperTerminal SPA
+      - name: Build canonical React HyperTerminal from pinned source revision
         run: |
+          git clone --no-checkout --depth=1 https://github.com/machackabook/Cryptics-Hyper-Terminal-OS.git hyperterminal-source
+          git -C hyperterminal-source fetch --depth=1 origin 10dd456ba74a435908e126c518784fbc871157ce
+          git -C hyperterminal-source checkout --detach FETCH_HEAD
+          cd hyperterminal-source
           npm install --no-fund --no-audit
           npm run lint
           npm run build
           test -s dist/index.html
+          cd ..
+          mkdir -p dist
+          cp -R hyperterminal-source/dist/. dist/
       - name: Package sanitized build verification receipt
         if: always()
         run: |
@@ -54,7 +61,18 @@ jobs:
         with: {persist-credentials: false}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - run: npm install --no-fund --no-audit && npm run lint && npm run build
+      - name: Restore approved HyperTerminal bundle from pinned commit
+        run: |
+          git clone --no-checkout --depth=1 https://github.com/machackabook/Cryptics-Hyper-Terminal-OS.git hyperterminal-source
+          git -C hyperterminal-source fetch --depth=1 origin 10dd456ba74a435908e126c518784fbc871157ce
+          git -C hyperterminal-source checkout --detach FETCH_HEAD
+          cd hyperterminal-source
+          npm install --no-fund --no-audit
+          npm run lint
+          npm run build
+          cd ..
+          mkdir -p dist
+          cp -R hyperterminal-source/dist/. dist/
       - name: Deploy Cloudflare Workers preview
         working-directory: cloudflare/crypticnews
         env:
