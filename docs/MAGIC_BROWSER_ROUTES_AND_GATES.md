@@ -1,6 +1,6 @@
 # NEXUS Magic Browser: Route-to-Document Verification (TDOC-12014)
 
-This specification governs only the PUBLIC static Magic Browser within `machackabook/Cryptic`. It is not an authentication service or authorization bypass. The 20 allowlisted routes are local checked-in HTML fragments and should only display documents/interfaces that exist in the repository. Every fragment is fetched using a same-origin URL; failures explicitly display an error. Navigation is independent of htmx and Three.js.
+This specification governs only the PUBLIC static Magic Browser within `machackabook/Cryptic`. It is not an authentication service or authorization bypass. The 21 allowlisted routes are local checked-in HTML fragments and should only display documents/interfaces that exist in the repository. Every fragment is fetched using a same-origin URL; failures explicitly display an error. Navigation is independent of htmx and Three.js.
 
 ## Functional map
 
@@ -22,3 +22,5 @@ HOME → `magic/surfaces/home.html`; TERMINAL → `magic/surfaces/terminal.html`
 Run `node --test magic/tests/*.test.mjs`. Check every route fragment exists; confirm iframe src targets under `interfaces/` or public `panel.html`, verify valid relative URLs. Verify route selection, browser history, known and unknown errors, network-denial fallback, active tab state and mobile scrolling in an actual browser. Only mark browser verification PASS after a real Page test—not static inspection.
 
 Before promotion, run Git-history secret scan, dependency and build checks, actual live site probes and backup restore. ORCHBENCH → LIVE_EXECUTION → ADAM_PROOF_GATES → PRODUCTION_VERIFIED → ARCHBENCHSHOP. Until those gates pass, this document and source changes are a proposed integration.
+
+Browser Developer / CHROME DEV maps to magic/surfaces/browser-dev.html. It is a public-documentation view, NOT an authorization to CDP/MCP or Chrome internals.
