@@ -20,6 +20,9 @@
     "test:service": "node tests/security-service.test.mjs",
     "test:console": "node tests/security-console.test.mjs",
     "test:vpn": "node tests/vpn-plan.test.mjs",
-    "check:csp": "node scripts/check-csp.mjs"
+    "check:csp": "node scripts/check-csp.mjs",
+    "test:developer-browser": "node --test native/developer-browser/broker.test.mjs native/developer-browser/adam-gates.test.mjs",
+    "build:extension": "node native/developer-browser/build-extension.mjs",
+    "build:preview": "node native/developer-browser/build-preview.mjs"
   }
 }
