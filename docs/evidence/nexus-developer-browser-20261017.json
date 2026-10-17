@@ -1,0 +1,112 @@
+{
+  "kind": "unsigned-local-development-evidence",
+  "date": "2026-10-17",
+  "node": "v24.19.0",
+  "checks": [
+    {
+      "name": "broker-policy",
+      "command": [
+        "node",
+        "--test",
+        "native/developer-browser/broker.test.mjs",
+        "native/developer-browser/adam-gates.test.mjs",
+        "native/developer-browser/restore-artifact.test.mjs"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "timestamp": "2026-10-17T12:06:57.211Z",
+      "logSHA256": "c276c20b793716045c3e9423c607cc625fcfd01422971303099d22e46596c80c",
+      "productionVerified": false,
+      "testCount": 7
+    },
+    {
+      "name": "gsel",
+      "command": [
+        "node",
+        "--test",
+        "tests/gsel-engine.test.mjs"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "timestamp": "2026-10-17T12:07:02.065Z",
+      "logSHA256": "7556459dc26f09e06d851d629eba4e01fc9291cf745434be52b6c818f5505290",
+      "productionVerified": false,
+      "testCount": 2
+    },
+    {
+      "name": "extension-build",
+      "command": [
+        "node",
+        "native/developer-browser/build-extension.mjs"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "timestamp": "2026-10-17T12:07:03.107Z",
+      "logSHA256": "7409da0114c886cf54a26035d1192348a688c300708dd3902696841d47ccae91",
+      "productionVerified": false
+    },
+    {
+      "name": "pwa-build",
+      "command": [
+        "node",
+        "native/developer-browser/build-preview.mjs"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "timestamp": "2026-10-17T12:07:04.657Z",
+      "logSHA256": "17ef2fd0122219e813d78a17f577375546ae7b43109ebe6a004e34ebdfe1498a",
+      "productionVerified": false
+    },
+    {
+      "name": "host-browser",
+      "exitCode": null,
+      "timedOut": true,
+      "logSHA256": "0999b2c41527876edf783e40614ce2ee1cff290691780323d238571ad4c16ef0",
+      "timestamp": "2026-10-17T12:01:53.661Z",
+      "productionVerified": false
+    }
+  ],
+  "frontendTypecheck": {
+    "status": "observed_exit_zero",
+    "command": "node node_modules/typescript/bin/tsc --noEmit",
+    "productionVerified": false
+  },
+  "frontendBundle": {
+    "status": "pending_at_receipt_creation",
+    "command": "node node_modules/vite/bin/vite.js build --base=/Cryptics-Hyper-Terminal-OS/"
+  },
+  "legacyCrypticSuite": {
+    "tests": 57,
+    "passed": 39,
+    "failed": 18,
+    "status": "baseline_before_GSEL_correction",
+    "failureClasses": [
+      "malformed GSEL regex (subsequently corrected and targeted tests passed)",
+      "stale public-surface expectations",
+      "Windows filename and directory-fsync limitations",
+      "VM test harness DOM/import incompatibilities"
+    ]
+  },
+  "ci": {
+    "status": "not_verified",
+    "jobStepsExecuted": 0,
+    "jobLogFetch": "404 BlobNotFound",
+    "sourceFixDoesNotProveInfrastructureRecovery": true
+  },
+  "release": {
+    "security": "independent_review_required",
+    "build": "not_approved",
+    "browser": "blocked_host_startup_timeout",
+    "restore": "independent_host_restore_required",
+    "approval": "not_granted",
+    "mergePerformed": false,
+    "deploymentPerformed": false,
+    "productionVerified": false
+  },
+  "subject": {
+    "repository": "machackabook/Cryptic",
+    "implementationCommit": "96092b5f295380b517d690726c5beebfe13e7dac",
+    "sharedNativeSourceIdenticalInBothRepositories": true
+  },
+  "notice": "Unsigned development evidence. Independent release gates remain blocked; no credentialed gateway, production model or telecom call verified."
+}
