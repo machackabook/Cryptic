@@ -1,18 +1,58 @@
 <!doctype html>
-<html lang="en"><head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-g7Y1OCZ/ABmPc/v2myuuEa0tLmQH6cY3VD0KZstjb+s='; object-src 'none'; base-uri 'none'">
-<meta name="referrer" content="no-referrer">
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cryptic Terminal Route</title>
-<script>
-(() => {
-  const target = new URL('../', location.href);
-  for (const [k,v] of new URLSearchParams(location.search)) target.searchParams.set(k,v);
-  target.hash = '#terminal';
-  location.replace(target.href);
-})();
-</script>
-</head><body><noscript><a href="../">Open Cryptic</a></noscript>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A1F">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'">
+<meta name="description" content="NEXUS Cryptic public-lite terminal: read-only local commands, architecture, and tiered access.">
+<link rel="canonical" href="https://machackabook.github.io/Cryptic/terminal/">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./lite.css">
+<title>Cryptic // NEXUS Public Lite Terminal</title>
+</head>
+<body>
+<a class="skip" href="#console">Skip to public console</a>
+<div class="shell">
+<header class="top">
+ <div class="brand"><span class="sigil">⨋Ⓖန⇔နⒼ</span><div><strong>CRYPTIC / NEXUS</strong><small>HYPERTERMINAL GATEWAY · TDOC 12013</small></div></div>
+ <nav aria-label="Platform navigation"><a href="../">Cryptic homepage</a><a href="./full/">Compiled HyperTerminal</a><a href="https://github.com/machackabook/Cryptics-Hyper-Terminal-OS">Verified source</a></nav>
+</header>
+<main>
+<section class="intro" aria-labelledby="title">
+ <div class="eyebrow">PUBLIC TIER • NO PRIVATE RUNTIME ACCESS</div>
+ <h1 id="title">The NEXUS <em>HyperTerminal</em></h1>
+ <p>A working, local-first public console plus a gateway to the advanced React application. Public access does not authorize OS commands, Enclave mounts, AI inference, GitHub writes, or agent dispatch.</p>
+ <p class="notice"><strong>Release status:</strong> Source integration pending ADAM proof and deployment verification. The advanced viewer link works only after its compiled bundle is published.</p>
+</section>
+<div class="grid">
+ <section class="panel" aria-labelledby="tier-title">
+  <h2 id="tier-title">Scoped Access Tiers</h2>
+  <p class="muted">Select a tier to inspect allowed capabilities. Selecting a tier does not grant permissions.</p>
+  <div class="tiers" role="group" aria-label="Display access tier">
+   <button type="button" class="selected" data-tier="public" aria-pressed="true">T0 · Public Lite</button>
+   <button type="button" data-tier="member" aria-pressed="false">T1 · Member</button>
+   <button type="button" data-tier="developer" aria-pressed="false">T2 · Developer</button>
+   <button type="button" data-tier="architect" aria-pressed="false">T3 · Architect</button>
+  </div>
+  <div class="tier-detail" aria-live="polite"><h3 id="tier-name">Public Lite</h3><p id="tier-description">Read-only documentation and an offline local console.</p><p class="status" id="tier-status">PUBLIC · READY LOCALLY</p><ul id="tier-abilities"><li>Read public release information.</li></ul></div>
+ </section>
+ <section class="panel console" id="console" aria-labelledby="console-title">
+  <div class="console-head"><h2 id="console-title">Æ // LOCAL COMMAND FABRIC</h2><span class="tag">LOCAL · NO EXECUTION ENGINE</span></div>
+  <div class="output" id="output" role="log" aria-live="polite" aria-label="Terminal command output">
+   <p>Cryptic Public Lite v13 initialized. Type <code>help</code> for commands.</p>
+  </div>
+  <form id="command-form" class="command" autocomplete="off"><label for="command">PUBLIC:// </label><input id="command" required maxlength="180" spellcheck="false" placeholder="help | status | tiers | about | source | clear"><button type="submit">RUN LOCAL</button></form>
+  <div class="commands"><button id="help-btn" type="button">HELP</button><button id="status-btn" type="button">STATUS</button><button id="clear-btn" type="button">CLEAR OUTPUT</button><a class="action" href="./full/">OPEN REACT VIEWER ↗</a></div>
+ </section>
+</div>
+<section class="panel bottom"><h2>Verified architecture boundary</h2><p><b>T0</b> is statically hosted. <b>T1</b> needs authenticated sessions. <b>T2</b> additionally needs repository-scoped developer permissions. <b>T3</b> requires MFA, attested identity, ADAM proof and separate approval. Server-side decisions are mandatory. No private service is deployed by this page.</p>
+<a href="https://github.com/machackabook/Cryptic/blob/main/AI-ACCESS-POLICY.md">Public access policy ↗</a><span> · </span><a href="../">Return to classic Cryptic ↗</a></section>
+</main>
+<footer>NEXUS ROOT PALETTE · #0A0A1F / #14143D / #00FFFF / #9333EA / #E0E7FF · TDOC 12013</footer>
+</div>
+<script type="module" src="./lite.mjs"></script>
 </body></html>
