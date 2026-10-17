@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "assessedAt": "2026-10-13",
+  "verificationBoundary": "Checksums and text extraction were verified for the five supplied byte streams. Document claims, linked sources, installed hardware, DNS policy, and tailnet configuration were not independently verified.",
+  "publicationPipeline": {
+    "source": "docs/GAIA-URL-ASSIMILATION-v1.md: Stage gates",
+    "stages": [
+      "Discover",
+      "Observe",
+      "Normalize",
+      "Classify",
+      "Verify",
+      "Fingerprint",
+      "Review/Promote",
+      "Reverify"
+    ],
+    "approvalStage": "Review/Promote",
+    "scope": "Publish reviewed, sanitized derivative records. The supplied runtime document does not establish completion of these stages or approval of raw attachments."
+  },
+  "sources": [
+    {
+      "id": "gaia-axs-abel-v5",
+      "title": "GAIA / AXS / ABEL — Provenance and Runtime Gate v5.0.0",
+      "type": "supplied-markdown",
+      "sha256": "061e63f83e08f5bc75f2211bb04bcd3d05c1051f35e47204034a951621a92f99",
+      "verification": {
+        "checksum": "verified-local-bytes",
+        "textExtraction": "complete",
+        "independentValidation": "not-performed"
+      },
+      "evidence": [
+        {
+          "location": "Source boundary, line 3; attribution convention, line 33",
+          "suppliedClaim": "Public metadata has bounded provenance; private conversation ownership, broader authorship, and participant attribution require separate confirmation.",
+          "integrationUse": "Keep supplied claims separate from measured observations and independent verification.",
+          "limits": "This record does not verify external links or authorship."
+        },
+        {
+          "location": "Runtime gate, lines 23–25 and 28–29",
+          "suppliedClaim": "Local lifecycle commands; explicit run of a locally installed model; no automatic dependencies, model fetches, cloud delegation, or modification of the separate lifecycle module.",
+          "integrationUse": "Private DNS and Tailscale enforcement require a separate authenticated local or backend operator workflow. Network observations are explicit and bounded.",
+          "limits": "A static browser page cannot demonstrate that these runtime controls are installed or enforce tailnet policy."
+        },
+        {
+          "location": "Runtime gate, line 26",
+          "suppliedClaim": "A local hash-chained metadata ledger omits raw prompts; optional replay caching uses restricted file permissions.",
+          "integrationUse": "Use minimal evidence records, keep response caching opt-in, and keep prompts, responses, keys, and private network inventory out of public records.",
+          "limits": "A hash chain needs a trusted retained anchor. Hashes of sensitive or guessable values are not a privacy substitute; browser storage does not enforce the stated file permissions."
+        },
+        {
+          "location": "Runtime gate, line 27",
+          "suppliedClaim": "Freeze validates ownership metadata and terminates its owned process group; its scope excludes other daemons and hardware.",
+          "integrationUse": "Describe browser stop controls as stopping browser monitoring. Keep administrative enforcement outside the public page.",
+          "limits": "No process termination, hardware stop, or Tailscale isolation is claimed by the browser UI."
+        }
+      ],
+      "lineCount": 33
+    },
+    {
+      "id": "navstrike-m-20-c96-14",
+      "title": "NavStrike-M GPS Receiver — 20-C96-14",
+      "type": "supplied-product-datasheet",
+      "sha256": "0d061d1b8423a0d75762ac2f68c73756fb2906536c568b38799b845151f2b9cc",
+      "verification": {
+        "checksum": "verified-local-bytes",
+        "textExtraction": "complete",
+        "independentValidation": "not-performed"
+      },
+      "evidence": [
+        {
+          "location": "Page 1, primary communication interface; page 2, Interfaces and System characteristics",
+          "suppliedClaim": "The receiver uses an RS-422 serial interface and GPS radio inputs; the product description lists timing and key-input capabilities.",
+          "integrationUse": "Reference-only hardware interface evidence. Maintain a boundary between public network evidence and any separately managed device adapter.",
+          "limits": "No device is proven installed. No DNS, TLS, Tailscale implementation, key handling integration, or measured accuracy is provided."
+        },
+        {
+          "location": "Page 2, Disclaimer and copyright; public-release footer",
+          "suppliedClaim": "This is a general product description; the public-clearance footer reads 11/20.",
+          "integrationUse": "Keep vendor descriptions labelled as supplied claims.",
+          "limits": "The filename does not establish a 2025 release date or independent security certification."
+        }
+      ],
+      "pageCount": 2
+    },
+    {
+      "id": "navstrike-20-c96-10",
+      "title": "NavStrike GPS Receiver — 20-C96-10",
+      "type": "supplied-product-datasheet",
+      "sha256": "f4eb268b42633e1ed250ab9f784a7a6e8225fb542a31bd7b87b5fa262fa25ffa",
+      "verification": {
+        "checksum": "verified-local-bytes",
+        "textExtraction": "complete",
+        "independentValidation": "not-performed"
+      },
+      "evidence": [
+        {
+          "location": "Page 1, Key features and benefits; page 2, Interfaces and System characteristics",
+          "suppliedClaim": "The vendor describes GPS anti-spoofing and an RS-422 serial interface with timing and key-input capabilities.",
+          "integrationUse": "Reference-only description; do not use hardware capabilities as DNS or tailnet health evidence.",
+          "limits": "GPS anti-spoofing does not authenticate DNS answers. Hardware capabilities and security claims were not independently tested."
+        },
+        {
+          "location": "Page 2, Disclaimer and copyright; public-release footer",
+          "suppliedClaim": "This is a general product description; the public-clearance footer reads 07/20.",
+          "integrationUse": "Retain document scope and conditional claims.",
+          "limits": "The supplied filename does not verify the release year or publisher authenticity."
+        }
+      ],
+      "pageCount": 2
+    },
+    {
+      "id": "navstorm-m-23-b98-01",
+      "title": "NavStorm-M GPS Receiver — 23-B98-01",
+      "type": "supplied-product-datasheet",
+      "sha256": "13c7ccccb0dc8d1f76c107aa6b4452c6949dfca3af4dc5bb54ab8e3517e5f488",
+      "verification": {
+        "checksum": "verified-local-bytes",
+        "textExtraction": "complete",
+        "independentValidation": "not-performed"
+      },
+      "evidence": [
+        {
+          "location": "Page 1, Key features; page 2, Reliability and Interfaces",
+          "suppliedClaim": "The vendor describes layered protection, a security-certified module, built-in tests, serial interfaces, key zeroization, and bounded data hold.",
+          "integrationUse": "General motivation for layered controls, health checks, secret revocation, and timestamped evidence with explicit stale states.",
+          "limits": "These are architectural interpretations, not a software specification or independent validation. Hardware hold duration is not a DNS/Tailscale freshness threshold."
+        },
+        {
+          "location": "Page 2, performance footnote, Disclaimer and copyright, and public-release footer",
+          "suppliedClaim": "Performance depends on conditions; this is a general product description and the public-clearance footer reads 7/23.",
+          "integrationUse": "Keep condition-dependent vendor claims bounded and distinct from local measurements.",
+          "limits": "No hardware access, certified software stack, DNS protection, or tailnet configuration is established."
+        }
+      ],
+      "pageCount": 2
+    },
+    {
+      "id": "navstorm-plus-20-c96-09",
+      "title": "NavStorm+ GPS Receiver — 20-C96-09",
+      "type": "supplied-product-datasheet",
+      "sha256": "e85b2becc53bd19347a8847e0886023040c7a62b273fdbc7a245dcdd3a5bf839",
+      "verification": {
+        "checksum": "verified-local-bytes",
+        "textExtraction": "complete",
+        "independentValidation": "not-performed"
+      },
+      "evidence": [
+        {
+          "location": "Page 1, Key features and benefits; page 2, Interfaces and Reliability",
+          "suppliedClaim": "The vendor lists GPS anti-jamming, an LVCMOS serial interface, built-in tests, key zeroization, and bounded data hold.",
+          "integrationUse": "Reference-only hardware evidence. Separate secrets and precise device/location telemetry from the public Pages surface; mark stale monitoring evidence explicitly.",
+          "limits": "No device integration or commands are supplied. Radio anti-jamming does not secure DNS transport or a tailnet."
+        },
+        {
+          "location": "Page 2, Disclaimer and copyright; public-release footer",
+          "suppliedClaim": "This is a general product description; the public-clearance footer reads 07/20.",
+          "integrationUse": "Publish only reviewed derivative metadata with a byte fingerprint.",
+          "limits": "A checksum identifies the supplied bytes; it does not prove vendor authenticity, installed functionality, or the filename year."
+        }
+      ],
+      "pageCount": 2
+    }
+  ]
+}

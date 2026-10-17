@@ -1,0 +1,172 @@
+{
+  "schema": "cryptic.device.profiles.v1",
+  "profiles": [
+    {
+      "id": "gaia-axs-abel-v5",
+      "sourceId": "gaia-axs-abel-v5",
+      "name": "GAIA / AXS / ABEL \u2014 Provenance and Runtime Gate v5.0.0",
+      "kind": "software",
+      "interfaces": [
+        "local-authenticated-HTTP"
+      ],
+      "metricKeys": [
+        "loadAverage",
+        "memoryPercent",
+        "uptimeSeconds"
+      ],
+      "limits": {},
+      "runtimeControls": [
+        "start-collector",
+        "stop-collector",
+        "verify-evidence",
+        "export-receipts"
+      ],
+      "installation": "not-established",
+      "sourceSha256": "061e63f83e08f5bc75f2211bb04bcd3d05c1051f35e47204034a951621a92f99"
+    },
+    {
+      "id": "navstrike-m-20-c96-14",
+      "sourceId": "navstrike-m-20-c96-14",
+      "name": "NavStrike-M GPS Receiver \u2014 20-C96-14",
+      "kind": "hardware-reference",
+      "interfaces": [
+        "RS-422"
+      ],
+      "metricKeys": [
+        "temperatureC",
+        "serialBaud",
+        "connected",
+        "sampleAgeSeconds",
+        "healthOk",
+        "builtInTestOk"
+      ],
+      "limits": {
+        "temperatureC": {
+          "min": -54,
+          "max": 85,
+          "sourceLocation": "page 2, operating temperature range",
+          "basis": "vendor operating reference; not measured assurance"
+        },
+        "serialBaud": {
+          "max": 921600,
+          "sourceLocation": "page 2, Interfaces",
+          "basis": "vendor upper bound; adapter protocol still requires separate specification"
+        }
+      },
+      "runtimeControls": [
+        "review-register",
+        "ingest-scoped-telemetry",
+        "revoke-device"
+      ],
+      "installation": "not-established",
+      "sourceSha256": "0d061d1b8423a0d75762ac2f68c73756fb2906536c568b38799b845151f2b9cc"
+    },
+    {
+      "id": "navstrike-20-c96-10",
+      "sourceId": "navstrike-20-c96-10",
+      "name": "NavStrike GPS Receiver \u2014 20-C96-10",
+      "kind": "hardware-reference",
+      "interfaces": [
+        "RS-422"
+      ],
+      "metricKeys": [
+        "temperatureC",
+        "serialBaud",
+        "connected",
+        "sampleAgeSeconds",
+        "healthOk",
+        "builtInTestOk"
+      ],
+      "limits": {
+        "temperatureC": {
+          "min": -54,
+          "max": 85,
+          "sourceLocation": "page 2, operating temperature range",
+          "basis": "vendor operating reference; not measured assurance"
+        },
+        "serialBaud": {
+          "max": 230000,
+          "sourceLocation": "page 2, Interfaces",
+          "basis": "vendor upper bound; adapter protocol still requires separate specification"
+        }
+      },
+      "runtimeControls": [
+        "review-register",
+        "ingest-scoped-telemetry",
+        "revoke-device"
+      ],
+      "installation": "not-established",
+      "sourceSha256": "f4eb268b42633e1ed250ab9f784a7a6e8225fb542a31bd7b87b5fa262fa25ffa"
+    },
+    {
+      "id": "navstorm-m-23-b98-01",
+      "sourceId": "navstorm-m-23-b98-01",
+      "name": "NavStorm-M GPS Receiver \u2014 23-B98-01",
+      "kind": "hardware-reference",
+      "interfaces": [
+        "RS-422"
+      ],
+      "metricKeys": [
+        "temperatureC",
+        "serialBaud",
+        "connected",
+        "sampleAgeSeconds",
+        "healthOk",
+        "builtInTestOk"
+      ],
+      "limits": {
+        "temperatureC": {
+          "min": -45,
+          "max": 85,
+          "sourceLocation": "page 2, operating temperature range",
+          "basis": "vendor operating reference; not measured assurance"
+        }
+      },
+      "runtimeControls": [
+        "review-register",
+        "ingest-scoped-telemetry",
+        "revoke-device"
+      ],
+      "installation": "not-established",
+      "sourceSha256": "13c7ccccb0dc8d1f76c107aa6b4452c6949dfca3af4dc5bb54ab8e3517e5f488"
+    },
+    {
+      "id": "navstorm-plus-20-c96-09",
+      "sourceId": "navstorm-plus-20-c96-09",
+      "name": "NavStorm+ GPS Receiver \u2014 20-C96-09",
+      "kind": "hardware-reference",
+      "interfaces": [
+        "LVCMOS (RS-232)"
+      ],
+      "metricKeys": [
+        "temperatureC",
+        "serialBaud",
+        "connected",
+        "sampleAgeSeconds",
+        "healthOk",
+        "builtInTestOk"
+      ],
+      "limits": {
+        "temperatureC": {
+          "min": -45,
+          "max": 85,
+          "sourceLocation": "page 2, operating temperature range",
+          "basis": "vendor operating reference; not measured assurance"
+        },
+        "serialBaud": {
+          "max": 230000,
+          "sourceLocation": "page 2, Interfaces",
+          "basis": "vendor upper bound; adapter protocol still requires separate specification"
+        }
+      },
+      "runtimeControls": [
+        "review-register",
+        "ingest-scoped-telemetry",
+        "revoke-device"
+      ],
+      "installation": "not-established",
+      "sourceSha256": "e85b2becc53bd19347a8847e0886023040c7a62b273fdbc7a245dcdd3a5bf839"
+    }
+  ],
+  "qualification": "Document-derived configuration constraints and reference interfaces; no device is assumed installed."
+}

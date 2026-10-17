@@ -1,0 +1,31 @@
+{
+  "schema": "cryptic.vpn.readiness.v1",
+  "observedAt": "2026-10-13T04:38:49.953303Z",
+  "evidenceType": "authenticated-cloudflare-configuration-read",
+  "provider": "cloudflare",
+  "publicDomain": "crypticnews.org",
+  "accountSelection": "account owning the configured public domain",
+  "apiAuthentication": "verified",
+  "warpProfile": "configured",
+  "tunnelCount": 2,
+  "privateRouteCount": 0,
+  "accessApplicationCount": 1,
+  "identityProviderCount": 0,
+  "clientConnectivity": "unverified",
+  "collectorConnectivity": "unverified",
+  "enforcement": "unverified",
+  "changesApplied": true,
+  "missing": [
+    "collector host",
+    "private hostname or CIDR",
+    "explicit operator identities",
+    "Access authorization",
+    "end-to-end WARP test"
+  ],
+  "qualification": "Configuration snapshot only. No enrollment, routing, authorization, or live VPN traffic is established by this record.",
+  "accessPolicy": "deny-all: no Allow policy configured",
+  "stagedHostname": "security.crypticnews.org",
+  "connectorStatus": "not-connected",
+  "githubBrowserLogin": "requires dedicated OAuth application",
+  "appliedScope": "new isolated Tunnel and default-deny Access application only"
+}

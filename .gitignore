@@ -16,3 +16,6 @@ service-account*.json
 credentials*.json
 *secret*
 *.sparsebundle/
+reports/security/
+.security-private/
+

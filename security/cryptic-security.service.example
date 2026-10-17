@@ -1,0 +1,23 @@
+[Unit]
+Description=Cryptic private security collector
+After=network.target
+
+[Service]
+Type=simple
+User=cryptic
+Group=cryptic
+WorkingDirectory=/opt/cryptic
+EnvironmentFile=/etc/cryptic/security.env
+ExecStart=/usr/bin/node /opt/cryptic/runtime/security-service.mjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/cryptic/.security-private
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target
