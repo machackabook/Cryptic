@@ -13,6 +13,7 @@ test('GSEL engine is a same-origin externalized surface with no unsafe sinks', a
   assert.match(html, /style-src 'self'/);
   assert.match(html, /connect-src 'self'/);
   assert.match(html, /modules\/gsel\.js/);
+  assert.match(markup, /interfaces\/gsel-wave-gradient-engine\.css/);
   assert.doesNotMatch(html, /fonts\.googleapis|fonts\.gstatic|<style\b/i);
   assert.doesNotMatch(html, /\son(?:click|input|change|load|error)\s*=/i);
   assert.doesNotMatch(markup, /\son(?:click|input|change|load|error)\s*=/i);
