@@ -133,6 +133,12 @@
       "title": "CRYPTIC SSH IDENTITY // HULE-LACE",
       "file": "./modules/identity.html",
       "controller": "./modules/identity.js"
+    },
+    {
+      "id": "gsel",
+      "title": "GSEL WAVE // HUE GRADIENT ENGINE",
+      "file": "./modules/gsel.html",
+      "controller": "./modules/gsel.js"
     }
   ]
 }

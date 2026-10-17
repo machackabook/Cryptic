@@ -1,0 +1,25 @@
+<section class="gsel-engine" data-gsel-root aria-labelledby="gsel-title">
+  <header class="gsel-header">
+    <div class="gsel-title" id="gsel-title">GSEL Wave Hue Gradient Engine<small>Local WebGL text-mask renderer · no network or persistence</small></div>
+    <div class="gsel-status" data-gsel-role="status" data-state="loading" aria-live="polite">INITIALIZING</div>
+  </header>
+  <div class="gsel-layout">
+    <aside class="gsel-panel" aria-label="Engine controls">
+      <div class="gsel-control"><label class="gsel-label" for="gsel-seed">Storyline seed</label><input id="gsel-seed" class="gsel-input" data-gsel-role="seed" maxlength="240" value="THE NEXUS GAIA CORE UNFOLDS RECURSIVE REALITIES" autocomplete="off" spellcheck="false"></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-frequency">Wave frequency <span class="gsel-value" data-gsel-role="frequency-value">4.5</span></label><input id="gsel-frequency" class="gsel-range" data-gsel-role="frequency" type="range" min="0.5" max="15" step="0.1" value="4.5"></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-speed">Temporal speed <span class="gsel-value" data-gsel-role="speed-value">1.2</span></label><input id="gsel-speed" class="gsel-range" data-gsel-role="speed" type="range" min="0.1" max="5" step="0.1" value="1.2"></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-amplitude">Warp amplitude <span class="gsel-value" data-gsel-role="amplitude-value">0.80</span></label><input id="gsel-amplitude" class="gsel-range" data-gsel-role="amplitude" type="range" min="0" max="3" step="0.05" value="0.8"></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-saturation">Saturation ceiling <span class="gsel-value" data-gsel-role="saturation-value">0.90</span></label><input id="gsel-saturation" class="gsel-range" data-gsel-role="saturation" type="range" min="0" max="1.5" step="0.05" value="0.9"></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-brightness">Luminosity target <span class="gsel-value" data-gsel-role="brightness-value">1.10</span></label><input id="gsel-brightness" class="gsel-range" data-gsel-role="brightness" type="range" min="0.2" max="2" step="0.05" value="1.1"></div>
+      <div class="gsel-control"><div class="gsel-label">Spectral palette</div><div class="gsel-palette-grid" data-gsel-role="palettes"><button type="button" class="gsel-palette" data-palette="0" data-active="true">CYBER PLASMA</button><button type="button" class="gsel-palette" data-palette="1">HAMILTONIAN</button><button type="button" class="gsel-palette" data-palette="2">COGNITIVE FLOW</button><button type="button" class="gsel-palette" data-palette="3">MATRIX CORE</button></div></div>
+      <div class="gsel-control"><label class="gsel-label" for="gsel-font">Typography</label><select id="gsel-font" class="gsel-select" data-gsel-role="font"><option value="900 32px Inter">Inter bold</option><option value="700 28px ui-monospace">Monospace matrix</option><option value="italic 800 30px Inter">Inter italic</option></select></div>
+    </aside>
+    <main class="gsel-viewport" aria-label="Gradient renderer"><canvas class="gsel-canvas" data-gsel-role="canvas" width="800" height="450" aria-label="Animated GSEL text gradient"></canvas><div class="gsel-fallback" data-gsel-role="fallback" hidden>WebGL is unavailable in this browser. The controls remain local, but the gradient renderer cannot start.</div></main>
+    <aside class="gsel-panel" aria-label="Renderer telemetry">
+      <div class="gsel-label">Renderer telemetry</div><div class="gsel-telemetry"><div class="gsel-row"><span>Frames / second</span><span data-gsel-role="fps">—</span></div><div class="gsel-row"><span>Phase seconds</span><span data-gsel-role="time">0.0000</span></div><div class="gsel-row"><span>Resolution</span><span data-gsel-role="resolution">800 × 450</span></div><div class="gsel-row"><span>Pointer vector</span><span data-gsel-role="mouse">0.50, 0.50</span></div><div class="gsel-row"><span>Texture source</span><span>local text mask</span></div></div>
+      <div class="gsel-label">Glyph decomposition</div><div class="gsel-matrix" data-gsel-role="matrix" aria-label="Generated glyph tokens"></div>
+      <div class="gsel-label">Metadata inspector</div><pre class="gsel-inspector" data-gsel-role="inspector">Select a glyph token to inspect its local deterministic metadata.</pre>
+      <p class="gsel-note">All values are rendered in memory. No prompt, token, location, or telemetry value is sent to a service or written to browser storage.</p>
+    </aside>
+  </div>
+</section>
