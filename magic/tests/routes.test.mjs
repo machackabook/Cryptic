@@ -5,7 +5,7 @@ import {MAGIC_ROUTES,resolveMagicRoute,routeFromFragment,safeMagicSurfaceUrl} fr
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 test('all 20 routes resolve only to committed local fragments',()=>{
- const names=Object.keys(MAGIC_ROUTES);assert.equal(names.length,20);
+ const names=Object.keys(MAGIC_ROUTES);assert.equal(names.length,21);
  for(const n of names){const route=resolveMagicRoute(n);assert.ok(route);assert.ok(fs.statSync(new URL(route.file,root)).isFile(),n);}
  assert.equal(resolveMagicRoute('comms').id,'bus');
  assert.equal(resolveMagicRoute('docs').id,'rules');
