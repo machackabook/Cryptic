@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXUS Developer Browser</title><link rel="stylesheet" href="/panel.css"></head>
+<body><main><h1>NEXUS <span>Developer Browser</span></h1><p>Native loopback console · separate temporary browser profile · no raw CDP port</p>
+<p role="status" id="status">Disconnected. Supply local credentials and a fresh SYNAPSE capability for each action.</p>
+<form id="action-form"><label>Local broker secret <input id="secret" type="password" autocomplete="off" required></label><label>Fresh gateway capability <input id="capability" type="password" autocomplete="off"></label>
+<label>Preview URL <input id="url" type="url" value="http://127.0.0.1:3000"></label><label>Network profile <select id="profile"><option value="normal">Normal</option><option value="slow3g">Slow 3G</option><option value="offline">Offline</option></select></label>
+<nav aria-label="Developer actions"><button name="action" value="health">Check broker</button><button name="action" value="browser.start">Start developer browser</button><button name="action" value="browser.navigate">Navigate</button><button name="action" value="browser.inspect">Inspect DOM</button><button name="action" value="browser.throttle">Apply throttling</button><button name="action" value="browser.lighthouse">Lighthouse audit (optional adapter)</button><button name="action" value="browser.stop">Stop and remove profile</button></nav></form>
+<p>Lighthouse: optional adapter, disabled by default; enable only after separate installation and verification. General code evaluation: unavailable. Signaling/TURN and PSTN: not configured.</p>
+<a href="https://vscode.dev/github/machackabook/Cryptics-Hyper-Terminal-OS" target="_blank" rel="noreferrer noopener">Open HyperTerminal workspace in vscode.dev</a>
+<h2>Observed result</h2><pre id="result">No action executed.</pre></main><script type="module" src="/panel.js"></script></body></html>
