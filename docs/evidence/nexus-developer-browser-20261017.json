@@ -72,8 +72,10 @@
     "productionVerified": false
   },
   "frontendBundle": {
-    "status": "pending_at_receipt_creation",
-    "command": "node node_modules/vite/bin/vite.js build --base=/Cryptics-Hyper-Terminal-OS/"
+    "status": "interrupted_unverified",
+    "command": "node node_modules/vite/bin/vite.js build --base=/Cryptics-Hyper-Terminal-OS/",
+    "exitCode": 1,
+    "detail": "Stopped after prolonged transformation without a final build result. No bundle artifact validated."
   },
   "legacyCrypticSuite": {
     "tests": 57,
