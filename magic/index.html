@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' ; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.crypticnews.org https://bus.crypticnews.org http://127.0.0.1:* http://localhost:* http://[::1]:* https://127.0.0.1:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -9,7 +9,7 @@
 <meta name="description" content="Cryptic Magic Window — polymorphic HTMX command-center surface.">
 <title>Cryptic // Magic Window of ܞ</title>
 <link rel="stylesheet" href="./magic.css">
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
+<!-- Same-origin allowlisted router replaces the external HTMX dependency. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
@@ -78,8 +78,8 @@
   <div class="browser-bar">
     <div class="browser-dots"><i></i><i></i><i></i></div>
     <div class="browser-location" id="browserLocation">cryptic://magic/home</div>
-    <div class="browser-actions">
-      <button hx-get="./surfaces/home.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="home">HOME</button>
+    <div class="browser-actions" role="toolbar" aria-label="Magic Browser surface tabs">
+      <button type="button" aria-pressed="true" hx-get="./surfaces/home.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="home">HOME</button>
       <button hx-get="./surfaces/terminal.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="terminal">TERMINAL</button>
       <button hx-get="./surfaces/galaxies.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="galaxies" style="color:var(--gold);border-color:rgba(245,206,112,0.35)">7 GALAXIES</button>
       <button hx-get="./surfaces/genie.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="genie" style="color:#d580ff;border-color:rgba(180,90,255,0.4)">GENIE DJINN</button>
@@ -96,13 +96,17 @@
       <button hx-get="./surfaces/bus.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="comms">COMMS</button>
       <button hx-get="./surfaces/nodes.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="nodes">NODES</button>
       <button hx-get="./surfaces/welcome.html" hx-target="#magicStage" hx-swap="innerHTML transition:true" data-route="welcome">WELCOME</button>
+      <button type="button" data-route="rules">RULES &amp; DOCS</button>
+      <button type="button" data-route="network">NETWORK INDEX</button>
+      <button type="button" data-route="aurora">AURORA</button>
     </div>
   </div>
-  <div id="magicStage" class="magic-stage" hx-get="./surfaces/home.html" hx-trigger="load" hx-swap="innerHTML"></div>
+  <div id="magicStage" class="magic-stage" aria-live="polite"><p class="magic-route-error">Loading public Magic Browser home…</p></div>
 </main>
 
-<div id="systemStatus">SYS.OP.REAL<br>WAITING.EVENTS</div>
+<div id="systemStatus">UI.PUBLIC<br>VERIFYING.SURFACES</div>
 
+<script type="module" src="./router.mjs"></script>
 <script type="module" src="./magic.js"></script>
 </body>
 </html>
