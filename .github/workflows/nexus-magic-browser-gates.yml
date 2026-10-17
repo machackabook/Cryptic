@@ -1,0 +1,24 @@
+name: NEXUS Magic Browser Route Gates
+on:
+  pull_request:
+    branches: [main]
+    paths: ['magic/**','docs/MAGIC_BROWSER_ROUTES_AND_GATES.md','.github/workflows/nexus-magic-browser-gates.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  magic-route-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Source syntax and route/link checks
+        run: |
+          set -euo pipefail
+          node --check magic/routes.mjs
+          node --check magic/router.mjs
+          node --check magic/magic.js
+          node --test magic/tests/*.test.mjs
+          git diff --check
