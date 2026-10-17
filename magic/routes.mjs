@@ -8,7 +8,7 @@ export const MAGIC_ROUTES=Object.freeze({
   sentinel:'sentinel',quine:'quine',embedding:'embedding',
   documents:'documents',irc:'irc',matrix:'matrix',
   telemetry:'telemetry',bus:'bus',nodes:'nodes',welcome:'welcome',
-  network:'network',aurora:'aurora',rules:'rules'
+  network:'network',aurora:'aurora',rules:'rules','browser-dev':'browser-dev'
 });
 export const ROUTE_ALIASES=Object.freeze({comms:'bus',docs:'rules'});
 export function resolveMagicRoute(name){
