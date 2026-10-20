@@ -19,7 +19,7 @@ node singularity/coordinator.mjs
 # open http://127.0.0.1:8088/singularity/
 ```
 
-In tab A, choose **COMPUTE NODES → VOLUNTEER THIS TAB**. In tab B, choose **SUBMIT TO OPT-IN POOL**. A receipt appears only after tab A calculates and the coordinator independently verifies its result. Without tab A, a queued job stays queued (not successful). **COMPUTE ON MY DEVICE** works without a coordinator, including from GitHub Pages, using a local Web Worker.
+In the **same visible tab**, choose **COMPUTE NODES → VOLUNTEER THIS TAB**, then **SUBMIT TO OPT-IN POOL**. A hidden background tab will relinquish its worker; two separate tabs do not stay active by default. A receipt appears only after tab A calculates and the coordinator independently verifies its result. Without tab A, a queued job stays queued (not successful). **COMPUTE ON MY DEVICE** works without a coordinator, including from GitHub Pages, using a local Web Worker.
 
 On mobile devices a localhost server must be started **on that mobile device** (or the site must be served from a user-approved local network service with its own authentication). `localhost` always means the machine where the browser runs, never the developer's computer.
 
