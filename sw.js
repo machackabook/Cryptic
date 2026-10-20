@@ -1,4 +1,4 @@
-const CACHE='cryptic-public-v0.9.2';
+const CACHE='cryptic-public-v0.9.2-polyglot-v17';
 const ASSETS=[
   './',
   './index.html',
@@ -11,6 +11,7 @@ const ASSETS=[
   './ui/panel.css',
   './ui/panel.js',
   './core/terminal-core.js',
+  './polyglot/quine-os.js',
   './cryptic-runtime.js',
   './cryptic-bus.js',
   './cryptic-console.js',
