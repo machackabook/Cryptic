@@ -1,3 +1,4 @@
+import { dispatchHyperterminal } from '../polyglot/quine-os.js';
 const VERSION='0.9.2';
 const providers=[['gemini','Gemini'],['github','GitHub'],['drive','Google Drive'],['ollama','Ollama'],['openai','OpenAI'],['amazon-q','Amazon Q'],['watson','IBM Watson'],['bridge','Local Bridge'],['genie','Genie Djinn']];
 const tokens=[];
@@ -103,7 +104,7 @@ async function gaiaCommand(args){
   return stat;
 }
 
-async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+v,'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
+async function runCommand(raw){const v=String(raw||'').trim();if(!v)return;const safe=/^(help|about|status|nodes|gaia(?:\s+status)?|telemetry(?:\s+(?:start|snapshot|summary))?|bus\s+routes)$/i.test(v);if(!gateOpen&&!safe){out('Guardian gate is closed.','warn');return {ok:false,error:'guardian_closed'}}out('cryptic> '+v,'user');ledger('terminal.command',{cmd:v.split(/\s+/)[0]});const pg=await dispatchHyperterminal(v);if(pg.handled){out(pg.message,pg.kind==='good'?'good':pg.kind==='warn'?'warn':'system');ledger('polyglot.command',{scope:'polyglot.v17',status:pg.kind==='warn'?'UNVERIFIED':'BROWSER_ONLY'});return pg.value??pg}const [cmd,...args]=v.split(/\s+/),lower=cmd.toLowerCase();
  if(lower==='help')return help();
  if(lower==='about')return out('Cryptic '+VERSION+' modular HyperTerminal command center.','good');
  if(lower==='status'){const x={gate:gateOpen,online:navigator.onLine,tokens:tokens.length,bus:window.CrypticBus?.routes?.()||null,panels:[...(window.CrypticDashboard?.mounted?.keys?.()||[])]};out(JSON.stringify(x,null,2),'system');return x}
