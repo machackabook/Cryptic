@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#02040a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>GAIA–NEXUS · Singularity AE-M4</title>
+<style>
+:root{--gold:#ffcc00;--purple:#9932cc;--cyan:#00e5ff;--green:#34d399;--red:#f87171;--gray:#94a3b8;--background:#02040a;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#d7eaf9}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--background)}
+#void-canvas,#graph-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}#void-canvas{z-index:0}#graph-canvas{z-index:1;pointer-events:none}
+#shell{position:fixed;z-index:2;inset:0;pointer-events:none;padding:calc(12px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) calc(12px + env(safe-area-inset-left,0px));display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+#shell>*{pointer-events:auto}.header{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.mark{font-size:13px;letter-spacing:.13em;font-weight:800;text-shadow:0 0 18px #00e5ff66}.status{font-size:10px;letter-spacing:.07em;border:1px solid #294155a8;background:#061622cc;border-radius:99px;padding:5px 8px}
+.controls{max-width:min(440px,100%);border:1px solid #244156b8;background:#020814e8;box-shadow:0 12px 50px #0008;backdrop-filter:blur(18px);border-radius:16px;padding:14px;max-height:min(78vh,800px);overflow:auto;scrollbar-width:thin}
+.controls[hidden]{display:none}.row{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.stat{background:#081728bc;padding:8px;border-radius:8px;border:1px solid #183043;font-size:10px}.stat b{display:block;color:var(--cyan);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button,.pick{display:inline-flex;align-items:center;justify-content:center;border:1px solid #28526d;background:#082536;color:#cff3ff;border-radius:8px;padding:8px 10px;cursor:pointer;font:600 12px system-ui;min-height:36px}button:hover,.pick:hover{border-color:var(--cyan)}button:focus-visible,.pick:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.control-title{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin:13px 0 4px}
+.small{color:var(--gray);font-size:11px;line-height:1.5;margin:5px 0}.number{color:var(--green)}
+fieldset{border:1px solid #1e3444;border-radius:8px;margin:8px 0 0;padding:8px}legend{color:var(--gold);font-size:11px}label{font-size:11px;cursor:pointer}label.range{display:flex;align-items:center;gap:8px}input[type=range]{width:130px;accent-color:var(--cyan)}
+input[type=text]{width:100%;min-height:36px;background:#06101d;color:#d5e8f9;border:1px solid #315069;border-radius:7px;padding:8px;font:12px ui-monospace,monospace}
+#feed{padding:9px;border-radius:8px;background:#030a11a8;border:1px solid #123447;font:11px ui-monospace,monospace;max-height:138px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;min-height:50px}
+.footer{display:flex;gap:8px;justify-content:space-between;align-items:flex-end;flex-wrap:wrap}.footer p{margin:0;background:#020814ad;border:1px solid #173343;border-radius:8px;padding:7px 10px;max-width:560px;font-size:10px;color:#abbfd0;line-height:1.5}
+#toggle{border-color:var(--gold);color:var(--gold);background:#201b06dd}#node-list{max-height:110px;overflow:auto;padding-left:17px;margin:7px 0;font-size:10px;color:#c8dceb;overflow-wrap:anywhere}#node-list li{margin:4px 0}
+@media(max-width:650px){.header{max-width:100%}.mark{font-size:11px}.controls{padding:10px;max-height:65vh}.footer p{max-width:70%}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+body.singularity-embed #shell{display:none!important}
+</style>
+</head>
+<body>
+<canvas id="void-canvas" aria-hidden="true"></canvas>
+<canvas id="graph-canvas" aria-hidden="true"></canvas>
+<div id="shell" data-ready="initializing">
+  <header class="header"><div class="mark">𓂀 GAIA · NEXUS · SINGULARITY</div><span id="render-state" class="status">INITIALIZING</span><span id="source-state" class="status">NO SOURCE VERIFIED</span></header>
+  <section class="controls" id="controls" aria-label="Singularity control panel">
+    <div class="stats"><div class="stat">SOURCES<b id="count">0</b></div><div class="stat">RENDER<b id="fps">0 FPS</b></div><div class="stat">QUALITY<b id="quality">-</b></div></div>
+    <p class="control-title">Evidence-based source unification</p>
+    <p class="small">Load a generated catalog or directly select real local files. Your file bytes stay in this browser; only SHA-256 metadata is displayed.</p>
+    <div class="row">
+      <label class="pick" for="file-import">Import files</label><input type="file" id="file-import" multiple>
+      <label class="pick" for="dir-import">Import directory</label><input type="file" id="dir-import" webkitdirectory multiple>
+      <button id="load-manifest" type="button">Load catalog</button>
+      <button id="export-manifest" type="button">Export catalog</button>
+    </div>
+    <label for="manifest-url" class="small">Same-origin catalog URL (no private tokens)</label>
+    <input id="manifest-url" type="text" value="./absorbvoid/index.json" spellcheck="false" autocomplete="off">
+    <div class="row"><label class="range" for="entropy">Entropy <input id="entropy" type="range" min="0" max="1" step="0.01" value="0.42"><span id="entropy-value">0.42</span></label></div>
+    <fieldset><legend>Experimental shader expression (GLSL, not JavaScript eval)</legend>
+      <label for="shader-expr" class="small">Returns a vec3 color multiplier. Invalid expressions are rejected and the previous program remains active.</label>
+      <input id="shader-expr" type="text" value="vec3(0.10, 0.78, 1.0) * (0.65 + 0.35 * sin(t + uv.x * 2.0))" spellcheck="false">
+      <div class="row"><button id="compile" type="button">Compile expression</button><button id="reset-shader" type="button">Reset shader</button></div>
+    </fieldset>
+    <p class="control-title">Evidence log / ADAM</p><div id="feed" role="log" aria-live="polite"></div>
+    <p class="control-title">Observed artifacts (up to 12 displayed)</p><ol id="node-list"><li>No verified artifacts loaded.</li></ol>
+    <p class="small">DISCOVER → OBSERVE → NORMALIZE → CLASSIFY → VERIFY → FINGERPRINT → LOOKUP_REMEDY → APPLY_REMEDY → REVERIFY</p>
+  </section>
+  <footer class="footer"><p>Æ-M4 · TDOC-0036 · Cryptic-Heartbeat lineage · SHA-256 ≠ execution proof · No provider or device action without an authenticated adapter.</p><button id="toggle" type="button" aria-controls="controls" aria-expanded="true">HIDE CONTROLS</button></footer>
+</div>
+<script>if(new URLSearchParams(location.search).has('embed'))document.body.classList.add('singularity-embed');</script>
+<script type="module">
+const $=id=>document.getElementById(id);
+const shell=$('shell'),canvas=$('void-canvas'),overlay=$('graph-canvas'),graph=overlay.getContext('2d',{alpha:true});
+const registry=new Map(); // path -> verified metadata; data never retained
+const logLines=[];
+const state={entropy:.42,mode:'IDLE',pulse:0,audioEnergy:0,securityState:'LOCAL_ONLY',fps:0,quality:1,version:'4.0.0',observed:0,renderer:'INITIALIZING'};
+const DEFAULT_EXPR=$('shader-expr').value;
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+function log(text){const t=new Date().toLocaleTimeString();logLines.push(`[${t}] ${text}`);if(logLines.length>70)logLines.shift();$('feed').textContent=logLines.join('\n');$('feed').scrollTop=$('feed').scrollHeight;}
+function requireValid(entry){if(!entry||typeof entry!=='object')throw Error('Malformed source entry');const hash=entry.sha256||entry.hash;const p=entry.path||entry.name;if(typeof p!=='string'||p.length>600||typeof hash!=='string'||!/^[0-9a-f]{64}$/i.test(hash))throw Error('Invalid path/hash');if(p.split('/').includes('..')||p.includes('\u0000'))throw Error('Unsafe source path');return {id:hash.toLowerCase(),hash:hash.toLowerCase(),sha256:hash.toLowerCase(),name:String(entry.name||entry.label||p.split('/').pop()).slice(0,160),label:String(entry.label||entry.name||p.split('/').pop()).slice(0,160),path:p,bytes:Number.isFinite(entry.bytes)?entry.bytes:null,status:(entry.status==='HASH_VERIFIED_LOCAL'||entry.status==='HASH_VERIFIED_BROWSER')?entry.status:'UNVERIFIED_REFERENCE'};}
+function merge(entries){let fresh=0;for(const entry of entries){const e=requireValid(entry);if(!registry.has(e.path)||registry.get(e.path).sha256!==e.sha256){registry.set(e.path,e);fresh++;}}state.observed=registry.size;updateStats();renderGraph();window.dispatchEvent(new CustomEvent('singularity:catalog',{detail:{count:registry.size,fresh}}));return fresh;}
+async function hashFile(file){const buf=await file.arrayBuffer();const digest=await crypto.subtle.digest('SHA-256',buf);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function importLocalFiles(files){const list=[...files].filter(f=>f.size<=8*1024*1024).slice(0,1200);const imported=[];
+  for(const f of list){try{const sha=await hashFile(f);imported.push({name:f.name,path:f.webkitRelativePath||f.name,sha256:sha,bytes:f.size,status:'HASH_VERIFIED_BROWSER'});}catch(err){log(`BLOCKED hash ${f.name}: ${err.message}`);}}
+  const n=merge(imported);log(`VERIFY+FINGERPRINT: ${n} file identities hashed in-browser; ${files.length-list.length} excluded by per-import limit.`);return n;}
+async function loadManifest(manifestUrl='./absorbvoid/index.json'){
+  const url=new URL(manifestUrl,location.href);if(url.origin!==location.origin)throw Error('Manifest must be same-origin; export external sources locally first.');
+  const res=await fetch(url,{cache:'no-store',credentials:'same-origin'});if(!res.ok)throw Error(`Catalog HTTP ${res.status}`);const doc=await res.json();
+  const entries=Array.isArray(doc)?doc:Array.isArray(doc.entries)?doc.entries:null;if(!entries)throw Error('Expected catalog entries array');if(entries.length>12000)throw Error('Catalog exceeds 12,000 file limit');
+  const fresh=merge(entries);log(`DISCOVER → FINGERPRINT: catalog read (${entries.length} metadata records, ${fresh} new paths). Source bytes NOT independently rechecked by browser.`);return {total:entries.length,added:fresh};
+}
+function exportCatalog(){const entries=[...registry.values()].sort((a,b)=>a.path.localeCompare(b.path));const data=JSON.stringify({schema:'gaia.singularity.manifest.v1',version:state.version,exportedAt:new Date().toISOString(),entries,proof:'METADATA_ONLY_NOT_PRODUCTION_VERIFIED'},null,2);const url=URL.createObjectURL(new Blob([data],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='GAIA_SINGULARITY_AE-M4_CATALOG.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);log(`EXPORT: ${entries.length} metadata entries; no source bytes.`);}
+function updateStats(){$('count').textContent=String(registry.size);$('quality').textContent=`${Math.round(state.quality*100)}%`;const entries=[...registry.values()];$('source-state').textContent=entries.length?`${entries.filter(e=>e.status!=='UNVERIFIED_REFERENCE').length} HASHED / ${entries.length} SOURCES`:'NO SOURCE VERIFIED';$('node-list').replaceChildren(...(entries.length?entries.slice(0,12).map(e=>{const li=document.createElement('li');li.textContent=`${e.name} · ${e.status} · ${e.sha256.slice(0,12)}`;return li;}):[(()=>{const li=document.createElement('li');li.textContent='No verified artifacts loaded.';return li;})()]));}
+const VERT=`#version 300 es
+precision highp float;
+out vec2 vUV;
+void main(){vec2 p=vec2((gl_VertexID==1)?3.0:-1.0,(gl_VertexID==2)?3.0:-1.0);vUV=p*.5+.5;gl_Position=vec4(p,0.0,1.0);}`;
+function makeFragment(expr){return `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 outColor;
+uniform vec2 uResolution;
+uniform float uTime;
+uniform float uEntropy;
+uniform float uAudio;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0)),f.x),f.y);}
+float fbm(vec2 p){float a=.55,v=0.0;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.03+vec2(9.2,7.1);a*=.5;}return v;}
+void main(){vec2 uv=(gl_FragCoord.xy-.5*uResolution)/max(1.0,min(uResolution.x,uResolution.y));float t=uTime*.26;
+float r=length(uv),angle=atan(uv.y,uv.x);vec2 warp=uv*2.1+vec2(cos(angle*3.0-t),sin(angle*2.0+t))*.12*uEntropy;
+float dust=fbm(warp*2.2+vec2(t,-t*.6));float spiral=sin(angle*5.0-r*11.0+t*2.0)*.5+.5;
+float halo=exp(-r*(4.5+2.5*uEntropy));float arm=smoothstep(.42,.87,spiral*dust+.4*halo)*exp(-r*2.5);
+vec3 accent=(${expr});
+vec3 col=vec3(.004,.010,.027)+vec3(.05,.01,.10)*dust*halo+accent*(halo*.35+arm*.48)*(.6+.4*uEntropy)+vec3(1.,.75,.28)*pow(max(0.0,1.0-r*8.0),6.0)*(1.0+uAudio*.3);
+float stars=step(.9984,h(floor(gl_FragCoord.xy/3.0)));col+=vec3(.35,.62,.9)*stars*(.3+.7*h(floor(gl_FragCoord.xy/9.0)));
+outColor=vec4(clamp(col,0.0,1.0),1.0);}`;}
+let gl=null, program=null, uniforms=null, lastFrame=0, frameCount=0, measureStart=0, resizeQueued=true, still=true;
+let fallbackCtx=null, failedGPU=false;
+try{gl=canvas.getContext('webgl2',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'high-performance',preserveDrawingBuffer:false});}catch{}
+function makeShader(type,src){const sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)){const error=gl.getShaderInfoLog(sh)||'Unknown GLSL error';gl.deleteShader(sh);throw Error(error.slice(0,700));}return sh;}
+function compileExpression(expression){if(!gl)throw Error('WebGL2 unavailable');if(expression.length>200||!/^[a-zA-Z0-9_.+*\-/(),\s]+$/.test(expression))throw Error('Expression characters or length not permitted');
+  const names=expression.match(/[a-zA-Z_][a-zA-Z_0-9]*/g)||[];const allow=new Set(['vec2','vec3','vec4','uv','t','sin','cos','tan','abs','min','max','clamp','mix','smoothstep','length','dot','fract','pow','exp','log','sqrt','normalize','atan','floor','ceil','mod','x','y','z','w']);if(names.some(x=>!allow.has(x)))throw Error('Unknown expression identifier: '+names.find(x=>!allow.has(x)));
+  const vs=makeShader(gl.VERTEX_SHADER,VERT),fs=makeShader(gl.FRAGMENT_SHADER,makeFragment(expression));const candidate=gl.createProgram();gl.attachShader(candidate,vs);gl.attachShader(candidate,fs);gl.linkProgram(candidate);gl.deleteShader(vs);gl.deleteShader(fs);
+  if(!gl.getProgramParameter(candidate,gl.LINK_STATUS)){const err=gl.getProgramInfoLog(candidate);gl.deleteProgram(candidate);throw Error(err||'Shader linking failed');}
+  const previous=program;program=candidate;uniforms={resolution:gl.getUniformLocation(program,'uResolution'),time:gl.getUniformLocation(program,'uTime'),entropy:gl.getUniformLocation(program,'uEntropy'),audio:gl.getUniformLocation(program,'uAudio')};if(previous)gl.deleteProgram(previous);resizeQueued=true;log('VERIFY: GLSL expression compiled and linked on live WebGL2 context.');return true;}
+if(gl){try{compileExpression(DEFAULT_EXPR);state.renderer='WEBGL2';}catch(e){state.renderer='GPU_COMPILE_FAILED';log('BLOCKED GPU shader: '+e.message);}}else{failedGPU=true;fallbackCtx=canvas.getContext('2d');state.renderer=fallbackCtx?'CANVAS2D_FALLBACK':'NO_RENDERER';}
+$('render-state').textContent=state.renderer;shell.dataset.ready=state.renderer==='NO_RENDERER'?'blocked':'ready';
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();state.renderer='WEBGL_CONTEXT_LOST';program=null;log('BLOCKED: graphics context lost.');$('render-state').textContent=state.renderer;});
+canvas.addEventListener('webglcontextrestored',()=>{try{compileExpression(DEFAULT_EXPR);state.renderer='WEBGL2';log('REVERIFY: graphics context restored.');}catch(e){log('BLOCKED restoration: '+e.message);}resizeQueued=true;});
+const rObs=new ResizeObserver(()=>{resizeQueued=true;});rObs.observe(document.body);
+function resize(){const dpr=clamp(devicePixelRatio||1,1,2.25),w=Math.max(1,innerWidth),h=Math.max(1,innerHeight),pixels=(navigator.deviceMemory&&navigator.deviceMemory<=4)?2300000:6800000;
+  let effective=Math.min(dpr*state.quality,Math.sqrt(pixels/(w*h)));if(gl){const max=gl.getParameter(gl.MAX_VIEWPORT_DIMS);effective=Math.min(effective,max[0]/w,max[1]/h);}effective=Math.max(.5,effective);
+  const rw=Math.max(1,Math.floor(w*effective)),rh=Math.max(1,Math.floor(h*effective));if(canvas.width!==rw||canvas.height!==rh){canvas.width=rw;canvas.height=rh;}
+  const gdpr=Math.min(dpr,1.8),gw=Math.floor(w*gdpr),gh=Math.floor(h*gdpr);if(overlay.width!==gw||overlay.height!==gh){overlay.width=gw;overlay.height=gh;}
+  graph.setTransform(gdpr,0,0,gdpr,0,0);if(gl)gl.viewport(0,0,rw,rh);resizeQueued=false;return {w,h};}
+function coords(seed,idx,total,w,h,t){let a=((parseInt(seed.slice(0,7),16)>>>0)/0xfffffff)*Math.PI*2;const spread=Math.sqrt((idx+.7)/(total+1));let rad=spread*Math.min(w,h)*.49;let twist=(!reducedMotion)?t*.035*(.5+spread):0;a+=twist+spread*2.8;return {x:w*.5+Math.cos(a)*rad*1.3,y:h*.5+Math.sin(a)*rad*.76};}
+function renderGraph(t=0){if(!graph)return;const {w,h}={w:innerWidth,h:innerHeight};graph.clearRect(0,0,w,h);const arr=[...new Map([...registry.values()].map(v=>[v.sha256,v])).values()].slice(0,450);if(!arr.length)return;
+ const n=arr.length;const pos=arr.map((e,i)=>coords(e.sha256,i,n,w,h,t));
+ graph.lineWidth=.6;for(let i=1;i<n;i++){const p=pos[i],q=pos[(i-1)>>1];graph.beginPath();graph.moveTo(p.x,p.y);graph.lineTo(q.x,q.y);graph.strokeStyle='rgba(0,229,255,.10)';graph.stroke();}
+ for(let i=0;i<n;i++){const p=pos[i];graph.beginPath();graph.arc(p.x,p.y,n>250?1.5:2.2,0,Math.PI*2);graph.fillStyle=arr[i].status==='UNVERIFIED_REFERENCE'?'#f87171':'#34d399';graph.fill();}
+}
+let graphTicker=0;function draw(now){const delta=lastFrame?now-lastFrame:16.7;lastFrame=now;frameCount++;
+ if(!measureStart)measureStart=now;
+ if(now-measureStart>1800){state.fps=Math.round(frameCount*1000/(now-measureStart));frameCount=0;measureStart=now;
+   if(!reducedMotion&&state.fps<42)state.quality=clamp(state.quality*.86,.55,1.25);else if(state.fps>=57)state.quality=clamp(state.quality+0.06,.55,1.25);resizeQueued=true;$('fps').textContent=`${state.fps} FPS`;updateStats();}
+ if(resizeQueued)resize();
+ if(gl&&program&&state.renderer==='WEBGL2'){gl.useProgram(program);gl.uniform2f(uniforms.resolution,canvas.width,canvas.height);gl.uniform1f(uniforms.time,reducedMotion?0:now/1000);gl.uniform1f(uniforms.entropy,state.entropy);gl.uniform1f(uniforms.audio,state.audioEnergy);gl.drawArrays(gl.TRIANGLES,0,3);}
+ else if(fallbackCtx){const ctx=fallbackCtx,w=canvas.width,h=canvas.height;const grad=ctx.createRadialGradient(w*.5,h*.5,0,w*.5,h*.5,Math.max(w,h)*.65);grad.addColorStop(0,'#17204c');grad.addColorStop(.5,'#06061e');grad.addColorStop(1,'#02040a');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);}
+ if(!reducedMotion&&(graphTicker++%3===0))renderGraph(now/1000);
+ requestAnimationFrame(draw);}
+requestAnimationFrame(draw);
+$('entropy').addEventListener('input',e=>{state.entropy=Number(e.target.value);$('entropy-value').textContent=state.entropy.toFixed(2);});
+$('file-import').addEventListener('change',async e=>{try{await importLocalFiles(e.target.files);}catch(err){log('BLOCKED import: '+err.message);}e.target.value='';});
+$('dir-import').addEventListener('change',async e=>{try{await importLocalFiles(e.target.files);}catch(err){log('BLOCKED directory import: '+err.message);}e.target.value='';});
+$('load-manifest').addEventListener('click',async()=>{try{await loadManifest($('manifest-url').value);}catch(err){log('BLOCKED catalog: '+err.message);}});
+$('export-manifest').addEventListener('click',exportCatalog);
+$('compile').addEventListener('click',()=>{try{compileExpression($('shader-expr').value);$('render-state').textContent='WEBGL2 / EXPERIMENTAL';}catch(err){log('BLOCKED experiment: '+err.message);}});
+$('reset-shader').addEventListener('click',()=>{try{$('shader-expr').value=DEFAULT_EXPR;compileExpression(DEFAULT_EXPR);$('render-state').textContent='WEBGL2';}catch(err){log('BLOCKED reset: '+err.message);}});
+$('toggle').addEventListener('click',()=>{const hidden=!$('controls').hidden;$('controls').hidden=hidden;$('toggle').setAttribute('aria-expanded',String(!hidden));$('toggle').textContent=hidden?'SHOW CONTROLS':'HIDE CONTROLS';});
+const controller={state,get registry(){return [...registry.values()];},loadManifest,importLocalFiles,exportCatalog,merge};
+window.createSingularity=async ({manifestUrl,files,entries}={})=>{const result={renderer:state.renderer,added:0,sourceCount:registry.size};if(entries)result.added+=merge(entries);if(files)result.added+=await importLocalFiles(files);if(manifestUrl){const x=await loadManifest(manifestUrl);result.added+=x.added;}result.sourceCount=registry.size;return result;};
+window.loadFilesystemGalaxy=()=>loadManifest('./absorbvoid/index.json'); // compatibility with legacy AE-M3
+window.GAIASingularity=controller;
+log(`OBSERVE: ${state.renderer} initialized. ADAM source bytes require independent verification.`);
+loadManifest('./absorbvoid/index.json').catch(e=>log(`DISCOVER: no local catalog loaded (${e.message}). Import verified files to continue.`));
+</script>
+</body>
+</html>
