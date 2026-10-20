@@ -1,27 +1,44 @@
-# ADAM / Cryptic Showcase Promotion Gate — 2026-10-20
+# Cryptic / Polyglot Quine OS — ADAM staging gates
 
-## Target routing
-- \`https://crypticnews.org/\` → public showcase after promotion.
-- \`https://crypticnews.org/os/\` → preserved DragonRider/WebTV OS via fetch(request) to existing custom-domain origin Worker.
-- \`https://crypticnews.org/nexus/\` → independent staging showcase path.
-- \`https://api.crypticnews.org\` and \`https://bus.crypticnews.org\` stay on their existing Cloudflare workers.
+## Canonical public product direction (2026-10-20)
+**Primary OS:** browser-rendered Polyglot Quine HyperTerminal with floating WebGL torus knot, user-permissioned microphone FFT, and optional authenticated Gemini CLI that can propose bounded scene mutations.
 
-## Prohibited claims and content
-Never infer legal clearance, model training, TPM attestation, real remote computation, or AI model connectivity from a rendered badge or animation. Do not expose Nexus Enclave, sparsebundles, private repo content, passwords, credentials, identifiers, or device addresses. Do not advertise deployed features that have no observed proof. Browser client connections require explicit user consent; no visitor joins a compute pool automatically.
+**Landing gate:** public entry confirmation plus server-validated, operator-issued key. Key must be configured as a Cloudflare Worker secret; no key is embedded in the public JS. The key is NOT authorization for remote hardware or privileged CLI tools.
 
-## Gates (evidence receipts needed)
-DISCOVER → OBSERVE → NORMALIZE → CLASSIFY → VERIFY → FINGERPRINT → LOOKUP_REMEDY → APPLY_REMEDY → REVERIFY.
-1. Browser locally renders canvas and capability check, with reduced-motion behavior.
-2. \`/nexus/\` staging returns 200 and response header \`x-cryptic-route: showcase-v1\`.
-3. \`/os/\` still serves original deployed OS, including functional controls and navigability.
-4. Existing api/bus custom domains unchanged and accessible.
-5. Security review: no secrets/public private data in frontend or diff; CSP and headers tested.
-6. Legal review: source/asset licenses, trademark presentation, third-party model permissions and accessibility.
-7. Operational review: monitoring, retry, rollback and maintenance owner.
-8. Only after gates pass promote root \`crypticnews.org/*\` route. Failed gates remain BLOCKED, not PASS.
+**Preserved history:** \`feature/hyperterminal-polyglot-quine-os-v17\`, \`feature/hyperterminal-singularity-ae-m5-tdoc-0037\`, and the public legacy Cryptic terminal. This staging shell retains their browser-safe commands and deny-by-default adapter contract. It is not a mathematical fixed-point quine.
+
+**No DragonRider hero.** Prior DragonRider experience stays only as a legacy archival layer until an independently reviewed migration. Root domain's old Worker has not been modified in staging.
+
+## Current Cloudflare paths
+- \`crypticnews.org/nexus/*\` — staging edge Worker \`cryptic-showcase-router\`.
+- \`crypticnews.org/\` — existing DragonRider origin until production promotion; no root route changed.
+- \`api.crypticnews.org\` and \`bus.crypticnews.org\` — existing independent edge Workers.
+- Future root promotion is a separate, reviewed action, only after this document's gates pass.
+
+## Required Cloudflare secrets (not yet provisioned)
+- \`CRYPTIC_GATE_KEY\`: operator-issued random public-use entry code, at least 16 characters.
+- \`CRYPTIC_GATE_SIGNING_KEY\`: separate random secret, at least 32 characters; signs HttpOnly session cookies.
+- \`GEMINI_BRIDGE_URL\`: operator-controlled HTTPS endpoint to a trusted CLI bridge (the \`/v1/gemini\` route).
+- \`GEMINI_BRIDGE_TOKEN\`: dedicated authorization token shared only by Worker and CLI bridge.
+Secrets must be installed in Cloudflare's encrypted Worker bindings, NOT committed to GitHub.
+Implement rate limiting for the login and model endpoints at the Cloudflare edge before public promotion.
+
+## Native Gemini CLI
+\`runtime/gemini-cli-scene-bridge.mjs\` is a real Node bridge that invokes an installed and authenticated \`gemini --prompt ... --output-format json --approval-mode plan\` on a dedicated low-privilege host. It binds to loopback. Host it behind a hardened Cloudflare Tunnel with appropriate origin host header and access policies, and verify connectivity in both directions. Never use \`--yolo\`; disable arbitrary tool access through the CLI Policy Engine and OS sandboxing. Model output may only change \`hue\`, \`speed\`, \`energy\`; input/output bounded and receipts returned. No model is bundled in the Worker.
+
+## Evidence promotion
+DISCOVER → OBSERVE → NORMALIZE → CLASSIFY → VERIFY → FINGERPRINT → LOOKUP_REMEDY → APPLY_REMEDY → REVERIFY
+
+- [ ] Independent HTTP GET \`/nexus/\` = 200, content-type HTML, hashed CSP, \`x-cryptic-route\` header.
+- [ ] No pre-key terminal access; POST missing/incorrect key rejected; valid issued key receives HttpOnly session.
+- [ ] Browser WebGL knot visible, floats, responds to scene controls on real mobile/desktop.
+- [ ] Microphone access only after clicking the button, recording stops on revoke/navigation.
+- [ ] Real Gemini CLI bridge online; live prompt returns model response and verified constrained scene mutation receipt.
+- [ ] Audit GitHub changes, source / licenses, access rules, accessibility, privacy and operational resilience.
+- [ ] GitHub Actions jobs ran and passed (not merely configured).
+- [ ] Root route migration + rollback tested, root origin preserved, public privacy messaging accurate.
+
+Failure at any gate means NOT VERIFIED. No simulated pass badges or unverifiable legal-compliance claims.
 
 ## Rollback
-Remove only the route pointing to \`cryptic-showcase-router\` (or change it back to staging-only). Do not delete or modify \`dragonrideraios-webtvos\` or the api/bus worker custom domains.
-
-## Source of truth
-\`cloudflare/showcase-router.js\` contains the public-edge router. \`docs/ADAM-SHOWCASE-GATES.md\` contains promotion policy. GitHub PR review is required before treating the resulting deployment as production-verified.
+Delete only the staging route \`crypticnews.org/nexus/*\` targeting \`cryptic-showcase-router\`. This leaves the existing root \`dragonrideraios-webtvos\` Custom Domain Worker, api gateway, and bus unchanged.
