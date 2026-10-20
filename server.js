@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const PUBLIC_ROOTS = new Set(['ui','core','modules','interfaces','magic','terminal','living-ledger','security']);
+const PUBLIC_ROOTS = new Set(['ui','core','polyglot','modules','interfaces','magic','terminal','living-ledger','security']);
 const PUBLIC_FILES = new Set([
   'index.html','panel.html','manifest.webmanifest','metadata.json','robots.txt','sw.js','SECURITY.md',
   'cryptic-runtime.js','cryptic-runtime.v07.js','cryptic-bus.js','cryptic-bus.v07.js','cryptic-console.js',
