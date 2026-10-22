@@ -10,11 +10,29 @@ test('public entry has restrictive CSP, no external script dependency, and keybo
   assert.match(html, /script-src 'self'/);
   assert.match(html, /object-src 'none'/);
   assert.match(html, /base-uri 'self'/);
-  assert.match(html, /href="#snapGrid">Skip to command dashboard/);
+  assert.match(html, /href="#terminal">Skip to the terminal/);
   const scriptSources = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)/gi)].map(m => m[1]);
   assert.ok(scriptSources.every(src => !/^https?:/i.test(src)), 'boot scripts must be same-origin');
   const csp = html.match(/Content-Security-Policy[^>]*content="([^"]+)"/i)?.[1] || '';
   assert.ok(!/localhost:\*/i.test(csp), 'local connections must not allow every port');
+});
+
+
+test('public root is Polyglot Quine OS and legacy remains separate', async () => {
+  const html = await read('index.html');
+  const publicJs = await read('polyglot-public.js');
+  const css = await read('polyglot-public.css');
+  const legacy = await read('legacy.html');
+  assert.match(html,/HYPERTERMINAL POLYGLOT QUINE OS/);
+  assert.match(html,/id="terminal"/);
+  assert.match(html,/polyglot-public\.js/);
+  assert.match(html,/HyperPolyGlot-SOS-/);
+  assert.doesNotMatch(html,/id="snapGrid"/);
+  assert.match(legacy,/id="snapGrid"/);
+  assert.match(publicJs,/crypto\.subtle\.digest\('SHA-256'/);
+  assert.match(publicJs,/function exportQuine/);
+  assert.match(publicJs,/NOT CONFIGURED|not configured/);
+  assert.match(css,/\.orbit-wrap/);
 });
 
 test('published response headers and crawler policy make boundaries explicit', async () => {
@@ -30,8 +48,8 @@ test('published response headers and crawler policy make boundaries explicit', a
   assert.match(policy.notice, /not an authentication protocol/i);
 });
 
-test('dashboard structure, panel controls, AXS, and identity modules are wired in source', async () => {
-  const html = await read('index.html');
+test('legacy dashboard structure, panel controls, AXS, and identity modules are wired in source', async () => {
+  const html = await read('legacy.html');
   const js = await read('ui/dashboard.js');
   const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map(m => m[1]));
   for (const id of ['visualizerLayer','dashboardFx','snapGrid','overlayLayer','guardianLayer']) assert.ok(ids.has(id), 'missing dashboard host '+id);

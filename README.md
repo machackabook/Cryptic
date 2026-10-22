@@ -1,3 +1,5 @@
+> **PUBLIC HOME UPDATE · 2026-10-21** — The `main` branch root `index.html` now opens the **HyperTerminal Polyglot Quine OS public browser shell**, not the former v0.9.x modular dashboard. The previous dashboard is retained at [legacy.html](legacy.html). This no-build, independently executable public shell provides honest browser capability probes, SHA-256, local ledger receipts, speech synthesis where supported, and a self-exporting HTML descendant. The authoritative *full* React/Vite application remains [HyperPolyGlot-SOS-](https://github.com/machackabook/HyperPolyGlot-SOS-), and is **not** represented as compiled or deployed by this static shell. Native device operations, AI inference, and private bridges require separately authenticated adapters. GitHub Pages should use `main` → `/(root)` (standard branch publishing, no Jekyll), and Cloudflare's `crypticnews.org` apex remains a separately managed Worker custom domain until a verified migration.
+
 # Cryptic
 
 **Public Cryptic landing page:** [Open Cryptic landing page](https://machackabook.github.io/Cryptic/)

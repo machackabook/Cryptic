@@ -1,21 +1,12 @@
 {
-  "name": "Cryptic HyperTerminal Sovereign OS",
-  "short_name": "Cryptic",
+  "name": "Cryptic News · HyperTerminal Polyglot Quine OS",
+  "short_name": "Cryptic Quine",
+  "description": "Standalone public Polyglot browser shell with local cryptographic proof and artifact export.",
   "start_url": "./",
-  "display": "standalone",
-  "background_color": "#03050a",
-  "theme_color": "#03050a",
-  "description": "Portable local-first command surface with scoped runtime request tokens.",
-  "icons": [],
-  "version": "0.7.0",
   "scope": "./",
-  "protocol_handlers": [
-    {
-      "protocol": "web+cryptic",
-      "url": "./terminal/?cmd=%s"
-    }
-  ],
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  }
+  "display": "standalone",
+  "background_color": "#020610",
+  "theme_color": "#020610",
+  "icons": [],
+  "version": "1.0.0"
 }
