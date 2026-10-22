@@ -1,23 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
-<meta name="referrer" content="no-referrer">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="theme-color" content="#020610">
-<meta name="description" content="Cryptic News — canonical HyperTerminal Polyglot Quine OS.">
-<meta http-equiv="refresh" content="0; url=https://crypticnews.org/">
-<link rel="canonical" href="https://crypticnews.org/">
-<title>CRYPTIC NEWS // HYPERTERMINAL POLYGLOT QUINE OS</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#020610;color:#daf8ff;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:1rem}main{max-width:650px}h1{font-size:clamp(28px,7vw,64px);line-height:1.05;letter-spacing:-.06em}a{color:#00e5ff}small{color:#8eafc6}a:focus-visible{outline:3px solid #ffcc00;outline-offset:5px}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>Cryptic News | HyperTerminal Polyglot Quine OS</title>
+  <meta name="description" content="The actual AI Studio HyperPolyGlot React/Three.js application, compiled from the live main branch with its torus knot and terminal.">
+  <meta name="theme-color" content="#02050b">
+  <link rel="canonical" href="https://crypticnews.org/">
+  <link rel="preconnect" href="https://esm.sh" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script>
+    // Retire cached versions of the old Cryptic landing shell without deleting user data.
+    if ('serviceWorker' in navigator && /(^|\.)crypticnews\.org$/.test(location.hostname)) {
+      navigator.serviceWorker.getRegistrations().then(regs =>
+        Promise.all(regs.map(reg => reg.unregister()))
+      ).catch(error => console.warn('Service worker retirement failed:', error));
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(keys
+          .filter(key => key.startsWith('cryptic-public-'))
+          .map(key => caches.delete(key))
+        )).catch(error => console.warn('Legacy page cache cleanup failed:', error));
+      }
+    }
+  </script>
+  <script type="importmap">
+  {"imports":{"react":"https://esm.sh/react@19.0.1","react/jsx-runtime":"https://esm.sh/react@19.0.1/jsx-runtime","react-dom/client":"https://esm.sh/react-dom@19.0.1/client?external=react"}}
+  </script>
+  <style>html,body,#root{margin:0;width:100%;height:100%;overflow:hidden;background:#02050b;color:#e2f1ff}body{font-family:"Fira Code","JetBrains Mono",monospace}#runtime-error{display:none;color:#ffb4b4;background:#170809;max-width:740px;padding:18px;position:absolute;inset:25px auto auto 25px;z-index:1000;white-space:pre-wrap}#runtime-error:focus{outline:2px solid #00e5ff}</style>
 </head>
-<body><main>
-<p>⨋ &nbsp; CRYPTIC NEWS · THE NEXUS GENERATION</p>
-<h1>HYPERTERMINAL<br>POLYGLOT QUINE OS</h1>
-<p>The canonical application now lives at <a href="https://crypticnews.org/">crypticnews.org</a>, keeping this public GitHub Pages entry synchronized with the same production origin.</p>
-<p><a href="https://github.com/machackabook/HyperPolyGlot-SOS-">AI Studio source repository ↗</a></p>
-<small>Public redirect only. Local/native device access requires explicit authorization.</small>
-</main></body>
+<body>
+  <div id="root"></div><div id="runtime-error" role="alert" tabindex="-1"></div>
+  <script type="module">
+    const SOURCE="https://esm.sh/gh/machackabook/HyperPolyGlot-SOS-@main/src/App.tsx?deps=react@19.0.1,three@0.186.1&external=react";
+    Promise.all([import("react"),import("react-dom/client"),import(SOURCE)]).then(([React,DOM,Module])=>{
+      if(typeof Module.default!=="function")throw new Error("Current GitHub source has no usable application entrypoint.");
+      DOM.createRoot(document.getElementById("root")).render(React.createElement(Module.default));
+      document.documentElement.dataset.source="machackabook/HyperPolyGlot-SOS-:main";
+    }).catch(error=>{
+      const alert=document.getElementById("runtime-error");
+      alert.textContent="Unable to load the real HyperPolyGlot application from GitHub source. No substitute UI will be shown.\n"+String(error?.message||error);
+      alert.style.display="block";alert.focus();
+      console.error("HYPERPOLYGLOT_REAL_SOURCE_LOAD_FAILED",error);
+    });
+  </script>
+</body>
 </html>
