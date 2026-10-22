@@ -10,7 +10,7 @@ test('public entry has restrictive CSP, no external script dependency, and keybo
   assert.match(html, /script-src 'self'/);
   assert.match(html, /object-src 'none'/);
   assert.match(html, /base-uri 'self'/);
-  assert.match(html, /href="#terminal">Skip to the terminal/);
+  assert.match(html, /https:\/\/crypticnews\.org\//);
   const scriptSources = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)/gi)].map(m => m[1]);
   assert.ok(scriptSources.every(src => !/^https?:/i.test(src)), 'boot scripts must be same-origin');
   const csp = html.match(/Content-Security-Policy[^>]*content="([^"]+)"/i)?.[1] || '';
@@ -20,12 +20,14 @@ test('public entry has restrictive CSP, no external script dependency, and keybo
 
 test('public root is Polyglot Quine OS and legacy remains separate', async () => {
   const html = await read('index.html');
+  const archived = await read('polyglot-public.html');
   const publicJs = await read('polyglot-public.js');
   const css = await read('polyglot-public.css');
   const legacy = await read('legacy.html');
   assert.match(html,/HYPERTERMINAL POLYGLOT QUINE OS/);
-  assert.match(html,/id="terminal"/);
-  assert.match(html,/polyglot-public\.js/);
+  assert.match(html,/http-equiv="refresh" content="0; url=https:\/\/crypticnews\.org\//);
+  assert.match(archived,/id="terminal"/);
+  assert.match(archived,/polyglot-public\.js/);
   assert.match(html,/HyperPolyGlot-SOS-/);
   assert.doesNotMatch(html,/id="snapGrid"/);
   assert.match(legacy,/id="snapGrid"/);
