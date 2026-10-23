@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "crypticnews-public-gateway",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-10-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "assets": {
+    "directory": "../../dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+}
