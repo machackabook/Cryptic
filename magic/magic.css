@@ -51,3 +51,19 @@ body.ui-clear .corner-module,body.ui-clear .magic-browser,body.ui-clear #systemS
 body.ui-clear .master-header{background:transparent;border-color:transparent;backdrop-filter:none}body.ui-clear .brand b,body.ui-clear .brand small,body.ui-clear .master-nav{opacity:0;pointer-events:none}
 body.ui-clear .root-node{background:rgba(0,5,12,.22);border-color:rgba(85,244,255,.15)}
 @media(max-width:820px){.brand small{display:none}.magic-browser{width:94vw;height:72vh}.browser-bar{grid-template-columns:auto 1fr}.browser-actions{grid-column:1/3;position:absolute;top:42px;left:7px;right:7px;justify-content:center;z-index:3}.magic-stage{inset:74px 0 0}body.dash-active .corner-module{width:43vw;height:22vh}.master-nav .link{display:none}}
+
+/* TDOC-12014: mobile-selectable tabs and verifiable document surface. */
+.browser-bar{grid-template-columns:auto minmax(90px,1fr) minmax(0,auto)}
+.browser-actions{overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;max-width:min(52vw,680px);white-space:nowrap;scrollbar-width:thin;scrollbar-color:var(--cyan) transparent;padding:3px 0}
+.browser-actions button{flex:0 0 auto;white-space:nowrap}
+.browser-actions button.is-active,.browser-actions button[aria-pressed="true"]{color:#00ffff;border-color:#00ffff;background:rgba(0,255,255,.12)}
+.magic-route-error{padding:24px;color:#ffd369;background:rgba(5,9,20,.95);font-size:13px;line-height:1.6}
+.rules-surface{overflow:auto;display:block;background:rgba(4,9,20,.92)}
+.rules-content{max-width:980px;margin:0 auto;padding:4px 10px;color:#e0e7ff}
+.rules-content h1{color:#00ffff;font-size:clamp(17px,2.7vw,27px)}
+.rules-content p{font-size:12px;line-height:1.6}
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:15px 0}
+.rules-grid a{display:flex;flex-direction:column;gap:6px;border:1px solid rgba(0,255,255,.22);border-radius:8px;padding:12px;color:#00ffff;background:#14143d;text-decoration:none;font-size:11px;min-height:88px}
+.rules-grid a span{color:#94a3b8;font-size:10px}
+.rule-callout{padding:12px;border-left:3px solid #ffcc00;background:#14143d}
+@media(max-width:820px){.browser-bar{height:88px}.browser-actions{position:absolute;top:43px;left:7px;right:7px;max-width:none;justify-content:flex-start;padding:4px 0 8px}.magic-stage{inset:88px 0 0}.rules-grid{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}}
