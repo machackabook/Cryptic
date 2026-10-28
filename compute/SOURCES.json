@@ -1,0 +1,53 @@
+{
+  "version": "v6",
+  "project": "A Living System / COMPUTƏ",
+  "source_reference": "https://chatgpt.com/share/6ae27b7a-ec38-83ea-bc7c-93c5d0d07daa?ogimg=plain",
+  "source_reference_status": "supplied_not_verified",
+  "request_id": "ac6f48b0-201e-0061-252c-67f726000000",
+  "semantic_aliases": [
+    "computə",
+    "CHOP",
+    "DUC",
+    "ADAM",
+    "TDOC",
+    "407links"
+  ],
+  "artifact_classes": [
+    "projects",
+    "repositories",
+    "models",
+    "datasets",
+    "application-state",
+    "os-config",
+    "packages",
+    "services",
+    "dotfiles",
+    "mcp-config",
+    "router-config"
+  ],
+  "storage_roles": [
+    "primary",
+    "replica",
+    "cache",
+    "archive",
+    "offline"
+  ],
+  "connectors_requested": [
+    "GitHub",
+    "Cloudflare",
+    "alphaXiv",
+    "Annotations Extensibility",
+    "Codex Tasks",
+    "Vercel",
+    "Adobe",
+    "WebMCP",
+    "GAIA Nexus Memory Bridge",
+    "Google Drive",
+    "Plugin Creator",
+    "Hugging Face",
+    "Wolfram",
+    "Canva"
+  ],
+  "visibility": "public-safe-metadata-only",
+  "automatic_execution": false
+}
