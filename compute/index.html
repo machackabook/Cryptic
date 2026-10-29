@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COMPUTƏ v6 | Cryptic Living System</title><meta name="theme-color" content="#090d18">
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif;background:#090d18;color:#e9f2ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#24183e,#090d18 70%)}
+header,main,footer{max-width:1100px;margin:auto;padding:22px}header{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+a{color:#8deaff}nav a{margin-left:14px}h1{font-size:clamp(2.2rem,7vw,5rem);margin:24px 0 0;color:#d6b7ff}h2{font-size:1.2rem}p{line-height:1.6;color:#bdcbe2}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.card{padding:20px;background:#131c30;border:1px solid #384967;border-radius:16px}
+.card strong{color:#93e7fa}.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.flow span{padding:10px;border:1px solid #7e65ac;border-radius:9px;background:#1b1b38}
+.badge{display:inline-block;padding:5px 10px;background:#46331c;color:#ffdf95;border-radius:999px;font-size:.8rem}
+button{background:#322450;color:#fff;border:1px solid #b39aff;padding:10px;border-radius:9px;cursor:pointer}
+code{word-break:break-word}footer{color:#99a6bb;font-size:.85rem}
+</style></head><body>
+<header><strong>CRYPTIC / A LIVING SYSTEM</strong><nav><a href="../">HyperTerminal</a><a href="https://github.com/machackabook/Cryptic/tree/main/compute">Source</a></nav></header>
+<main>
+<span class="badge">PUBLIC REFERENCE MODULE · v6 · NOT LIVE AGENT CONTROL</span>
+<h1>COMPUTƏ <span style="color:#72dbea">◈</span></h1>
+<p>Osmosis without replacement: the Cryptic HyperTerminal remains intact while COMPUTƏ introduces a shared verification, arbitration and memory foundation.</p>
+<h2>Verified computation pipeline</h2>
+<div class="flow"><span>Scoped sources</span>→<span>CHOP · SHA-256</span>→<span>DUC · Reconcile</span>→<span>TDOC · Ledger</span>→<span>ADAM · Review</span></div>
+<h2>Living system domains</h2>
+<div class="grid">
+<div class="card"><strong>Source Fabric</strong><p>Projects, repositories, models, datasets, application state, OS configuration, packages, services, dotfiles, MCP and router configuration. Private data stays private.</p></div>
+<div class="card"><strong>Memory Fabric</strong><p>Primary, replica, cache, archive and offline roles. These are defined contracts; remote synchronization is not yet active.</p></div>
+<div class="card"><strong>Arbitration & Semantic Control</strong><p>RED / YELLOW / GREEN decisions and typed, permission-scoped actions. No automatic remote command execution.</p></div>
+<div class="card"><strong>Evidence Ledger</strong><p>Local SHA-256 manifest receipts and explicit checkpoints. Independent anchors and deployment verification remain future gates.</p></div>
+<div class="card"><strong>Zenith / Omnibrowser</strong><p>The existing Cryptic experience remains the primary UI. COMPUTƏ is an integrated public reference surface, not a replacement.</p></div>
+<div class="card"><strong>Growth / Osmosis</strong><p>New capabilities join through reviewed adapters, tested modules, provenance records and explicit publication gates.</p></div>
+</div>
+<h2>Self-reference & provenance</h2>
+<p><a href="https://chatgpt.com/share/6ae27b7a-ec38-83ea-bc7c-93c5d0d07daa?ogimg=plain" rel="noopener noreferrer" target="_blank">Supplied design conversation</a> · <a href="SOURCES.json">Source registry</a> · <a href="README.md">Architecture specification</a></p>
+<p><button id="hash">Verify this page's rendered HTML source digest</button> <code id="digest" aria-live="polite"></code></p>
+<p>This computes a local digest of the downloaded page, not an independently anchored proof of deployment integrity.</p>
+</main><footer>CRYPTIC / COMPUTƏ · Evidence before promotion · Existing public features preserved.</footer>
+<script>document.getElementById('hash').addEventListener('click',async()=>{const out=document.getElementById('digest');try{const bytes=new TextEncoder().encode(document.documentElement.outerHTML);const hash=await crypto.subtle.digest('SHA-256',bytes);out.textContent=Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('')}catch(e){out.textContent='Digest unavailable: '+e.message}});</script>
+</body></html>
