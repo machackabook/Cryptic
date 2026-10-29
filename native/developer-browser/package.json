@@ -1,0 +1,7 @@
+{
+  "name": "nexus-developer-browser-broker",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test broker.test.mjs", "start": "node broker.mjs", "test:browser": "node browser-smoke.mjs"},
+  "dependencies": {"playwright-core": "1.62.1"}
+}
