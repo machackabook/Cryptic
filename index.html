@@ -1,51 +1,45 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  <title>Cryptic News | HyperTerminal Polyglot Quine OS</title>
-  <meta name="description" content="The actual AI Studio HyperPolyGlot React/Three.js application, compiled from the live main branch with its torus knot and terminal.">
-  <meta name="theme-color" content="#02050b">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stable, accessible public entry points for Cryptic.">
+  <meta name="theme-color" content="#101827">
+  <title>Cryptic — Public Access</title>
   <link rel="canonical" href="https://crypticnews.org/">
-  <link rel="preconnect" href="https://esm.sh" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <script>
-    // Retire cached versions of the old Cryptic landing shell without deleting user data.
-    if ('serviceWorker' in navigator && /(^|\.)crypticnews\.org$/.test(location.hostname)) {
-      navigator.serviceWorker.getRegistrations().then(regs =>
-        Promise.all(regs.map(reg => reg.unregister()))
-      ).catch(error => console.warn('Service worker retirement failed:', error));
-      if ('caches' in window) {
-        caches.keys().then(keys => Promise.all(keys
-          .filter(key => key.startsWith('cryptic-public-'))
-          .map(key => caches.delete(key))
-        )).catch(error => console.warn('Legacy page cache cleanup failed:', error));
-      }
-    }
-  </script>
-  <script type="importmap">
-  {"imports":{"react":"https://esm.sh/react@19.0.1","react/jsx-runtime":"https://esm.sh/react@19.0.1/jsx-runtime","react-dom/client":"https://esm.sh/react-dom@19.0.1/client?external=react"}}
-  </script>
-  <style>html,body,#root{margin:0;width:100%;height:100%;overflow:hidden;background:#02050b;color:#e2f1ff}body{font-family:"Fira Code","JetBrains Mono",monospace}#runtime-error{display:none;color:#ffb4b4;background:#170809;max-width:740px;padding:18px;position:absolute;inset:25px auto auto 25px;z-index:1000;white-space:pre-wrap}#runtime-error:focus{outline:2px solid #00e5ff}</style>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101827; color: #f4f7fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.6; }
+    main { width: min(48rem, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0; }
+    .skip-link { position: absolute; left: 1rem; top: 1rem; transform: translateY(-200%); padding: .65rem 1rem; background: #fff; color: #111; }
+    .skip-link:focus { transform: none; }
+    h1 { line-height: 1.15; font-size: clamp(2rem, 6vw, 3.4rem); }
+    .notice { border: 1px solid #8294ad; border-radius: .8rem; padding: 1rem 1.2rem; background: #18263a; }
+    nav { display: grid; gap: .85rem; margin-top: 1.5rem; }
+    nav a { display: block; border: 1px solid #93c5fd; border-radius: .65rem; padding: .9rem 1rem; color: #bfdbfe; text-decoration: underline; text-underline-offset: .2em; overflow-wrap: anywhere; }
+    a:focus-visible { outline: 3px solid #facc15; outline-offset: 4px; }
+    footer { margin-top: 2rem; color: #cbd5e1; font-size: .9rem; }
+  </style>
 </head>
 <body>
-  <a href="./compute/" aria-label="Open COMPUTƏ Living System" style="position:fixed;right:18px;bottom:18px;z-index:99999;display:inline-flex;align-items:center;gap:8px;background:#1b1533;color:#e8d5ff;border:1px solid #a78bfa;padding:11px 16px;border-radius:999px;font:700 13px system-ui;text-decoration:none;box-shadow:0 5px 24px #0009">◈ COMPUTƏ · Living System</a>
-  <div id="root"></div><div id="runtime-error" role="alert" tabindex="-1"></div>
-  <script type="module">
-    const SOURCE="https://esm.sh/gh/machackabook/HyperPolyGlot-SOS-@main/src/App.tsx?deps=react@19.0.1,three@0.186.1&external=react";
-    Promise.all([import("react"),import("react-dom/client"),import(SOURCE)]).then(([React,DOM,Module])=>{
-      if(typeof Module.default!=="function")throw new Error("Current GitHub source has no usable application entrypoint.");
-      DOM.createRoot(document.getElementById("root")).render(React.createElement(Module.default));
-      document.documentElement.dataset.source="machackabook/HyperPolyGlot-SOS-:main";
-    }).catch(error=>{
-      const alert=document.getElementById("runtime-error");
-      alert.textContent="Unable to load the real HyperPolyGlot application from GitHub source. No substitute UI will be shown.\n"+String(error?.message||error);
-      alert.style.display="block";alert.focus();
-      console.error("HYPERPOLYGLOT_REAL_SOURCE_LOAD_FAILED",error);
-    });
-  </script>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main" tabindex="-1">
+    <p>CRYPTIC · PUBLIC ACCESS</p>
+    <h1>Cryptic public access</h1>
+    <section class="notice" aria-labelledby="status-title">
+      <h2 id="status-title">Stable entry page</h2>
+      <p>This GitHub Pages entry is a static navigation surface. The interactive HyperTerminal bundle is not provided by this page revision. This notice avoids presenting an unverified runtime as operational.</p>
+    </section>
+    <nav aria-label="Public destinations">
+      <a href="./compute/">Open COMPUTƏ reference</a>
+      <a href="https://crypticnews.org/">Open the separately hosted Cryptic site (availability not verified here)</a>
+      <a href="https://github.com/machackabook/HyperPolyGlot-SOS-/pull/6">Review the compiled HyperTerminal fix proposal</a>
+      <a href="https://github.com/machackabook/Cryptic">Browse Cryptic source</a>
+    </nav>
+    <footer>
+      <p>Static access fallback. No authentication, private bridge, device inventory, memory content, or remote execution is exposed by this page.</p>
+    </footer>
+  </main>
 </body>
 </html>
