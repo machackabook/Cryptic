@@ -1,0 +1,26 @@
+name: Public entry contract
+on:
+  pull_request:
+    paths:
+      - index.html
+      - tools/check-public-entry.mjs
+      - .github/workflows/public-entry-contract.yml
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - tools/check-public-entry.mjs
+      - .github/workflows/public-entry-contract.yml
+permissions:
+  contents: read
+concurrency:
+  group: public-entry-contract-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Verify accessible static entry
+        run: node tools/check-public-entry.mjs
