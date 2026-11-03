@@ -1,10 +1,8 @@
-> **CANONICAL ENTRY SYNCHRONIZATION — 2026-10-22.** This repository's root homepage is a permanent public link to **https://crypticnews.org/** so it cannot drift from the current production HyperTerminal Polyglot Quine OS. The real latest AI Studio TSX application is maintained and built from [HyperPolyGlot-SOS-](https://github.com/machackabook/HyperPolyGlot-SOS-). The prior static public shell is retained at [polyglot-public.html](polyglot-public.html); the original modular dashboard remains at [legacy.html](legacy.html). **A redirect is not evidence of a completed Vite deployment**. The Cloudflare GitHub installation must be reauthorized and the real app built/published before claiming current AI Studio production. Source deployment specification: [HyperPolyGlot canonical deploy](https://github.com/machackabook/HyperPolyGlot-SOS-/blob/main/docs/CRYPTICNEWS-CANONICAL-DEPLOY.md).
-
-> **PUBLIC HOME UPDATE · 2026-10-21** — The `main` branch root `index.html` now opens the **HyperTerminal Polyglot Quine OS public browser shell**, not the former v0.9.x modular dashboard. The previous dashboard is retained at [legacy.html](legacy.html). This no-build, independently executable public shell provides honest browser capability probes, SHA-256, local ledger receipts, speech synthesis where supported, and a self-exporting HTML descendant. The authoritative *full* React/Vite application remains [HyperPolyGlot-SOS-](https://github.com/machackabook/HyperPolyGlot-SOS-), and is **not** represented as compiled or deployed by this static shell. Native device operations, AI inference, and private bridges require separately authenticated adapters. GitHub Pages should use `main` → `/(root)` (standard branch publishing, no Jekyll), and Cloudflare's `crypticnews.org` apex remains a separately managed Worker custom domain until a verified migration.
+> **CANONICAL PUBLIC ENTRY — 2026-11-03.** The production apex and www homepage on `crypticnews.org` now route through the Cloudflare Worker `cryptic-welcome-frontdoor` to the canonical [Welcome Sentience invitation](https://machackabook.github.io/Welcome-Sentience/). The exact-root route is isolated: existing application paths and API routes are left in place. The GitHub Pages fallback at [machackabook.github.io/Cryptic](https://machackabook.github.io/Cryptic/) points to the same invitation. The prior HyperPolyGlot browser application is preserved at [app.html](app.html); the existing protected `/nexus/` route remains separate. This entry-point change does not claim that visitor OAuth accounts or owner-level multi-identity authorization are complete.
 
 # Cryptic
 
-**Public Cryptic landing page:** [Open Cryptic landing page](https://machackabook.github.io/Cryptic/)
+**Public Cryptic landing page:** [Open Cryptic News](https://crypticnews.org/) · [Welcome Sentience source](https://github.com/machackabook/Welcome-Sentience)
 
 
 **The HyperTerminal Sovereign Operating System** — first public promoted surface for the Cryptic / Nexus / GAIA lineage.
@@ -130,7 +128,7 @@ See `docs/CRYPTIC-COMMUNICATION.md`.
 
 ## GitHub Pages
 
-In **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/(root)`, then save. The public surface is already rooted at `index.html`; the separate verification workflow remains the evidence gate for each push.
+In **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/(root)`, then save. The root `index.html` is a fallback redirect to Welcome Sentience; the production `crypticnews.org` homepage is routed by the Cloudflare Worker. The separate verification workflow remains the evidence gate for each push.
 
 ## Public security boundary
 
