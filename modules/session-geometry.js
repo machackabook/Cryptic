@@ -1,10 +1,10 @@
-/** Session geometry sampler. Stages 435-438. Paste not rewritten. No secrets.
- *  session hash beec41f1 / living hash 7cd81012 / infinity 438
- *  four cases: infinity | hamiltonian | triangular | torus
+/** Session geometry sampler. Stages 435-442. Paste not rewritten. No secrets.
+ *  session hash beec41f1 / living hash 7cd81012 / stages 439-442
+ *  four cases + gravity / weave / lerp holds
  */
 export const SESSION_HASH = 'beec41f1';
 export const LIVING_HASH = '7cd81012';
-export const STAGE = 438;
+export const STAGE = 442;
 
 export function sampleInfinity(theta, phi, major, minor, t, idx) {
   // Lemniscate of Bernoulli mathematical mapping
@@ -41,6 +41,42 @@ export function sampleTorusTube(major, minor, phi, theta, t, idx) {
   };
 }
 
+// Stage 439: gravityPull scales theta velocity
+export function sampleGravityTheta(idx, gravityPull, baseTheta = 0) {
+  const delta = (0.01 + idx * 0.002) * gravityPull;
+  return baseTheta + delta;
+}
+
+// Stage 442: toroidalWeave on minor
+export function sampleMinorFromWeave(toroidalWeave) {
+  return 3 + (toroidalWeave * 2);
+}
+
+// Stage 440-441: target geometry selector + lerp hint
+export function sampleTargetGeometry(geometry, theta, phi, major, minor, t, idx) {
+  switch (geometry) {
+    case 'infinity':
+      return sampleInfinity(theta, phi, major, minor, t, idx);
+    case 'hamiltonian':
+      return sampleHamiltonianXZ(theta, major, t);
+    case 'triangular': {
+      const tAngle = (Math.floor(theta / (Math.PI * 2 / 3)) * (Math.PI * 2 / 3));
+      return {
+        x: major * Math.cos(tAngle) + minor * Math.cos(theta * 5),
+        z: major * Math.sin(tAngle) + minor * Math.sin(theta * 5),
+        y: (idx % 3 - 1) * major * 0.5 + Math.sin(t) * minor,
+      };
+    }
+    case 'torus':
+    default:
+      return sampleTorusTube(major, minor, phi, theta, t, idx);
+  }
+}
+
+export function lerpHint(current, target, factor = 0.05) {
+  return current + (target - current) * factor;
+}
+
 /**
  * State space slice sampler:
  * Sₙ(t) = { xₙ, yₙ, zₙ=nΔz, τ=t, p, α, stateₙ } | O=(0,0,0)
@@ -68,6 +104,9 @@ export function sessionGeometryHolds() {
   const lane2 = sampleTriangularYLane(2, 14, 3, Math.PI / 2);
   const tube = sampleTorusTube(10, 3, 0, 0, 0, 0);
   const inf = sampleInfinity(Math.PI / 2, 0, 10, 3, 0, 0);
+  const gTheta = sampleGravityTheta(0, 1.0, 0);
+  const minorW = sampleMinorFromWeave(1.0);
+  const targetInf = sampleTargetGeometry('infinity', Math.PI / 2, 0, 10, 3, 0, 0);
   return {
     stage: STAGE,
     session: SESSION_HASH,
@@ -76,6 +115,9 @@ export function sessionGeometryHolds() {
     hamiltonianXZTimeFree: a.x === b.x && a.z === b.z && Math.abs((b.y - a.y) - 2) < 1e-9,
     triangularYLaneThetaFree: lane.sector === -5 && lane.y === -2 && lane2.sector === 7 && lane2.y === 10,
     torusTubeSharedXZ: tube.tube === 13 && tube.x === 13 && tube.z === 0 && tube.y === 0,
+    gravityThetaScale: Math.abs(gTheta - 0.01) < 1e-9,
+    weaveMinor: minorW === 5,
+    targetSwitchInfinity: Math.abs(targetInf.x) < 1e-9 && Math.abs(targetInf.z) < 1e-9,
     pasteRewritten: false,
     secrets: false,
   };
