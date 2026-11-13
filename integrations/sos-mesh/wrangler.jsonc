@@ -9,7 +9,7 @@
     {
       "binding": "DB",
       "database_name": "cryptic-sos-mesh",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "8f945ddf-dcc4-4f16-a28b-6b5db39ba685"
     }
   ],
   "vars": {
