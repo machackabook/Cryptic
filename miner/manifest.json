@@ -1,0 +1,119 @@
+{
+  "schema": "cryptic.unified-miner.manifest.v1",
+  "architecture_id": "AE.GAIA.NEXUS.MINERVA.FLUBBER",
+  "version": "1.0.0",
+  "repository": "machackabook/Cryptic",
+  "execution_state": "PREFLIGHT_ONLY",
+  "mining_enabled": false,
+  "candidate_search_enabled": false,
+  "pool_connections_enabled": false,
+  "wallet_or_payout_operations_enabled": false,
+  "reference_policy": {
+    "references_per_run": 1,
+    "require_provenance": true,
+    "require_algorithm_id": true,
+    "require_canonical_block_format": true
+  },
+  "external_integration_exception": {
+    "id": "AE.ACCESSIBILITY.BRIDGE",
+    "required": true,
+    "purpose": [
+      "semantic_terminal_io",
+      "speech_utterance",
+      "speech_recognition_when_available",
+      "keyboard_and_focus_access"
+    ],
+    "grants_host_privileges": false
+  },
+  "optional_capability_interfaces": [
+    "MCP"
+  ],
+  "lane_topology": {
+    "logical_lane_count": 64,
+    "work_lanes": [
+      0,
+      62
+    ],
+    "solver_reconciliation_lane": 63,
+    "disjoint_shards_required": true,
+    "physical_core_count_assumed": false
+  },
+  "receipt_protocol": {
+    "receipts_required": 2,
+    "receipt_a": "RECONSTRUCTION",
+    "receipt_b": "INDEPENDENT_FORWARD_VERIFICATION",
+    "both_required_for_advancement": true,
+    "receipt_fingerprint": "SHA-256",
+    "fingerprint_proves_universal_inversion": false
+  },
+  "modules": [
+    {
+      "id": "CRYPTIC_AXS",
+      "role": "accessible-terminal-and-session-surface",
+      "status": "existing-source-review-required"
+    },
+    {
+      "id": "ARX",
+      "role": "reversible-transform-adapter",
+      "status": "source-definition-required"
+    },
+    {
+      "id": "HCCGN",
+      "role": "canonical-chain-transition",
+      "status": "source-definition-required"
+    },
+    {
+      "id": "MINERVA",
+      "role": "bidirectional-traversal-and-inverse-orchestration",
+      "status": "integration-contract-defined"
+    },
+    {
+      "id": "FLUBBER",
+      "role": "candidate-reconstruction-and-proof-checks",
+      "status": "integration-contract-defined"
+    },
+    {
+      "id": "GAIA_NEXUS",
+      "role": "orchestration-routing-state-and-ledger",
+      "status": "existing-lineage-review-required"
+    },
+    {
+      "id": "TCCO",
+      "role": "error-correction-and-reverification",
+      "status": "code-profile-required"
+    },
+    {
+      "id": "PROJECT_ATLAS",
+      "role": "graphing-and-observability",
+      "status": "existing-visualizer-review-required"
+    },
+    {
+      "id": "SOS",
+      "role": "host-session-and-operating-environment",
+      "status": "source-import-required"
+    },
+    {
+      "id": "ANIMUS",
+      "role": "agent-integration",
+      "status": "source-import-required"
+    },
+    {
+      "id": "CODEXOLVER",
+      "role": "solver-adapter-registry",
+      "status": "source-definition-required"
+    }
+  ],
+  "storage": {
+    "primary_replica_cache_archive_offline": true,
+    "optional_content_addressed_deduplication": true,
+    "deduplication_deletes_source_evidence": false,
+    "sparsebundle_adapter": "apple-platform-only",
+    "portable_fallback": "authorized-file-backed-virtual-block-store"
+  },
+  "security": {
+    "public_repo_contains_private_receipts": false,
+    "public_repo_contains_secrets": false,
+    "provider_ruleset_required_before_pool_adapter": true,
+    "signed_manifest_and_artifact_hash_required_for_downloads": true
+  }
+}
