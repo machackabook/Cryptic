@@ -99,6 +99,11 @@ async function rateLimit(env, key, limit = 12) {
   await env.DB.prepare("DELETE FROM mesh_rate WHERE bucket < ?").bind(bucket - 2).run();
   return (row?.hits || 0) <= limit;
 }
+async function signAgentEnvelope(env, envelope) {
+  const key = await hmac(env.AGENT_HMAC_SECRET);
+  const signature = await crypto.subtle.sign("HMAC", key, te.encode(JSON.stringify(envelope)));
+  return b64u(signature);
+}
 async function verifyAgent(req, raw, env) {
   const timestamp = Number(req.headers.get("X-Cryptic-Agent-Time"));
   const nonce = req.headers.get("X-Cryptic-Agent-Nonce") || "";
@@ -179,6 +184,7 @@ async function dispatch(req, env) {
     payload_sha256: await sha(payload),
     payload: { action: data.action, arguments: args }
   };
+  envelope.edge_signature = await signAgentEnvelope(env, envelope);
   await env.DB.prepare("INSERT INTO mesh_jobs(id,subject,envelope,status,created_at) VALUES(?,?,?,'queued',?)")
     .bind(jobId, claims.sub, JSON.stringify(envelope), created).run();
   await audit(env, "mesh.dispatch", claims.sub, "queued", "job=" + jobId + ";action=" + data.action);
@@ -191,9 +197,10 @@ async function agent(req, env, path) {
     return json({ error: "agent_unauthorized" }, 401);
   }
   if (path === "/v1/mesh/agent/poll") {
-    const row = await env.DB.prepare("SELECT id,envelope FROM mesh_jobs WHERE status='queued' ORDER BY created_at LIMIT 1").first();
+    const staleBefore = now() - 120;
+    const row = await env.DB.prepare("SELECT id,envelope FROM mesh_jobs WHERE status='queued' OR (status='claimed' AND claimed_at < ?) ORDER BY created_at LIMIT 1").bind(staleBefore).first();
     if (!row) return json({ job: null });
-    const claim = await env.DB.prepare("UPDATE mesh_jobs SET status='claimed',claimed_at=? WHERE id=? AND status='queued'").bind(now(), row.id).run();
+    const claim = await env.DB.prepare("UPDATE mesh_jobs SET status='claimed',claimed_at=? WHERE id=? AND (status='queued' OR (status='claimed' AND claimed_at < ?))").bind(now(), row.id, staleBefore).run();
     if (!claim.meta.changes) return json({ job: null });
     const envelope = JSON.parse(row.envelope);
     if (envelope.expires_at <= now() || envelope.hop_count >= envelope.max_hops) {
