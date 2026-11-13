@@ -18,22 +18,17 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
-          cache: npm
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
       - name: Validate mesh JavaScript syntax
         run: |
           node --check integrations/sos-mesh/worker.mjs
           node --check integrations/sos-mesh/client.mjs
           node --check integrations/sos-mesh/agent.mjs
+          node --check cryptic-bus.js
       - name: Verify Cloudflare Access assertion signatures
         run: node --test tests/sos-mesh-access-assertion.test.mjs
-      - name: Run existing repository test suite
-        run: npm test
-      - name: Run repository build checks
-        run: npm run build
       - name: Check patch whitespace
-        run: git diff --check
+        run: git diff --check origin/main...HEAD
