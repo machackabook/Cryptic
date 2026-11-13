@@ -16,7 +16,6 @@
     "FIREBASE_PROJECT_ID": "the-void-0d149",
     "FIREBASE_ISSUER": "https://securetoken.google.com/the-void-0d149",
     "FIREBASE_JWKS_URL": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com",
-    "GOOGLE_OAUTH_CLIENT_ID": "537787787118-sfj23flihrbcc8uodp51l19u20islov7.apps.googleusercontent.com",
     "PORTAL_ISSUER": "https://crypticnews.cloudflareaccess.com",
     "PORTAL_AUDIENCE": "fac224bcc6b364514390deb38330bd171935ea0afd09d87c31985a7c553bd828",
     "PORTAL_JWKS_URL": "https://crypticnews.cloudflareaccess.com/cdn-cgi/access/certs",
