@@ -28,9 +28,10 @@ jobs:
           node --check integrations/sos-mesh/client.mjs
           node --check integrations/sos-mesh/agent.mjs
           node --check integrations/sos-mesh/public.mjs
+          node --check integrations/uniomni-browser/worker.mjs
           node --check cryptic-bus.js
           bash -n integrations/sos-mesh/agentctl.sh
       - name: Verify Cloudflare Access assertion signatures
-        run: node --test tests/sos-mesh-access-assertion.test.mjs tests/sos-public-page.test.mjs
+        run: node --test tests/sos-mesh-access-assertion.test.mjs tests/sos-public-page.test.mjs tests/uniomni-browser.test.mjs
       - name: Check patch whitespace
         run: git diff --check origin/main...HEAD
