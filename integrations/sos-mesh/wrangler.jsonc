@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cryptic-sos-mesh",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-13",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cryptic-sos-mesh",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ],
+  "vars": {
+    "GOOGLE_ISSUER": "https://accounts.google.com",
+    "GOOGLE_AUDIENCE": "REPLACE_WITH_GOOGLE_OAUTH_CLIENT_ID",
+    "PORTAL_ISSUER": "REPLACE_WITH_PORTAL_OIDC_ISSUER",
+    "PORTAL_AUDIENCE": "REPLACE_WITH_PORTAL_OIDC_AUDIENCE",
+    "PORTAL_JWKS_URL": "REPLACE_WITH_PORTAL_JWKS_URL",
+    "ALLOWED_ORIGINS": "https://aistudio.google.com,https://crypticnews.org,https://www.crypticnews.org",
+    "AGENT_ID": "nexus-local-01"
+  }
+}
