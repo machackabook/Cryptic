@@ -94,16 +94,16 @@ Keep the agent secret in the host secret store or a mode-600 environment file. T
 Import `client.mjs` into the S.O.S application. Supply two functions that obtain fresh OIDC tokens from the real Google and portal sign-in flows:
 
 ```js
-import { createCrypticMeshClient } from "./client.mjs";
+import { installCrypticMeshClient } from "./client.mjs";
 
-const mesh = createCrypticMeshClient({
+const mesh = installCrypticMeshClient({
   baseUrl: "https://YOUR-WORKER.workers.dev",
   getGoogleIdToken: async () => googleIdentityAdapter.getIdToken(),
   getPortalIdToken: async () => portalIdentityAdapter.getIdToken()
 });
 
 await mesh.connect();
-const receipt = await mesh.dispatch("nexus.health", {});
+const receipt = await CrypticBus.send("nexus.health", {}, { route: ["mesh"] });
 ```
 
 The adapter names above are integration points, not pre-existing globals. Implement them using the actual Google Identity Services client and the portal's supported OIDC client. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
