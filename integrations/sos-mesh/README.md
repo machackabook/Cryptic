@@ -54,44 +54,50 @@ The loop is a **request/receipt/result cycle**, not an unrestricted peer-to-peer
 6. NEXUS uses a separate HMAC key and HMAC-signed timestamp/nonce/body requests. Nonces are stored once in D1 to reject replay.
 7. The browser client holds bridge tokens in memory only. It does not write tokens to localStorage, URLs, console output or prompts.
 
-## Deploy without replacing the existing Cryptic API worker
+## Deploy and activate without replacing existing Cryptic services
 
-This is a separate Worker named `cryptic-sos-mesh`, initially on its workers.dev hostname. Do not overwrite `cryptic-capability-gateway` or `cryptic-message-bus`.
+The mesh is a separate Worker named `cryptic-sos-mesh`, initially exposed on its own workers.dev hostname. Its Wrangler config is pinned to the Cloudflare account containing `crypticnews.org`. Never deploy this configuration over `cryptic-capability-gateway`, `cryptic-message-bus`, or the public site Worker.
 
-From this directory, install the pinned project dependencies and authenticate Wrangler:
+Provisioning already completed:
+- Dedicated D1 database `cryptic-sos-mesh` is created and the five-table schema is applied.
+- D1 binding `DB` is set in `wrangler.jsonc`.
+- `MESH_SIGNING_SECRET` is stored as a Worker secret.
+- Firebase Secure Token and Cloudflare Access issuer/audience/JWKS configuration is present.
+- The separate portal Worker route is deployed at `crypticnews.org/api/cryptic-mesh/*` and is protected by the existing Access application `crypticnews.org/api`.
+
+For future source updates, run the checks first, then deploy only this isolated Worker from this directory:
 
 ```bash
-npm install
-npx wrangler login
+npm install --no-audit --no-fund
+npx wrangler deploy --config ./wrangler.jsonc
 ```
 
-The dedicated D1 database `cryptic-sos-mesh` has already been created in the Cryptic Cloudflare account and its UUID is bound in `wrangler.jsonc`. Do not create a duplicate. The schema has already been applied and the five mesh tables were verified in D1. To re-apply the idempotent schema after a future schema update, run:
+The D1 schema is already applied. Only after a deliberate schema change, re-apply the idempotent schema with:
 
 ```bash
 npx wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql --config ./wrangler.jsonc
 ```
 
-`MESH_SIGNING_SECRET` has already been generated and stored as a Cloudflare Worker secret. The Worker source is deployed as `cryptic-sos-mesh` and its workers.dev subdomain is enabled. The NEXUS agent secret is intentionally generated on the private NEXUS host and must be added separately before the agent starts:
+### Private NEXUS agent secret and startup
+
+Do not manually type, print, paste, or commit `AGENT_HMAC_SECRET`. Run this once on the private host that will run the agent:
 
 ```bash
-npx wrangler secret put AGENT_HMAC_SECRET --config ./wrangler.jsonc
+bash agentctl.sh setup
 ```
 
-Do not redeploy over the production Cryptic gateway. Update only this isolated `cryptic-sos-mesh` Worker when the integration source changes.
+The controller installs the local dependencies, checks the Node entrypoints, starts Wrangler authentication if needed, generates a random 48-byte secret locally, stores it in `~/.config/cryptic-mesh/agent.env` with restrictive permissions, uploads the same value to the pinned Worker account, and starts the agent in the background. It does not print the secret.
 
-Generate an independent agent secret locally with `openssl rand -base64 48`; enter it only at the interactive Wrangler prompt and provision the same value in the private agent's secret store. Never put secrets in Git, AI Studio prompts, HTML, or chat.
-
-The existing Cryptic Cloudflare Access issuer, audience and JWKS URL are configured in `wrangler.jsonc`. Firebase Google identity is configured from the existing S.O.S Firebase app config; no separate OAuth client ID entry is needed. The portal identity is the Cloudflare Access JWT injected by the Access edge into the protected same-origin request. The browser must never read or forward the Access cookie/JWT itself. Do not substitute a portal session cookie or a self-asserted email.
-
-Start the NEXUS agent on the private host:
+Lifecycle commands:
 
 ```bash
-export CRYPTIC_MESH_URL='https://YOUR-WORKER.workers.dev'
-read -rsp 'NEXUS mesh HMAC secret: ' CRYPTIC_MESH_AGENT_SECRET; export CRYPTIC_MESH_AGENT_SECRET; echo
-node agent.mjs
+bash agentctl.sh status
+bash agentctl.sh stop
+bash agentctl.sh restart
+bash agentctl.sh rotate-secret
 ```
 
-Keep the agent secret in the host secret store or a mode-600 environment file. The agent has no HTTP listener.
+The agent currently supports only the explicit health, echo, and mesh-status handlers. It has no inbound HTTP listener and does not expose arbitrary shell execution.
 
 ## AI Studio client wiring
 
@@ -126,11 +132,19 @@ The secret is never printed, committed, or sent to chat. If Wrangler is not auth
 
 ## Smoke checks
 
+The public edge health endpoint checks only the mesh Worker:
+
 ```bash
 curl -fsS https://cryptic-sos-mesh.saytyarnornglorei.workers.dev/health
 ```
 
-Then test in order: invalid Google token rejected; invalid portal token rejected; mismatched emails rejected; valid dual identity exchange; expired token rejected; old token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; audit rows present. The production portal route is deployed, but a live authenticated browser session and complete end-to-end message cycle have not yet been verified from the build environment.
+The Cloudflare Access assertion is checked only through the protected portal route. Open this URL in a browser already signed in through the configured Access application:
+
+`https://crypticnews.org/api/cryptic-mesh/health`
+
+A successful response must include `access_assertion_verified: true` and `gateway.ok: true`. An unauthenticated request should be challenged by Access. Do not copy or extract the Access cookie or JWT.
+
+Then verify: invalid Firebase token rejected; invalid Access assertion rejected; mismatched identities rejected; valid exchange; expired bridge token rejected; previous token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; D1 audit rows present. The protected route is deployed, but a signed-in browser response and complete agent cycle have not yet been verified from this execution environment.
 
 ## Provisioning and activation status
 
@@ -139,7 +153,7 @@ Then test in order: invalid Google token rejected; invalid portal token rejected
 - `MESH_SIGNING_SECRET` is stored as a Cloudflare Worker secret.
 - Firebase Secure Token issuer, project audience and JWKS are configured from the existing S.O.S Firebase project.
 - The Cryptic Cloudflare Access issuer, audience and JWKS are configured.
-- `AGENT_HMAC_SECRET` is **not yet configured**. Generate one independently on the private NEXUS host, then enter the same value into this Worker with `wrangler secret put AGENT_HMAC_SECRET`. Never commit or paste it into chat.
-- The live workers.dev health request and end-to-end identity/rotation/replay/queue smoke tests have **not** been verified from the build environment.
+- `AGENT_HMAC_SECRET` is **not yet configured**. Run `bash agentctl.sh setup` on the private NEXUS host to generate it locally and upload the same value to this Worker without printing or committing it.
+- The live workers.dev health request, authenticated portal health response, and end-to-end identity/rotation/replay/queue smoke tests have **not** been verified from this execution environment.
 - The S.O.S client and the dedicated `cryptic-sos-portal` Worker are committed on the companion S.O.S PR. The production route `crypticnews.org/api/cryptic-mesh/*` is protected by the existing Cloudflare Access application; the browser cannot read the injected assertion.
 - The dedicated portal route is deployed, but the live authenticated browser exchange and end-to-end message cycle have not yet been confirmed. Existing DNS records and existing Worker routes remain unchanged.
