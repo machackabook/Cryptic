@@ -1,0 +1,19 @@
+name: ADAM Showcase Gates
+on:
+  pull_request:
+    paths: ['cloudflare/showcase-router.js', 'scripts/test-showcase.mjs', 'docs/ADAM-SHOWCASE-GATES.md', '.github/workflows/showcase-adam.yml']
+  push:
+    branches: ['main', 'feature/adam-invention-showcase-20261020']
+    paths: ['cloudflare/showcase-router.js', 'scripts/test-showcase.mjs', '.github/workflows/showcase-adam.yml']
+permissions:
+  contents: read
+jobs:
+  route-security-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/test-showcase.mjs
