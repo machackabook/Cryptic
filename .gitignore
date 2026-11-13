@@ -19,3 +19,7 @@ credentials*.json
 reports/security/
 .security-private/
 
+
+# Native-only generated artifacts and local receipts
+native/developer-browser/out/
+reports/local/

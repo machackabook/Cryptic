@@ -1,0 +1,31 @@
+name: NEXUS Developer Browser Candidate Gates
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Native authorization, replay and independent evidence gates
+        run: node --test native/developer-browser/broker.test.mjs native/developer-browser/adam-gates.test.mjs
+      - name: Build extension and local PWA preview
+        run: |
+          node native/developer-browser/build-extension.mjs
+          node native/developer-browser/build-preview.mjs
+          git diff --check
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nexus-native-candidate
+          path: native/developer-browser/out/
+          if-no-files-found: error
+  # This workflow neither deploys nor issues security/browser/restore/release approvals.

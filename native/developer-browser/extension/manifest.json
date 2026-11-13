@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "NEXUS Developer Workspace",
+  "version": "0.1.0",
+  "description": "Opens the local developer console on an explicit user gesture. No page access or debugging permission.",
+  "action": {"default_title": "NEXUS workspace", "default_popup": "popup.html"},
+  "permissions": [],
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'"}
+}
