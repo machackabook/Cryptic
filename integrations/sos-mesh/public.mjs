@@ -96,7 +96,6 @@ export default {
    "x-content-type-options":"nosniff",
    "referrer-policy":"no-referrer",
    "permissions-policy":"camera=(), microphone=(), geolocation=()",
-   "content-security-policy":"default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-"+nonce+"'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src data:; connect-src 'none'"
   };
   if(url.pathname==="/healthz" && ["GET","HEAD"].includes(request.method)){
    return new Response(request.method==="HEAD"?null:JSON.stringify({ok:true,service:"cryptic-sos-public",version:"1.0.0",mode:"public-read-only",mesh:"access-protected"}),{status:200,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"}});
