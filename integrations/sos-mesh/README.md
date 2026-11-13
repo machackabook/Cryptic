@@ -108,7 +108,7 @@ const receipt = await mesh.dispatch("nexus.health", {});
 
 The adapter names above are integration points, not pre-existing globals. Implement them using the actual Google Identity Services client and the portal's supported OIDC client. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
 
-To connect with Cryptic's existing bus, register `mesh.transport()` through the existing CrypticBus transport registration mechanism after confirming its current method contract. A gateway-accepted receipt means queued, not completed; read `mesh.jobs()` for the remote result.
+To connect with Cryptic's existing bus, import `installCrypticMeshClient`, install the authenticated client as `window.CrypticMesh`, then use the native `CrypticBus.send(kind, payload, { route: ['mesh'] })` transport. The bus now reports `mesh: true` only when the client is installed. A gateway-accepted receipt means queued, not completed; read `mesh.jobs()` for the remote result.
 
 ## Production hostname and existing routes
 
