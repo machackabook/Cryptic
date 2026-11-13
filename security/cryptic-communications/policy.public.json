@@ -1,0 +1,23 @@
+{
+  "schema": "cryptic.communications.eve.v1",
+  "version": "1.0.0",
+  "enforcement": "not-installed",
+  "defaultDecision": "deny",
+  "governance": {
+    "godCharterRequired": true,
+    "adamGates": ["DISCOVER", "OBSERVE", "NORMALIZE", "CLASSIFY", "VERIFY", "FINGERPRINT", "LOOKUP_REMEDY", "APPLY_REMEDY", "REVERIFY"],
+    "eveDenyOverridesAllow": true,
+    "azazelRequiresTrustedBroker": true
+  },
+  "radio": {
+    "bluetooth": "deny-unless-explicitly-authorized-on-endpoint",
+    "casting": "deny-unless-explicitly-authorized-on-endpoint",
+    "wifi": "deny-new-clients-until-enrolled"
+  },
+  "nexus": {
+    "maxLogicalIdentities": 6000,
+    "capacityIsNotEnrollment": true
+  },
+  "allowRules": [],
+  "denyRules": []
+}

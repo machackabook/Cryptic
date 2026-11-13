@@ -1,0 +1,19 @@
+{
+  "schema": "cryptic.communications.topology.v1",
+  "configured": false,
+  "ipPassthroughRequired": false,
+  "highSpeedPath": ["att-fiber-gateway", "optiplex-gigabit-uplink", "gigabit-switch", "desktop-hosts"],
+  "r6080Role": "isolated-wireless-access-and-fast-ethernet-edge",
+  "r6080EthernetLinkCeilingMbps": 100,
+  "optiplexRole": ["firewall-candidate", "dns-cache-candidate", "tailscale-exit-node-candidate", "nexus-control-plane"],
+  "ipv4": "private-plan-required",
+  "ipv6": "private-plan-required",
+  "tailnet": "separate-authenticated-policy-required",
+  "bluetoothAndCasting": "endpoint-enforcement-required",
+  "warnings": [
+    "Never connect two routed uplinks to the same broadcast network without an explicit tested routing design.",
+    "Do not claim the Optiplex exit node protects LAN clients until their actual forwarding paths are verified.",
+    "No custom firmware is available for flashing or validated on hardware.",
+    "Only a managed VLAN-capable switch can enforce the proposed segments at layer 2."
+  ]
+}
