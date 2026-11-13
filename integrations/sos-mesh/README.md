@@ -157,3 +157,18 @@ Then verify: invalid Firebase token rejected; invalid Access assertion rejected;
 - The live workers.dev health request, authenticated portal health response, and end-to-end identity/rotation/replay/queue smoke tests have **not** been verified from this execution environment.
 - The S.O.S client and the dedicated `cryptic-sos-portal` Worker are committed on the companion S.O.S PR. The production route `crypticnews.org/api/cryptic-mesh/*` is protected by the existing Cloudflare Access application; the browser cannot read the injected assertion.
 - The dedicated portal route is deployed, but the live authenticated browser exchange and end-to-end message cycle have not yet been confirmed. Existing DNS records and existing Worker routes remain unchanged.
+
+## Public S.O.S landing
+
+The read-only S.O.S public page is deployed separately from the protected mesh API:
+
+- Public landing: https://sos.crypticnews.org/
+- Health metadata: https://sos.crypticnews.org/healthz
+- Protected mesh endpoint: https://crypticnews.org/api/cryptic-mesh/health
+- UNIOMNI public index: https://uniomni.crypticnews.org/
+
+The public page contains no local agent controls or credentials. The mesh endpoint continues to require its separate Cloudflare Access session. Deploy the landing Worker independently with:
+
+```bash
+npx wrangler deploy --config ./public.wrangler.jsonc
+```
