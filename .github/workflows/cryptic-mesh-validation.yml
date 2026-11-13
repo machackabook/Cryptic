@@ -1,0 +1,39 @@
+name: Cryptic mesh integration validation
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cryptic-mesh-validation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate-mesh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Validate mesh JavaScript syntax
+        run: |
+          node --check integrations/sos-mesh/worker.mjs
+          node --check integrations/sos-mesh/client.mjs
+          node --check integrations/sos-mesh/agent.mjs
+          node --check integrations/sos-mesh/public.mjs
+          node --check integrations/uniomni-browser/worker.mjs
+          node --check cryptic-bus.js
+          bash -n integrations/sos-mesh/agentctl.sh
+      - name: Verify Cloudflare Access assertion signatures
+        run: node --test tests/sos-mesh-access-assertion.test.mjs tests/sos-public-page.test.mjs tests/uniomni-browser.test.mjs
+      - name: Smoke test public Cryptic, S.O.S, UNIOMNI and gateway pages
+        run: node tests/public-smoke.mjs
+      - name: Check patch whitespace
+        run: git diff --check origin/main...HEAD

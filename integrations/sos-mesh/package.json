@@ -1,0 +1,14 @@
+{
+  "name": "@cryptic/sos-mesh",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy --config wrangler.jsonc",
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "db:init": "wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql",
+    "agent": "node agent.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

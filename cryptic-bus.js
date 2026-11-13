@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION='0.7.0';
+  const VERSION='0.8.0';
   const CHANNEL='cryptic.message.bus.v1';
   const EDGE='https://bus.crypticnews.org';
   const SEEN_KEY='cryptic.bus.seen.v1';
@@ -142,12 +142,24 @@
     return receipt('deeplink',msg,true,{url:base.href,opened:open});
   }
 
+  async function sendMesh(msg){
+    const mesh=window.CrypticMesh;
+    if(!mesh || typeof mesh.dispatchFrame!=='function') return receipt('mesh',msg,false,{reason:'mesh_not_authenticated'});
+    try{
+      const accepted=await mesh.dispatchFrame(msg);
+      return receipt('mesh',msg,true,{status:202,remote_state:'queued',mesh_receipt:accepted});
+    }catch(e){
+      return receipt('mesh',msg,false,{reason:String(e?.message||'mesh_dispatch_failed')});
+    }
+  }
+
   const transports={
     loopback: async msg=>emitLocal(msg),
     broadcast: async msg=>sendBroadcast(msg),
     'service-worker': sendServiceWorker,
     localhost: sendLocalhost,
     edge: sendEdge,
+    mesh: sendMesh,
     deeplink: async msg=>deepLink(msg,false)
   };
 
@@ -239,6 +251,7 @@
       serviceWorker:false,
       localhost:Boolean(window.CrypticBridgeProfile?.url),
       edge:EDGE,
+      mesh:Boolean(window.CrypticMesh),
       deeplink:true
     }),
     url:(command,opts={})=>deepLink(frame('terminal.command',{command:String(command),autorun:Boolean(opts.autorun)},opts),false).url,
@@ -254,6 +267,7 @@
     '\nawait CrypticBus.command("status")',
     '\nawait CrypticBus.aggregate("telemetry.snapshot",{label:"console"})',
     '\nawait CrypticBus.bridge("git.status")',
+    '\nawait CrypticBus.send("nexus.health",{}, {route:["mesh"]})',
     '\nCrypticBus.routes()'
   );
 })();
