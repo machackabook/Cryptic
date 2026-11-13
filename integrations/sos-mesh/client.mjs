@@ -6,7 +6,7 @@ export function createCrypticMeshClient({ baseUrl, getGoogleIdToken, getPortalId
   let expiresAt = 0;
   const endpoint = path => baseUrl.replace(/\/+$/, "") + path;
   const tokenExpiry = token => {
-    try { return JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).exp || 0; }
+    try { return JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - token.split(".")[1].length % 4) % 4))).exp || 0; }
     catch { return 0; }
   };
   async function connect() {
