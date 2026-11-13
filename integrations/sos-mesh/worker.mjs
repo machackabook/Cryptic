@@ -3,7 +3,7 @@ const td = new TextDecoder();
 const b64u = bytes => {
   let s = "";
   for (const b of new Uint8Array(bytes)) s += String.fromCharCode(b);
-  return btoa(s).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+  return btoa(s).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 };
 const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0));
 const now = () => Math.floor(Date.now() / 1000);
@@ -157,6 +157,8 @@ async function dispatch(req, env) {
   if (!String(claims.scope).split(" ").includes("mesh:dispatch")) return json({ error: "insufficient_scope" }, 403);
   const { data } = await readBody(req);
   if (typeof data.action !== "string" || !/^[a-z][a-z0-9_.-]{0,63}$/.test(data.action)) return json({ error: "invalid_action" }, 400);
+  const allowedActions = new Set(["nexus.health", "nexus.echo", "sos.mesh.status"]);
+  if (!allowedActions.has(data.action)) return json({ error: "action_not_allowlisted" }, 403);
   const args = data.arguments ?? {};
   const payload = JSON.stringify({ action: data.action, arguments: args });
   if (te.encode(payload).length > 10000) return json({ error: "payload_too_large" }, 413);
