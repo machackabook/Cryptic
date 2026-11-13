@@ -95,20 +95,22 @@ Keep the agent secret in the host secret store or a mode-600 environment file. T
 
 ## AI Studio client wiring
 
-The S.O.S repository includes `src/services/crypticMeshService.ts`, which uses the existing Firebase Google session and exchanges through the S.O.S server endpoint `/api/cryptic-mesh/exchange`. The Express server forwards the server-side Cloudflare Access assertion to this Worker. Do not use the standalone dual-token browser adapter below for the S.O.S Express-proxy path.
+The S.O.S repository exports one shared `crypticMeshService` from `src/services/crypticMeshService.ts`. It uses the existing verified Firebase Google session and sends the Firebase ID token to the same-origin `/api/cryptic-mesh/exchange` path. In production, the dedicated `cryptic-sos-portal` Cloudflare Worker receives the server-injected `Cf-Access-Jwt-Assertion`, forwards both signed identities to this mesh Worker, and returns only the short-lived bridge result. The browser never reads the Access assertion or stores bridge tokens outside the service's in-memory closure.
 
-For a separate browser client that already has two independently verified OIDC token providers, `client.mjs` exposes `installCrypticMeshClient({ baseUrl, getFirebaseIdToken, getPortalIdToken })`. Those providers must come from real identity SDKs; never accept tokens or email addresses typed by a user. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
+The S.O.S Express route in `server.ts` remains a fail-closed Node/development fallback. Production traffic is intercepted by the dedicated Cloudflare Worker route described below; do not assume the Express fallback is the production request path.
 
-To connect with Cryptic's existing bus, import `installCrypticMeshClient`, install the authenticated client as `window.CrypticMesh`, then use the native `CrypticBus.send(kind, payload, { route: ['mesh'] })` transport. The bus now reports `mesh: true` only when the client is installed. A gateway-accepted receipt means queued, not completed; read `mesh.jobs()` for the remote result.
+For a separate browser client with two independently verified OIDC providers, `client.mjs` retains `installCrypticMeshClient({ baseUrl, getFirebaseIdToken, getPortalIdToken })`. Never accept tokens or email addresses typed by a user. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
+
+The S.O.S service also installs a `window.CrypticMesh.dispatchFrame` adapter for the existing `CrypticBus` library. It forwards only `nexus.health`, `nexus.echo`, and `sos.mesh.status`; the Worker enforces the same action allowlist again. A gateway-accepted receipt means queued, not completed; read `crypticMeshService.jobs()` for the remote result.
 
 ## Production hostname and existing routes
 
-The verified zone is active, and `api.crypticnews.org` already has a Cryptic API service. The zone's current Worker route list did not show a route for this new mesh. Keep the initial deployment on workers.dev. Before adding a production hostname, inspect the existing custom-domain/route configuration and use a dedicated `mesh.crypticnews.org` hostname or an explicitly approved non-overlapping path. Do not repoint `api`, `bus`, apex or `www`.
+The verified zone is active. A dedicated exact route is now attached: `crypticnews.org/api/cryptic-mesh/*` → `cryptic-sos-portal`. The existing Cloudflare Access application `crypticnews.org/api` protects this path and injects `Cf-Access-Jwt-Assertion`. The portal Worker forwards the signed assertion to `cryptic-sos-mesh` for verification. Existing DNS records and the existing `api`, `bus`, apex, `www`, Forge and public Worker routes are preserved; only this new non-overlapping path was added.
 
 ## Smoke checks
 
 ```bash
-curl -fsS https://YOUR-WORKER.workers.dev/health
+curl -fsS https://cryptic-sos-mesh.saytyarnornglorei.workers.dev/health
 ```
 
 Then test in order: invalid Google token rejected; invalid portal token rejected; mismatched emails rejected; valid dual identity exchange; expired token rejected; old token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; audit rows present. No live portal operation is enabled by default.
@@ -122,5 +124,5 @@ Then test in order: invalid Google token rejected; invalid portal token rejected
 - The Cryptic Cloudflare Access issuer, audience and JWKS are configured.
 - `AGENT_HMAC_SECRET` is **not yet configured**. Generate one independently on the private NEXUS host, then enter the same value into this Worker with `wrangler secret put AGENT_HMAC_SECRET`. Never commit or paste it into chat.
 - The live workers.dev health request and end-to-end identity/rotation/replay/queue smoke tests have **not** been verified from the build environment.
-- The S.O.S Express exchange proxy and client service are committed on the companion S.O.S PR. The S.O.S server must be protected by the configured Cloudflare Access application so the server receives a valid `Cf-Access-Jwt-Assertion` header.
-- No production DNS or existing Worker routes have been changed. Keep the integration on workers.dev until the complete smoke suite passes.
+- The S.O.S client and the dedicated `cryptic-sos-portal` Worker are committed on the companion S.O.S PR. The production route `crypticnews.org/api/cryptic-mesh/*` is protected by the existing Cloudflare Access application; the browser cannot read the injected assertion.
+- The dedicated portal route is deployed, but the live authenticated browser exchange and end-to-end message cycle have not yet been confirmed. Existing DNS records and existing Worker routes remain unchanged.
