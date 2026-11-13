@@ -46,6 +46,10 @@ export function createCrypticMeshClient({ baseUrl, getGoogleIdToken, getPortalId
   }
   return Object.freeze({
     connect,
+    dispatchFrame: msg => request("/v1/mesh/dispatch", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: msg.kind, arguments: msg.payload ?? {}, correlation_id: msg.id })
+    }),
     dispatch: (action, args = {}, correlation_id) => request("/v1/mesh/dispatch", {
       method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ action, arguments: args, correlation_id })
@@ -61,13 +65,20 @@ export function createCrypticMeshClient({ baseUrl, getGoogleIdToken, getPortalId
     // CrypticBus transport adapter. Receipts report gateway acceptance, not remote completion.
     transport: () => ({
       name: "cryptic-sos-mesh",
-      send: async (kind, payload) => {
-        const accepted = await request("/v1/mesh/dispatch", {
+      send: async msg => ({
+        accepted: true,
+        remoteExecution: "pending",
+        receipt: await request("/v1/mesh/dispatch", {
           method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ action: kind, arguments: payload })
-        });
-        return { accepted: true, remoteExecution: "pending", receipt: accepted };
-      }
+          body: JSON.stringify({ action: msg.kind, arguments: msg.payload ?? {}, correlation_id: msg.id })
+        })
+      })
     })
   });
+}
+
+export function installCrypticMeshClient(options, target = window) {
+  const client = createCrypticMeshClient(options);
+  Object.defineProperty(target, "CrypticMesh", { value: client, configurable: true, enumerable: false, writable: false });
+  return client;
 }
