@@ -35,8 +35,10 @@ need_tools() {
 
 install_dependencies() {
   cd "$SCRIPT_DIR" || return 1
-  npm install --no-audit --no-fund
-  return $?
+  npm install --no-audit --no-fund || return 1
+  node --check "$SCRIPT_DIR/agent.mjs" || return 1
+  node --check "$SCRIPT_DIR/worker.mjs" || return 1
+  return 0
 }
 
 ensure_wrangler_auth() {
@@ -69,9 +71,15 @@ upload_secret() {
 
 is_running() {
   [ -s "$PID_FILE" ] || return 1
-  local pid
+  local pid command_line
   pid="$(cat "$PID_FILE" 2>/dev/null)"
-  [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  command_line="$(ps -p "$pid" -o args= 2>/dev/null)"
+  case "$command_line" in
+    *"$SCRIPT_DIR/agent.mjs"*) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 start_agent() {
