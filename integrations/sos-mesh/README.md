@@ -107,6 +107,23 @@ The S.O.S service also installs a `window.CrypticMesh.dispatchFrame` adapter for
 
 The verified zone is active. A dedicated exact route is now attached: `crypticnews.org/api/cryptic-mesh/*` → `cryptic-sos-portal`. The existing Cloudflare Access application `crypticnews.org/api` protects this path and injects `Cf-Access-Jwt-Assertion`. The portal Worker forwards the signed assertion to `cryptic-sos-mesh` for verification. Existing DNS records and the existing `api`, `bus`, apex, `www`, Forge and public Worker routes are preserved; only this new non-overlapping path was added.
 
+## Private NEXUS agent pairing
+
+Run the following on the private host that will run the NEXUS agent (Termux/Linux with Node.js, npm, Git and OpenSSL):
+
+```bash
+bash agentctl.sh setup
+```
+
+The controller:
+- Pins Wrangler to the Cloudflare account containing `crypticnews.org`.
+- Generates a random 48-byte agent secret locally if one does not already exist.
+- Stores the secret in `~/.config/cryptic-mesh/agent.env` with restrictive permissions and uploads the same value to the Worker as `AGENT_HMAC_SECRET`.
+- Starts the Node agent in the background and writes logs under `~/Æ/logs` when `AE_ROOT` is unset/defaulted to `~/Æ`.
+- Supports `bash agentctl.sh status`, `stop`, `restart`, and `rotate-secret`.
+
+The secret is never printed, committed, or sent to chat. If Wrangler is not authenticated, the setup command starts the Cloudflare login flow. The current agent exposes only the explicit health, echo, and mesh-status handlers; it does not expose arbitrary shell execution.
+
 ## Smoke checks
 
 ```bash
