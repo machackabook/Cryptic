@@ -3,8 +3,11 @@
   "name": "cryptic-sos-mesh",
   "main": "worker.mjs",
   "compatibility_date": "2026-11-13",
+  "account_id": "bc67ed84864df46b05d196cff28126bb",
   "workers_dev": true,
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": true
+  },
   "d1_databases": [
     {
       "binding": "DB",
