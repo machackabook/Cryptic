@@ -20,7 +20,7 @@ const splitJwt = token => {
 };
 const jwksCache = new Map();
 
-async function verifyOidc(token, issuer, audience, jwksUrl) {
+async function verifyOidc(token, issuer, audience, jwksUrl, allowCloudflareAccess = false) {
   const [h, p, s] = splitJwt(token);
   const header = decode(h);
   if (header.alg !== "RS256" || typeof header.kid !== "string") throw new Error("unsupported_oidc_algorithm");
@@ -42,7 +42,8 @@ async function verifyOidc(token, issuer, audience, jwksUrl) {
   if (!Number.isInteger(c.exp) || c.exp <= now() || (c.nbf && c.nbf > now() + 30)) throw new Error("oidc_token_expired_or_early");
   if (!Number.isInteger(c.iat) || c.iat > now() + 30 || c.iat < now() - 300) throw new Error("oidc_token_too_old");
   if (Array.isArray(c.aud) && c.aud.length > 1 && c.azp !== audience) throw new Error("oidc_authorized_party_invalid");
-  if (typeof c.email !== "string" || c.email_verified !== true) throw new Error("verified_email_required");
+  const trustedEmail = c.email_verified === true || (allowCloudflareAccess && c.type === "app");
+  if (typeof c.email !== "string" || !trustedEmail) throw new Error("verified_email_required");
   return c;
 }
 
@@ -133,7 +134,7 @@ async function issue(req, env) {
   if (typeof data.google_id_token !== "string" || typeof data.portal_id_token !== "string") return json({ error: "both_oidc_tokens_required" }, 400);
   const [google, portal] = await Promise.all([
     verifyOidc(data.google_id_token, env.GOOGLE_ISSUER, env.GOOGLE_AUDIENCE, "https://www.googleapis.com/oauth2/v3/certs"),
-    verifyOidc(data.portal_id_token, env.PORTAL_ISSUER, env.PORTAL_AUDIENCE, env.PORTAL_JWKS_URL)
+    verifyOidc(data.portal_id_token, env.PORTAL_ISSUER, env.PORTAL_AUDIENCE, env.PORTAL_JWKS_URL, env.PORTAL_IDP_TYPE === "cloudflare-access")
   ]);
   const email = google.email.trim().toLowerCase();
   if (email !== portal.email.trim().toLowerCase()) throw new Error("identity_email_mismatch");
