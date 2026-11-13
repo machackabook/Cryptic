@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from "node:crypto";
+import { createHmac, createHash, randomBytes, timingSafeEqual } from "node:crypto";
 const base = (process.env.CRYPTIC_MESH_URL || "").replace(/\/+$/, "");
 const secret = process.env.CRYPTIC_MESH_AGENT_SECRET || "";
 const interval = Math.max(2000, Number(process.env.CRYPTIC_MESH_POLL_MS || 5000));
@@ -29,7 +29,11 @@ async function cycle() {
     const data = await signedPost("/v1/mesh/agent/poll", {});
     const job = data.job;
     if (!job) return;
-    if (job.version !== "cryptic-mesh/1" || job.expires_at <= Math.floor(Date.now() / 1000) || job.hop_count > job.max_hops) {
+    const { edge_signature, ...unsignedEnvelope } = job;
+    const expectedSignature = createHmac("sha256", secret).update(JSON.stringify(unsignedEnvelope)).digest("base64url");
+    const signatureOk = typeof edge_signature === "string" && Buffer.byteLength(edge_signature) === Buffer.byteLength(expectedSignature) && timingSafeEqual(Buffer.from(edge_signature), Buffer.from(expectedSignature));
+    const payloadDigest = createHash("sha256").update(JSON.stringify({ action: job.payload?.action, arguments: job.payload?.arguments ?? {} })).digest("base64url");
+    if (!signatureOk || payloadDigest !== job.payload_sha256 || job.origin !== "sos-aistudio" || job.destination !== "nexus-local" || typeof job.nonce !== "string" || job.version !== "cryptic-mesh/1" || job.expires_at <= Math.floor(Date.now() / 1000) || job.hop_count > job.max_hops) {
       await signedPost("/v1/mesh/agent/result", { message_id: job.message_id, status: "failed", result: { error: "invalid_or_expired_envelope" } });
       return;
     }
