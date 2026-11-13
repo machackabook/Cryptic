@@ -1,11 +1,12 @@
 import {sampleHamiltonianXZ,sampleTorusTube,sampleInfinity,sessionGeometryHolds} from '../modules/session-geometry.js';
+import {safeMagicSurfaceUrl} from './routes.mjs';
 
 const T=globalThis.THREE;
-if(!T)throw new Error('Three.js failed to load');
+// The visualizer is optional; route navigation and documents work without Three.js.
 
 const $=s=>document.querySelector(s);
 const safeJSON=(key,fallback=[])=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v??fallback}catch{return fallback}};
-const engine={renderer:null,scene:null,camera:null,knot:null,material:null,points:null,clock:new T.Clock(),targetMutation:.08,currentMutation:.08,focus:false,realSignal:0,lastLedger:0,lastTelemetry:0};
+const engine={renderer:null,scene:null,camera:null,knot:null,material:null,points:null,clock:T?new T.Clock():null,targetMutation:.08,currentMutation:.08,focus:false,realSignal:0,lastLedger:0,lastTelemetry:0};
 
 function appendLedger(event,data={}){
  const arr=safeJSON('cryptic.ledger',[]);
@@ -35,9 +36,11 @@ function renderLedger(){
  $('#metricLedger').textContent=String(ledger.length);
 }
 
+function renderData(){renderLedger();updateSignal();}
+
 async function renderRoutes(){
  const grid=$('#busState');
- const states={sameOrigin:true,edge:false,localhost:Boolean(sessionStorage.getItem('cryptic.bridge.url'))};
+ const states={sameOrigin:true,edge:false,localhost:false}; // A saved bridge URL is not evidence of an authenticated live connection.
  try{
    const r=await fetch('https://bus.crypticnews.org/v1/status',{cache:'no-store'});
    states.edge=r.ok;
@@ -52,26 +55,38 @@ async function renderRoutes(){
 }
 
 async function renderSurfaces(){
- const box=$('#surfaceList');box.innerHTML='';
+ const box=$('#surfaceList');box.replaceChildren();
  try{
-   const r=await fetch('../config/nodes.public.json',{cache:'no-store'}),j=await r.json();
-   for(const n of (j.nodes||[]).slice(0,14)){
-     const a=document.createElement('a');a.className='surface-link';a.href=n.interface_url||n.repo||'#';a.textContent=n.label||n.id;
-     const href=a.getAttribute('href')||'';
-     if(href.startsWith('./')){
-       a.href='#';a.onclick=e=>{e.preventDefault();openSameOriginSurface(n)}
-     }else{a.target='_blank';a.rel='noopener noreferrer'}
-     box.appendChild(a);
+  const r=await fetch('../config/nodes.public.json',{cache:'no-store',redirect:'error'});
+  if(!r.ok)throw Error('node registry HTTP '+r.status);
+  const j=await r.json();
+  for(const n of (j.nodes||[]).filter(x=>!x.local_only).slice(0,14)){
+   const raw=String(n.interface_url||n.repo||'');
+   const a=document.createElement('a');a.className='surface-link';a.textContent=String(n.label||n.id);
+   if(raw.startsWith('./')){
+    const permitted=safeMagicSurfaceUrl('../'+raw.slice(2),location.href,location.origin);
+    if(!permitted)continue;
+    a.href=permitted.href;
+    a.addEventListener('click',e=>{e.preventDefault();openSameOriginSurface(n);});
+   }else{
+    let external;try{external=new URL(raw);}catch{continue;}
+    if(external.protocol!=='https:')continue;
+    a.href=external.href;a.target='_blank';a.rel='noopener noreferrer';
    }
- }catch(e){box.textContent='Node registry unavailable: '+e.message}
+   box.appendChild(a);
+  }
+ }catch(e){box.textContent='Node registry unavailable: '+String(e.message).slice(0,140);}
 }
-
 function openSameOriginSurface(node){
- const stage=$('#magicStage');stage.innerHTML='';
+ const raw=String(node.interface_url||'');
+ const permitted=raw.startsWith('./')?safeMagicSurfaceUrl('../'+raw.slice(2),location.href,location.origin):null;
+ if(!permitted){appendLedger('magic.surface.denied',{node:String(node.id||'unknown').slice(0,50)});return;}
+ const stage=$('#magicStage');stage.replaceChildren();
  const section=document.createElement('section');section.className='magic-surface';
- const frame=document.createElement('iframe');frame.src='../'+String(node.interface_url).replace(/^\.\//,'');frame.title=node.label||node.id;frame.sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-downloads';
- section.appendChild(frame);stage.appendChild(section);$('#browserLocation').textContent='cryptic://surface/'+node.id;
- appendLedger('magic.surface.open',{node:node.id});
+ const frame=document.createElement('iframe');frame.src=permitted.href;frame.title=String(node.label||node.id||'public surface');
+ frame.sandbox='allow-scripts allow-forms allow-popups allow-downloads';
+ section.appendChild(frame);stage.appendChild(section);$('#browserLocation').textContent='cryptic://surface/'+String(node.id||'unknown').slice(0,50);
+ appendLedger('magic.surface.open',{node:String(node.id||'unknown').slice(0,50)});
 }
 
 function updateSignal(){
@@ -394,16 +409,16 @@ $('#rootToggle').onclick = e => {
   e.currentTarget.setAttribute('aria-pressed', String(on));
   appendLedger('magic.ui.clear', { active: on });
 };
-document.body.addEventListener('click', e => {
-  const b = e.target.closest('[data-route]');
-  if (b) $('#browserLocation').textContent = 'cryptic://magic/' + b.dataset.route;
-});
-document.body.addEventListener('htmx:afterSwap', e => {
-  if (e.detail?.target?.id === 'magicStage') appendLedger('magic.surface.swap', { path: $('#browserLocation').textContent });
+window.addEventListener('cryptic:magic:route',e=>{
+ appendLedger(e.detail?.ok?'magic.surface.swap':'magic.surface.failed',{
+  route:String(e.detail?.route||'unknown').slice(0,40),status:e.detail?.ok?'success':'blocked'
+ });
 });
 
-$('#systemStatus').innerHTML = 'SYS.OP.REAL<br>GEOMETRY.' + (sessionGeometryHolds().secrets ? 'BLOCKED' : 'VERIFIED');
-renderData(); renderRoutes(); renderSurfaces(); initWebGL();
+$('#systemStatus').textContent='UI.PUBLIC / ROUTES.GATED / ' + (sessionGeometryHolds().secrets ? 'SOURCE_REVIEW_REQUIRED' : 'GEOMETRY_SOURCE_CHECK');
+renderData();renderRoutes();renderSurfaces();
+if(T){try{initWebGL()}catch(error){console.warn('Optional Magic visualizer failed',error);}}
+else console.warn('Three.js unavailable: Magic Browser remains navigable');
 appendLedger('magic.window.online', { version: '0.9.6', source: 'Drive Magic Window neural-polymorph lineage + stage 438 infinity' });
 window.CrypticMagic = { engine, renderData, renderRoutes, renderSurfaces, openSameOriginSurface };
 
