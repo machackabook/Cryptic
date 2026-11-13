@@ -209,8 +209,11 @@ async function agent(req, env, path) {
       await env.DB.prepare("UPDATE mesh_jobs SET status='failed',completed_at=?,result=? WHERE id=?").bind(now(), JSON.stringify({ error: "envelope_expired_or_hop_limit" }), row.id).run();
       return json({ job: null });
     }
+    // Re-sign after mutating the envelope: the agent verifies the exact returned bytes.
+    delete envelope.edge_signature;
     envelope.hop_count += 1;
     envelope.last_hop = env.AGENT_ID || "nexus-local";
+    envelope.edge_signature = await signAgentEnvelope(env, envelope);
     await audit(env, "mesh.agent.claim", null, "success", "job=" + row.id);
     return json({ job: envelope });
   }
