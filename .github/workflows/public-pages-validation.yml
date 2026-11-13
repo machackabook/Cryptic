@@ -1,0 +1,33 @@
+name: Public Pages Validation
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/public-pages-*"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  public-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax-check Workers
+        run: |
+          node --check integrations/sos-mesh/public.mjs
+          node --check integrations/uniomni-browser/worker.mjs
+      - name: Run Worker contract tests
+        run: node --test tests/sos-public-page.test.mjs tests/uniomni-browser.test.mjs
+      - name: Smoke-test deployed public pages with retries
+        run: node tests/public-smoke.mjs
+      - name: Check patch whitespace
+        run: git diff --check
