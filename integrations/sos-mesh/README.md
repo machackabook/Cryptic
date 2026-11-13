@@ -47,7 +47,7 @@ The loop is a **request/receipt/result cycle**, not an unrestricted peer-to-peer
 ## Authentication contract
 
 1. Google OIDC ID token is verified against Google's published RS256 JWKS; issuer, audience, signature, expiry, subject and verified email are checked.
-2. The portal OIDC ID token is verified against the portal's configured JWKS URL; issuer, audience, signature, expiry and verified email are checked.
+2. The Cryptic portal identity is verified against the existing Cloudflare Access application JWT, using its configured issuer, audience and JWKS endpoint. Cloudflare Access app tokens carry a signed email and subject claim; the verifier accepts `type: app` only for this explicitly configured Access issuer. Other portal OIDC providers must supply `email_verified: true`.
 3. The two verified email addresses must match. The portal subject is the authorization principal.
 4. Cryptic issues a 10-minute HS256 access JWT. Only its JTI hash is stored in D1.
 5. Rotation revokes the previous JTI before issuing the next token. Reuse of the old token is rejected.
@@ -77,7 +77,7 @@ wrangler deploy
 
 For each secret, generate an independent value with `openssl rand -base64 48`; enter it only at the interactive prompt. Never put secrets in Git, AI Studio prompts, HTML, or this chat.
 
-Configure `wrangler.jsonc` with the exact Google OAuth client ID and portal OIDC issuer, audience and JWKS URL. The portal must provide a standards-compliant OIDC ID token with a verified email claim. Do not substitute a portal session cookie or a self-asserted email.
+The existing Cryptic Cloudflare Access issuer, audience and JWKS URL are already configured in `wrangler.jsonc`. Configure the exact Google OAuth client ID; it is not present in either repository's checked source. The portal must provide a standards-compliant OIDC ID token with a verified email claim. Do not substitute a portal session cookie or a self-asserted email.
 
 Start the NEXUS agent on the private host:
 
