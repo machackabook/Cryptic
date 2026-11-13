@@ -40,6 +40,8 @@ async function verifyOidc(token, issuer, audience, jwksUrl) {
   const audOk = c.aud === audience || (Array.isArray(c.aud) && c.aud.includes(audience));
   if (c.iss !== issuer || !audOk || typeof c.sub !== "string" || !c.sub) throw new Error("oidc_claims_invalid");
   if (!Number.isInteger(c.exp) || c.exp <= now() || (c.nbf && c.nbf > now() + 30)) throw new Error("oidc_token_expired_or_early");
+  if (!Number.isInteger(c.iat) || c.iat > now() + 30 || c.iat < now() - 300) throw new Error("oidc_token_too_old");
+  if (Array.isArray(c.aud) && c.aud.length > 1 && c.azp !== audience) throw new Error("oidc_authorized_party_invalid");
   if (typeof c.email !== "string" || c.email_verified !== true) throw new Error("verified_email_required");
   return c;
 }
