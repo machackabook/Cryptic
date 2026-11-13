@@ -70,9 +70,13 @@ The schema has already been applied and the five mesh tables were verified in D1
 
 ```bash
 wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql
-wrangler secret put MESH_SIGNING_SECRET
+`MESH_SIGNING_SECRET` has already been generated and stored as a Cloudflare Worker secret. The Worker source is deployed as `cryptic-sos-mesh` and its workers.dev subdomain is enabled. The NEXUS agent secret is intentionally generated on the private NEXUS host and must be added separately before the agent starts:
+
+```bash
 wrangler secret put AGENT_HMAC_SECRET
-wrangler deploy
+```
+
+Do not redeploy over the production Cryptic gateway. Update only this isolated `cryptic-sos-mesh` Worker when the integration source changes.
 ```
 
 For each secret, generate an independent value with `openssl rand -base64 48`; enter it only at the interactive prompt. Never put secrets in Git, AI Studio prompts, HTML, or this chat.
