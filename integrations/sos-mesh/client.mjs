@@ -1,7 +1,7 @@
 // Browser-safe client: holds short-lived bridge credentials in memory only.
-export function createCrypticMeshClient({ baseUrl, getGoogleIdToken, getPortalIdToken, fetchImpl = fetch }) {
+export function createCrypticMeshClient({ baseUrl, getFirebaseIdToken, getPortalIdToken, fetchImpl = fetch }) {
   if (!baseUrl || !/^https:\/\//.test(baseUrl)) throw new Error("baseUrl must be HTTPS");
-  if (typeof getGoogleIdToken !== "function" || typeof getPortalIdToken !== "function") throw new Error("identity token providers are required");
+  if (typeof getFirebaseIdToken !== "function" || typeof getPortalIdToken !== "function") throw new Error("identity token providers are required");
   let accessToken = null;
   let expiresAt = 0;
   const endpoint = path => baseUrl.replace(/\/+$/, "") + path;
@@ -10,10 +10,10 @@ export function createCrypticMeshClient({ baseUrl, getGoogleIdToken, getPortalId
     catch { return 0; }
   };
   async function connect() {
-    const [google_id_token, portal_id_token] = await Promise.all([getGoogleIdToken(), getPortalIdToken()]);
+    const [firebase_id_token, portal_id_token] = await Promise.all([getFirebaseIdToken(), getPortalIdToken()]);
     const response = await fetchImpl(endpoint("/v1/mesh/auth/exchange"), {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ google_id_token, portal_id_token }), redirect: "error"
+      body: JSON.stringify({ firebase_id_token, portal_id_token }), redirect: "error"
     });
     if (!response.ok) throw new Error("Cryptic mesh authentication rejected: HTTP " + response.status);
     const data = await response.json();
