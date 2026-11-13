@@ -95,22 +95,9 @@ Keep the agent secret in the host secret store or a mode-600 environment file. T
 
 ## AI Studio client wiring
 
-Import `client.mjs` into the S.O.S application. Supply two functions that obtain fresh OIDC tokens from the real Google and portal sign-in flows:
+The S.O.S repository includes `src/services/crypticMeshService.ts`, which uses the existing Firebase Google session and exchanges through the S.O.S server endpoint `/api/cryptic-mesh/exchange`. The Express server forwards the server-side Cloudflare Access assertion to this Worker. Do not use the standalone dual-token browser adapter below for the S.O.S Express-proxy path.
 
-```js
-import { installCrypticMeshClient } from "./client.mjs";
-
-const mesh = installCrypticMeshClient({
-  baseUrl: "https://YOUR-WORKER.workers.dev",
-  getGoogleIdToken: async () => googleIdentityAdapter.getIdToken(),
-  getPortalIdToken: async () => portalIdentityAdapter.getIdToken()
-});
-
-await mesh.connect();
-const receipt = await CrypticBus.send("nexus.health", {}, { route: ["mesh"] });
-```
-
-The adapter names above are integration points, not pre-existing globals. Implement them using the actual Google Identity Services client and the portal's supported OIDC client. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
+For a separate browser client that already has two independently verified OIDC token providers, `client.mjs` exposes `installCrypticMeshClient({ baseUrl, getFirebaseIdToken, getPortalIdToken })`. Those providers must come from real identity SDKs; never accept tokens or email addresses typed by a user. Do not paste Gemini API keys into this client. AI Studio's model runtime and user identity are separate concerns.
 
 To connect with Cryptic's existing bus, import `installCrypticMeshClient`, install the authenticated client as `window.CrypticMesh`, then use the native `CrypticBus.send(kind, payload, { route: ['mesh'] })` transport. The bus now reports `mesh: true` only when the client is installed. A gateway-accepted receipt means queued, not completed; read `mesh.jobs()` for the remote result.
 
@@ -126,6 +113,14 @@ curl -fsS https://YOUR-WORKER.workers.dev/health
 
 Then test in order: invalid Google token rejected; invalid portal token rejected; mismatched emails rejected; valid dual identity exchange; expired token rejected; old token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; audit rows present. No live portal operation is enabled by default.
 
-## Not yet provisioned
+## Provisioning and activation status
 
-The Cloudflare account has an active Cryptic zone and existing workers, but this integration still needs a new D1 database, new Worker deployment and two independent Worker secrets. The Google OAuth client ID and portal OIDC issuer/audience/JWKS URL are not present in the connected configuration. These are intentionally not guessed. Production route attachment remains a separate change after workers.dev smoke tests pass.
+- Dedicated D1 database `cryptic-sos-mesh` is provisioned and its five tables/indexes were applied.
+- Worker `cryptic-sos-mesh` is uploaded on the workers.dev hostname.
+- `MESH_SIGNING_SECRET` is stored as a Cloudflare Worker secret.
+- Firebase Secure Token issuer, project audience and JWKS are configured from the existing S.O.S Firebase project.
+- The Cryptic Cloudflare Access issuer, audience and JWKS are configured.
+- `AGENT_HMAC_SECRET` is **not yet configured**. Generate one independently on the private NEXUS host, then enter the same value into this Worker with `wrangler secret put AGENT_HMAC_SECRET`. Never commit or paste it into chat.
+- The live workers.dev health request and end-to-end identity/rotation/replay/queue smoke tests have **not** been verified from the build environment.
+- The S.O.S Express exchange proxy and client service are committed on the companion S.O.S PR. The S.O.S server must be protected by the configured Cloudflare Access application so the server receives a valid `Cf-Access-Jwt-Assertion` header.
+- No production DNS or existing Worker routes have been changed. Keep the integration on workers.dev until the complete smoke suite passes.
