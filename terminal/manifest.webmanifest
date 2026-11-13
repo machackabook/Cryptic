@@ -1,0 +1,10 @@
+{
+  "name": "Cryptic NEXUS HyperTerminal Public Lite",
+  "short_name": "NEXUS Lite",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0A0A1F",
+  "theme_color": "#9333EA",
+  "icons": []
+}

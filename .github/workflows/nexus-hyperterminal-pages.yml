@@ -1,0 +1,96 @@
+name: NEXUS Tiered HyperTerminal Pages
+on:
+  pull_request:
+    branches: [main]
+    paths: ['terminal/**', '.github/workflows/nexus-hyperterminal-pages.yml', 'docs/TERMINAL_PAGES_TIERS.md']
+  push:
+    branches: [main]
+    paths: ['terminal/**', '.github/workflows/nexus-hyperterminal-pages.yml', 'docs/TERMINAL_PAGES_TIERS.md']
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: nexus-tiered-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    name: nexus-public-tier-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Public Lite command and tier validation
+        run: |
+          set -euo pipefail
+          node --check terminal/lite-core.mjs
+          node --check terminal/lite.mjs
+          node --test terminal/tests/*.test.mjs runtime/tests/nexus-tier-gate.test.mjs
+          git diff --check
+      - uses: actions/checkout@v4
+        with:
+          repository: machackabook/Cryptics-Hyper-Terminal-OS
+          ref: 10dd456ba74a435908e126c518784fbc871157ce
+          path: .hyperterminal_src
+          persist-credentials: false
+      - name: Build pinned React source (no backend credentials)
+        working-directory: .hyperterminal_src
+        env:
+          VITE_NEXUS_TELEMETRY_URL: ''
+        run: |
+          set -euo pipefail
+          npm install --no-fund --no-audit
+          npm run lint
+          npx vite build --base=/Cryptic/terminal/full/
+          test -s dist/index.html
+          grep -q '/Cryptic/terminal/full/' dist/index.html
+      - name: Stage public-site allowlist
+        run: |
+          set -euo pipefail
+          mkdir -p _site/terminal/full _site/config
+          for file in index.html panel.html manifest.webmanifest robots.txt sw.js cryptic-runtime.js cryptic-bus.js cryptic-console.js cryptic-bus.v07.js cryptic-runtime.v07.js; do
+            if test -f "$file"; then cp "$file" _site/; fi
+          done
+          for dir in ui core modules magic interfaces; do
+            if test -d "$dir"; then cp -R "$dir" "_site/$dir"; fi
+          done
+          cp config/nodes.public.json _site/config/
+          cp -R terminal/. _site/terminal/
+          rm -rf _site/terminal/tests
+          cp -R .hyperterminal_src/dist/. _site/terminal/full/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_site/terminal/full/index.html')
+          s=p.read_text()
+          s=s.replace('href="/manifest.webmanifest"','href="../../manifest.webmanifest"')
+          s=s.replace('href="https://machackabook.github.io/Cryptic/"','href="https://machackabook.github.io/Cryptic/terminal/full/"')
+          p.write_text(s)
+          PY
+          touch _site/.nojekyll
+          test -s _site/index.html
+          test -s _site/terminal/index.html
+          test -s _site/terminal/full/index.html
+          if grep -RIE -m1 'sk-proj-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{35,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----' _site; then
+            echo 'Public artifact potentially contains a secret; blocked.'
+            exit 1
+          fi
+          printf 'source=%s\nhyperterminal=10dd456ba74a435908e126c518784fbc871157ce\nstage=NOT_YET_PRODUCTION_VERIFIED\n' "$GITHUB_SHA" > _site/terminal/build-receipt.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus-tiered-pages
+          path: _site/
+          retention-days: 14
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site/
+  deploy:
+    name: deploy-pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.NEXUS_PAGES_RELEASE_APPROVED == 'true'
+    runs-on: ubuntu-latest
+    environment: github-pages
+    permissions: {pages: write, id-token: write, contents: read}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
