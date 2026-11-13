@@ -63,10 +63,10 @@ From this directory:
 ```bash
 npm install --global wrangler
 wrangler login
-wrangler d1 create cryptic-sos-mesh
+The dedicated D1 database `cryptic-sos-mesh` has already been created in the Cryptic Cloudflare account and its UUID is bound in `wrangler.jsonc`. Do not create a duplicate.
 ```
 
-Copy the returned D1 UUID into `wrangler.jsonc`, then:
+The schema has already been applied and the five mesh tables were verified in D1. To re-apply idempotently after a future schema update, run:
 
 ```bash
 wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql
