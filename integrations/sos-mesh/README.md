@@ -26,7 +26,7 @@ This integration keeps **Cryptic as the edge gateway and message-bus authority**
            │ token rotation       │
            │ D1 audit + queue     │
            └──────────┬───────────┘
-                      │ signed envelope
+                      │ Cryptic-signed envelope
                       ▼
            ┌──────────────────────┐
            │ CRYPTIC MESSAGE BUS  │
@@ -51,7 +51,7 @@ The loop is a **request/receipt/result cycle**, not an unrestricted peer-to-peer
 3. The two verified email addresses must match. The portal subject is the authorization principal.
 4. Cryptic issues a 10-minute HS256 access JWT. Only its JTI hash is stored in D1.
 5. Rotation revokes the previous JTI before issuing the next token. Reuse of the old token is rejected.
-6. NEXUS uses a separate HMAC key and signed timestamp/nonce/body requests. Nonces are stored once in D1 to reject replay.
+6. NEXUS uses a separate HMAC key and HMAC-signed timestamp/nonce/body requests. Nonces are stored once in D1 to reject replay.
 7. The browser client holds bridge tokens in memory only. It does not write tokens to localStorage, URLs, console output or prompts.
 
 ## Deploy without replacing the existing Cryptic API worker
