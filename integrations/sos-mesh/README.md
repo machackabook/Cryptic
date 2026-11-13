@@ -81,7 +81,7 @@ Do not redeploy over the production Cryptic gateway. Update only this isolated `
 
 Generate an independent agent secret locally with `openssl rand -base64 48`; enter it only at the interactive Wrangler prompt and provision the same value in the private agent's secret store. Never put secrets in Git, AI Studio prompts, HTML, or chat.
 
-The existing Cryptic Cloudflare Access issuer, audience and JWKS URL are already configured in `wrangler.jsonc`. Firebase Google identity is now configured from the existing S.O.S Firebase app config; no separate OAuth client ID entry is needed for the Firebase ID-token verification path. The portal must provide a standards-compliant OIDC ID token with a verified email claim. Do not substitute a portal session cookie or a self-asserted email.
+The existing Cryptic Cloudflare Access issuer, audience and JWKS URL are configured in `wrangler.jsonc`. Firebase Google identity is configured from the existing S.O.S Firebase app config; no separate OAuth client ID entry is needed. The portal identity is the Cloudflare Access JWT injected by the Access edge into the protected same-origin request. The browser must never read or forward the Access cookie/JWT itself. Do not substitute a portal session cookie or a self-asserted email.
 
 Start the NEXUS agent on the private host:
 
@@ -113,7 +113,7 @@ The verified zone is active. A dedicated exact route is now attached: `crypticne
 curl -fsS https://cryptic-sos-mesh.saytyarnornglorei.workers.dev/health
 ```
 
-Then test in order: invalid Google token rejected; invalid portal token rejected; mismatched emails rejected; valid dual identity exchange; expired token rejected; old token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; audit rows present. No live portal operation is enabled by default.
+Then test in order: invalid Google token rejected; invalid portal token rejected; mismatched emails rejected; valid dual identity exchange; expired token rejected; old token rejected after rotation; duplicate agent nonce rejected; unknown action rejected; valid `nexus.health` queued, claimed and completed; audit rows present. The production portal route is deployed, but a live authenticated browser session and complete end-to-end message cycle have not yet been verified from the build environment.
 
 ## Provisioning and activation status
 
