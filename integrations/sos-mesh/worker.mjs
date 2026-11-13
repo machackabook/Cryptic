@@ -129,6 +129,27 @@ async function readBody(req, max = 16384) {
   try { data = JSON.parse(raw || "{}"); } catch { throw new Error("invalid_json"); }
   return { raw, data };
 }
+async function verifyPortal(req, env) {
+  const { data } = await readBody(req, 12000);
+  if (typeof data.portal_id_token !== "string" || data.portal_id_token.length < 100 || data.portal_id_token.length > 12000) {
+    return json({ error: "portal_assertion_required" }, 400);
+  }
+  const portal = await verifyOidc(
+    data.portal_id_token,
+    env.PORTAL_ISSUER,
+    env.PORTAL_AUDIENCE,
+    env.PORTAL_JWKS_URL,
+    env.PORTAL_IDP_TYPE === "cloudflare-access"
+  );
+  await audit(env, "auth.portal_assertion.verify", portal.sub, "success");
+  return json({
+    authenticated: true,
+    provider: "cloudflare-access",
+    subject_fingerprint: (await sha(portal.sub)).slice(0, 16),
+    expires_at: portal.exp
+  });
+}
+
 async function issue(req, env) {
   const { data } = await readBody(req, 12000);
   if (typeof data.firebase_id_token !== "string" || typeof data.portal_id_token !== "string") return json({ error: "firebase_and_portal_tokens_required" }, 400);
@@ -235,6 +256,7 @@ async function route(req, env) {
     await env.DB.prepare("SELECT 1").first();
     return json({ ok: true, service: "CRYPTIC-SOS-MESH", agent_id: env.AGENT_ID || "unconfigured", timestamp: new Date().toISOString() }, 200, cors(req, env));
   }
+  if (path === "/v1/mesh/auth/verify-portal" && req.method === "POST") return verifyPortal(req, env);
   if (path === "/v1/mesh/auth/exchange" && req.method === "POST") return issue(req, env);
   if (path === "/v1/mesh/auth/rotate" && req.method === "POST") return rotate(req, env);
   if (path === "/v1/mesh/auth/revoke" && req.method === "POST") {
