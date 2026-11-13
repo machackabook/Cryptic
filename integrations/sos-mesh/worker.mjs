@@ -131,11 +131,12 @@ async function readBody(req, max = 16384) {
 }
 async function issue(req, env) {
   const { data } = await readBody(req, 12000);
-  if (typeof data.google_id_token !== "string" || typeof data.portal_id_token !== "string") return json({ error: "both_oidc_tokens_required" }, 400);
+  if (typeof data.firebase_id_token !== "string" || typeof data.portal_id_token !== "string") return json({ error: "firebase_and_portal_tokens_required" }, 400);
   const [google, portal] = await Promise.all([
-    verifyOidc(data.google_id_token, env.GOOGLE_ISSUER, env.GOOGLE_AUDIENCE, "https://www.googleapis.com/oauth2/v3/certs"),
+    verifyOidc(data.firebase_id_token, env.FIREBASE_ISSUER, env.FIREBASE_PROJECT_ID, env.FIREBASE_JWKS_URL),
     verifyOidc(data.portal_id_token, env.PORTAL_ISSUER, env.PORTAL_AUDIENCE, env.PORTAL_JWKS_URL, env.PORTAL_IDP_TYPE === "cloudflare-access")
   ]);
+  if (google.firebase?.sign_in_provider !== "google.com") throw new Error("google_firebase_provider_required");
   const email = google.email.trim().toLowerCase();
   if (email !== portal.email.trim().toLowerCase()) throw new Error("identity_email_mismatch");
   if (!(await rateLimit(env, "exchange:" + await sha(email), 8))) return json({ error: "rate_limited" }, 429);
