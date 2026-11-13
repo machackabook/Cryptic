@@ -1,0 +1,39 @@
+name: Cryptic mesh integration validation
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cryptic-mesh-validation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate-mesh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate mesh JavaScript syntax
+        run: |
+          node --check integrations/sos-mesh/worker.mjs
+          node --check integrations/sos-mesh/client.mjs
+          node --check integrations/sos-mesh/agent.mjs
+      - name: Verify Cloudflare Access assertion signatures
+        run: node --test tests/sos-mesh-access-assertion.test.mjs
+      - name: Run existing repository test suite
+        run: npm test
+      - name: Run repository build checks
+        run: npm run build
+      - name: Check patch whitespace
+        run: git diff --check
