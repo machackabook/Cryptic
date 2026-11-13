@@ -58,28 +58,28 @@ The loop is a **request/receipt/result cycle**, not an unrestricted peer-to-peer
 
 This is a separate Worker named `cryptic-sos-mesh`, initially on its workers.dev hostname. Do not overwrite `cryptic-capability-gateway` or `cryptic-message-bus`.
 
-From this directory:
+From this directory, install the pinned project dependencies and authenticate Wrangler:
 
 ```bash
-npm install --global wrangler
-wrangler login
-The dedicated D1 database `cryptic-sos-mesh` has already been created in the Cryptic Cloudflare account and its UUID is bound in `wrangler.jsonc`. Do not create a duplicate.
+npm install
+npx wrangler login
 ```
 
-The schema has already been applied and the five mesh tables were verified in D1. To re-apply idempotently after a future schema update, run:
+The dedicated D1 database `cryptic-sos-mesh` has already been created in the Cryptic Cloudflare account and its UUID is bound in `wrangler.jsonc`. Do not create a duplicate. The schema has already been applied and the five mesh tables were verified in D1. To re-apply the idempotent schema after a future schema update, run:
 
 ```bash
-wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql
+npx wrangler d1 execute cryptic-sos-mesh --remote --file=./schema.sql --config ./wrangler.jsonc
+```
+
 `MESH_SIGNING_SECRET` has already been generated and stored as a Cloudflare Worker secret. The Worker source is deployed as `cryptic-sos-mesh` and its workers.dev subdomain is enabled. The NEXUS agent secret is intentionally generated on the private NEXUS host and must be added separately before the agent starts:
 
 ```bash
-wrangler secret put AGENT_HMAC_SECRET
+npx wrangler secret put AGENT_HMAC_SECRET --config ./wrangler.jsonc
 ```
 
 Do not redeploy over the production Cryptic gateway. Update only this isolated `cryptic-sos-mesh` Worker when the integration source changes.
-```
 
-For each secret, generate an independent value with `openssl rand -base64 48`; enter it only at the interactive prompt. Never put secrets in Git, AI Studio prompts, HTML, or this chat.
+Generate an independent agent secret locally with `openssl rand -base64 48`; enter it only at the interactive Wrangler prompt and provision the same value in the private agent's secret store. Never put secrets in Git, AI Studio prompts, HTML, or chat.
 
 The existing Cryptic Cloudflare Access issuer, audience and JWKS URL are already configured in `wrangler.jsonc`. Firebase Google identity is now configured from the existing S.O.S Firebase app config; no separate OAuth client ID entry is needed for the Firebase ID-token verification path. The portal must provide a standards-compliant OIDC ID token with a verified email claim. Do not substitute a portal session cookie or a self-asserted email.
 
