@@ -172,3 +172,11 @@ The public page contains no local agent controls or credentials. The mesh endpoi
 ```bash
 npx wrangler deploy --config ./public.wrangler.jsonc
 ```
+
+## UNIOMNI public knowledge browser
+
+- Public search page: https://uniomni.crypticnews.org/
+- Health metadata: https://uniomni.crypticnews.org/healthz
+- It indexes public README sections, tracked file paths, capability declarations and artifact receipts from `machackabook/ideal-enigma`.
+- It does not ingest private GAIA memory; the authenticated bridge is linked separately and preserves its own login boundary.
+- Deploy independently with `npx wrangler deploy --config ../uniomni-browser/wrangler.jsonc` from the Cryptic repository root.
