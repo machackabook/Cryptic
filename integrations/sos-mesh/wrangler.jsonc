@@ -15,9 +15,10 @@
   "vars": {
     "GOOGLE_ISSUER": "https://accounts.google.com",
     "GOOGLE_AUDIENCE": "REPLACE_WITH_GOOGLE_OAUTH_CLIENT_ID",
-    "PORTAL_ISSUER": "REPLACE_WITH_PORTAL_OIDC_ISSUER",
-    "PORTAL_AUDIENCE": "REPLACE_WITH_PORTAL_OIDC_AUDIENCE",
-    "PORTAL_JWKS_URL": "REPLACE_WITH_PORTAL_JWKS_URL",
+    "PORTAL_ISSUER": "https://crypticnews.cloudflareaccess.com",
+    "PORTAL_AUDIENCE": "fac224bcc6b364514390deb38330bd171935ea0afd09d87c31985a7c553bd828",
+    "PORTAL_JWKS_URL": "https://crypticnews.cloudflareaccess.com/cdn-cgi/access/certs",
+    "PORTAL_IDP_TYPE": "cloudflare-access",
     "ALLOWED_ORIGINS": "https://aistudio.google.com,https://crypticnews.org,https://www.crypticnews.org",
     "AGENT_ID": "nexus-local-01"
   }
