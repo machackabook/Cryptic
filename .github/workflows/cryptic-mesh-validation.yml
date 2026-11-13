@@ -33,5 +33,7 @@ jobs:
           bash -n integrations/sos-mesh/agentctl.sh
       - name: Verify Cloudflare Access assertion signatures
         run: node --test tests/sos-mesh-access-assertion.test.mjs tests/sos-public-page.test.mjs tests/uniomni-browser.test.mjs
+      - name: Smoke test public Cryptic, S.O.S, UNIOMNI and gateway pages
+        run: node tests/public-smoke.mjs
       - name: Check patch whitespace
         run: git diff --check origin/main...HEAD
